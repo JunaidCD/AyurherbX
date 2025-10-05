@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Leaf, User, Settings, Beaker, Shield, ArrowRight, Eye, EyeOff, Sparkles, Lock, Mail } from 'lucide-react';
+import { Leaf, User, Settings, Beaker, Shield, ArrowRight, Eye, EyeOff, Sparkles, Lock, Mail, Package } from 'lucide-react';
 import { strings } from '../../utils/strings';
 import { api } from '../../utils/api';
 
@@ -62,6 +62,17 @@ const Login = ({ onLogin, showToast }) => {
       borderGradient: 'from-orange-500/50 to-orange-600/50',
       credentials: { username: 'customer', password: 'customer123' },
       features: ['Product Tracking', 'QR Scanning', 'Provenance View']
+    },
+    {
+      id: 'Collector',
+      name: 'Collector',
+      description: 'Report and manage herb collections',
+      icon: Package,
+      gradient: 'from-emerald-500 to-teal-600',
+      bgGradient: 'from-emerald-500/20 to-teal-600/20',
+      borderGradient: 'from-emerald-500/50 to-teal-600/50',
+      credentials: { username: 'collector', password: 'collect123' },
+      features: ['Collection Reports', 'Batch Management', 'Inventory Tracking']
     }
   ];
 
@@ -212,10 +223,13 @@ const Login = ({ onLogin, showToast }) => {
                   <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-full border-2 border-gray-900 flex items-center justify-center">
                     <Shield className="w-5 h-5 text-white" />
                   </div>
+                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full border-2 border-gray-900 flex items-center justify-center">
+                    <Package className="w-5 h-5 text-white" />
+                  </div>
                 </div>
                 <div className="text-left">
-                  <p className="text-white font-semibold">4 Role-Based Dashboards</p>
-                  <p className="text-gray-400 text-sm">Admin, Processor, Lab Tester, Customer</p>
+                  <p className="text-white font-semibold">5 Role-Based Dashboards</p>
+                  <p className="text-gray-400 text-sm">Admin, Processor, Lab Tester, Customer, Collector</p>
                 </div>
               </div>
             </div>
@@ -233,7 +247,7 @@ const Login = ({ onLogin, showToast }) => {
                 </p>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
                 {roles.map((role, index) => {
                   const Icon = role.icon;
                   return (

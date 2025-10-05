@@ -7,6 +7,7 @@ import ProcessorDashboard from './pages/Processor/ProcessorDashboard';
 import LabDashboard from './pages/Lab/LabDashboard';
 import CustomerPortal from './pages/Customer/CustomerPortal';
 import CustomerDashboard from './pages/Customer/CustomerDashboard';
+import CollectorDashboard from './pages/Collector/CollectorDashboard';
 import Information from './pages/Customer/Information';
 import QRDetails from './pages/QRDetails/QRDetails';
 import Collections from './pages/Collections/Collections';
@@ -63,6 +64,8 @@ function App() {
         return <LabDashboard user={user} showToast={showToast} />;
       case 'Customer':
         return <CustomerDashboard user={user} showToast={showToast} />;
+      case 'Collector':
+        return <CollectorDashboard user={user} showToast={showToast} />;
       default:
         return <Navigate to="/login" />;
     }

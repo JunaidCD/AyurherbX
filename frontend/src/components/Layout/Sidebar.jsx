@@ -13,7 +13,8 @@ import {
   Eye,
   FileCheck,
   Search,
-  Info
+  Info,
+  ClipboardList
 } from 'lucide-react';
 import { strings } from '../../utils/strings';
 
@@ -26,7 +27,7 @@ const Sidebar = ({ user }) => {
         path: '/dashboard', 
         icon: LayoutDashboard, 
         label: strings.nav.dashboard,
-        roles: ['Admin', 'Processor', 'Lab Tester', 'Customer']
+        roles: ['Admin', 'Processor', 'Lab Tester', 'Customer', 'Collector']
       }
     ];
 
@@ -47,6 +48,10 @@ const Sidebar = ({ user }) => {
       'Customer': [
         { path: '/view-product', icon: Search, label: 'View Product' },
         { path: '/information', icon: Info, label: 'Information' }
+      ],
+      'Collector': [
+        { path: '/collections', icon: Database, label: 'Collection Reports' },
+        { path: '/collection-history', icon: ClipboardList, label: 'Collection History' }
       ]
     };
 
