@@ -20,15 +20,15 @@ const Login = ({ onLogin, showToast }) => {
 
   const roles = [
     {
-      id: 'Admin',
-      name: strings.roles.admin,
-      description: strings.login.adminDesc,
-      icon: Settings,
-      gradient: 'from-purple-500 to-purple-600',
-      bgGradient: 'from-purple-500/20 to-purple-600/20',
-      borderGradient: 'from-purple-500/50 to-purple-600/50',
-      credentials: { username: 'admin', password: 'admin123' },
-      features: ['System Analytics', 'User Management', 'Full Access']
+      id: 'Collector',
+      name: 'Collector',
+      description: 'Report and manage herb collections',
+      icon: Package,
+      gradient: 'from-emerald-500 to-teal-600',
+      bgGradient: 'from-emerald-500/20 to-teal-600/20',
+      borderGradient: 'from-emerald-500/50 to-teal-600/50',
+      credentials: { username: 'collector', password: 'collect123' },
+      features: ['Collection Reports', 'Batch Management', 'Inventory Tracking']
     },
     {
       id: 'Processor',
@@ -53,6 +53,17 @@ const Login = ({ onLogin, showToast }) => {
       features: ['Quality Testing', 'Lab Reports', 'Compliance Check']
     },
     {
+      id: 'Admin',
+      name: strings.roles.admin,
+      description: strings.login.adminDesc,
+      icon: Settings,
+      gradient: 'from-purple-500 to-purple-600',
+      bgGradient: 'from-purple-500/20 to-purple-600/20',
+      borderGradient: 'from-purple-500/50 to-purple-600/50',
+      credentials: { username: 'admin', password: 'admin123' },
+      features: ['System Analytics', 'User Management', 'Full Access']
+    },
+    {
       id: 'Customer',
       name: strings.roles.customer,
       description: strings.login.customerDesc,
@@ -62,17 +73,6 @@ const Login = ({ onLogin, showToast }) => {
       borderGradient: 'from-orange-500/50 to-orange-600/50',
       credentials: { username: 'customer', password: 'customer123' },
       features: ['Product Tracking', 'QR Scanning', 'Provenance View']
-    },
-    {
-      id: 'Collector',
-      name: 'Collector',
-      description: 'Report and manage herb collections',
-      icon: Package,
-      gradient: 'from-emerald-500 to-teal-600',
-      bgGradient: 'from-emerald-500/20 to-teal-600/20',
-      borderGradient: 'from-emerald-500/50 to-teal-600/50',
-      credentials: { username: 'collector', password: 'collect123' },
-      features: ['Collection Reports', 'Batch Management', 'Inventory Tracking']
     }
   ];
 
@@ -211,8 +211,8 @@ const Login = ({ onLogin, showToast }) => {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16">
               <div className="flex items-center gap-4">
                 <div className="flex -space-x-2">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-emerald-500 rounded-full border-2 border-gray-900 flex items-center justify-center">
-                    <Settings className="w-5 h-5 text-white" />
+                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full border-2 border-gray-900 flex items-center justify-center">
+                    <Package className="w-5 h-5 text-white" />
                   </div>
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full border-2 border-gray-900 flex items-center justify-center">
                     <User className="w-5 h-5 text-white" />
@@ -220,16 +220,16 @@ const Login = ({ onLogin, showToast }) => {
                   <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-primary-600 rounded-full border-2 border-gray-900 flex items-center justify-center">
                     <Beaker className="w-5 h-5 text-white" />
                   </div>
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-emerald-500 rounded-full border-2 border-gray-900 flex items-center justify-center">
+                    <Settings className="w-5 h-5 text-white" />
+                  </div>
                   <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-full border-2 border-gray-900 flex items-center justify-center">
                     <Shield className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full border-2 border-gray-900 flex items-center justify-center">
-                    <Package className="w-5 h-5 text-white" />
                   </div>
                 </div>
                 <div className="text-left">
                   <p className="text-white font-semibold">5 Role-Based Dashboards</p>
-                  <p className="text-gray-400 text-sm">Admin, Processor, Lab Tester, Customer, Collector</p>
+                  <p className="text-gray-400 text-sm">Collector, Processor, Lab Tester, Admin, Customer</p>
                 </div>
               </div>
             </div>
