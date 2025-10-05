@@ -164,11 +164,6 @@ const Login = ({ onLogin, showToast }) => {
               <a href="#features" className="text-gray-300 hover:text-white transition-colors font-medium">Features</a>
               <a href="#about" className="text-gray-300 hover:text-white transition-colors font-medium">About</a>
               <a href="#contact" className="text-gray-300 hover:text-white transition-colors font-medium">Contact</a>
-              <div className="w-px h-6 bg-gray-600"></div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                <span className="text-emerald-300 text-sm font-medium">Live Demo</span>
-              </div>
             </div>
 
             {/* Mobile Menu Button */}
