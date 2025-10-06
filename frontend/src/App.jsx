@@ -82,9 +82,13 @@ function App() {
             path="/collections" 
             element={
               user ? (
-                <Layout user={user} onLogout={handleLogout}>
-                  <Collections user={user} showToast={showToast} />
-                </Layout>
+                user.role === 'Collector' ? (
+                  <Layout user={user} onLogout={handleLogout}>
+                    <Collections user={user} showToast={showToast} />
+                  </Layout>
+                ) : (
+                  <Navigate to="/dashboard" />
+                )
               ) : (
                 <Navigate to="/login" />
               )

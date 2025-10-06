@@ -32,7 +32,6 @@ const Sidebar = ({ user }) => {
 
     const roleSpecificItems = {
       'Admin': [
-        { path: '/collections', icon: Database, label: strings.nav.collections },
         { path: '/verification-report', icon: FileCheck, label: 'Verification & Report' },
         { path: '/settings', icon: Settings, label: strings.nav.settings }
       ],

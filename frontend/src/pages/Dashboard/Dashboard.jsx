@@ -21,7 +21,7 @@ const Dashboard = ({ user, showToast }) => {
   const isCollector = userRole === 'Collector';
 
   // Debug log to verify role detection
-  console.log('Dashboard - User role:', userRole, 'isProcessor:', isProcessor);
+  console.log('Dashboard - User role:', userRole, 'isProcessor:', isProcessor, 'isLabTester:', isLabTester, 'isAdmin:', isAdmin);
 
   // Dummy data for dashboard
   const stats = {
@@ -75,6 +75,106 @@ const Dashboard = ({ user, showToast }) => {
                 <div className="space-y-4 max-w-md mx-auto">
                   <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                     New Item will appear here
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
+  // Lab Tester Dashboard - Simple Empty State
+  if (isLabTester) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 p-6">
+        <div className="max-w-7xl mx-auto space-y-8">
+          
+          {/* Header */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div>
+              <h1 className="relative text-6xl font-black tracking-tight">
+                <span className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent blur-sm opacity-50">
+                  Dashboard
+                </span>
+                <span className="relative bg-gradient-to-r from-white via-emerald-200 to-teal-300 bg-clip-text text-transparent animate-pulse">
+                  Dashboard
+                </span>
+                <div className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-full animate-pulse" style={{width: '100%'}}></div>
+              </h1>
+            </div>
+          </div>
+
+          {/* Simple Empty State */}
+          <div className="relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-xl animate-pulse"></div>
+            
+            <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-3xl p-12">
+              <div className="text-center py-16">
+                <div className="relative mb-8">
+                  <div className="relative inline-block">
+                    <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-full blur-2xl animate-pulse"></div>
+                    <div className="relative w-24 h-24 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border-2 border-emerald-500/30 rounded-3xl flex items-center justify-center backdrop-blur-sm">
+                      <Package className="w-12 h-12 text-emerald-400" />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4 max-w-md mx-auto">
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    New content For Dashboard will appear here
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
+  // Admin Dashboard - Simple Empty State
+  if (isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 p-6">
+        <div className="max-w-7xl mx-auto space-y-8">
+          
+          {/* Header */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div>
+              <h1 className="relative text-6xl font-black tracking-tight">
+                <span className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent blur-sm opacity-50">
+                  Dashboard
+                </span>
+                <span className="relative bg-gradient-to-r from-white via-emerald-200 to-teal-300 bg-clip-text text-transparent animate-pulse">
+                  Dashboard
+                </span>
+                <div className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-full animate-pulse" style={{width: '100%'}}></div>
+              </h1>
+            </div>
+          </div>
+
+          {/* Simple Empty State */}
+          <div className="relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-xl animate-pulse"></div>
+            
+            <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-3xl p-12">
+              <div className="text-center py-16">
+                <div className="relative mb-8">
+                  <div className="relative inline-block">
+                    <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-full blur-2xl animate-pulse"></div>
+                    <div className="relative w-24 h-24 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border-2 border-emerald-500/30 rounded-3xl flex items-center justify-center backdrop-blur-sm">
+                      <Package className="w-12 h-12 text-emerald-400" />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4 max-w-md mx-auto">
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    New content For Admin Dashboard will appear here
                   </h3>
                 </div>
               </div>
