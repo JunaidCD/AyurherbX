@@ -362,10 +362,14 @@ export const api = {
     processingSteps[batchId].push(newStep);
     localStorage.setItem('ayurherb_processing_steps', JSON.stringify(processingSteps));
     
-    // Generate mock blockchain transaction data
-    const transactionHash = '0x' + Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    const blockNumber = Math.floor(Math.random() * 1000000) + 18500000;
-    const gasUsed = Math.floor(Math.random() * 50000) + 21000;
+    // Import blockchain utilities at the top of the function to avoid import issues
+    const { generateMockTxHash, generateMockBlock } = await import('./blockchain.js');
+    
+    // Generate mock blockchain transaction data using utilities
+    const transactionHash = generateMockTxHash();
+    const blockData = generateMockBlock();
+    const blockNumber = blockData.blockNumber;
+    const gasUsed = blockData.gasUsed;
     
     return {
       success: true,

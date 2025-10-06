@@ -22,6 +22,7 @@ import AddProcessingAdvanced from './pages/Processing/AddProcessingAdvanced';
 import VerificationReport from './pages/VerificationReport/VerificationReport';
 import ViewProduct from './pages/ViewProduct/ViewProduct';
 import Toast from './components/UI/Toast';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -72,8 +73,9 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className="min-h-screen bg-dark-900 text-white">
+    <ErrorBoundary>
+      <Router>
+        <div className="min-h-screen bg-dark-900 text-white">
         <Routes>
           <Route 
             path="/login" 
@@ -270,8 +272,9 @@ function App() {
             onClose={() => setToast(null)} 
           />
         )}
-      </div>
-    </Router>
+        </div>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

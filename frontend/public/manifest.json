@@ -1,0 +1,17 @@
+{
+  "name": "Ayurherb 2.0 - Ayurvedic Supply Chain Management",
+  "short_name": "Ayurherb",
+  "description": "Comprehensive herbal supply chain management system",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#22c55e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

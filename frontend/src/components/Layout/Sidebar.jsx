@@ -13,8 +13,7 @@ import {
   Eye,
   FileCheck,
   Search,
-  Info,
-  ClipboardList
+  Info
 } from 'lucide-react';
 import { strings } from '../../utils/strings';
 
@@ -50,8 +49,7 @@ const Sidebar = ({ user }) => {
         { path: '/information', icon: Info, label: 'Information' }
       ],
       'Collector': [
-        { path: '/collections', icon: Database, label: 'Collection Reports' },
-        { path: '/collection-history', icon: ClipboardList, label: 'Collection History' }
+        { path: '/collections', icon: Database, label: 'Collection Reports' }
       ]
     };
 

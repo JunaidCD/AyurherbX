@@ -4,9 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ayurherb 2.0 - Ayurvedic Supply Chain Management</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#22c55e" />
   </head>
   <body class="dark:bg-dark-900 bg-gray-50">
     <div id="root"></div>
+    <script>
+      // Prevent MetaMask connection errors by providing a fallback
+      if (typeof window.ethereum === 'undefined') {
+        window.ethereum = {
+          isMetaMask: false,
+          request: () => Promise.reject(new Error('MetaMask not installed')),
+          on: () => {},
+          removeListener: () => {}
+        };
+      }
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
