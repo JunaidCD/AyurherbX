@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Plus, Search, Filter, Calendar, MapPin, Beaker, TrendingUp, Users, CheckCircle } from 'lucide-react';
+import { Package, Plus, Calendar, TrendingUp, CheckCircle } from 'lucide-react';
 import { api } from '../../utils/api';
 
 const CollectorDashboard = ({ user, showToast }) => {
-  const [collections, setCollections] = useState([]);
   const [stats, setStats] = useState({
     totalCollections: 0,
     todayCollections: 0,
@@ -11,8 +10,6 @@ const CollectorDashboard = ({ user, showToast }) => {
     completedReports: 0
   });
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All');
   const [showNewCollectionForm, setShowNewCollectionForm] = useState(false);
   const [newCollection, setNewCollection] = useState({
     herbName: '',
@@ -24,20 +21,8 @@ const CollectorDashboard = ({ user, showToast }) => {
   });
 
   useEffect(() => {
-    loadCollections();
     loadStats();
   }, []);
-
-  const loadCollections = async () => {
-    try {
-      const response = await api.getCollections();
-      setCollections(response);
-    } catch (error) {
-      showToast('Failed to load collections', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const loadStats = async () => {
     try {
@@ -76,42 +61,12 @@ const CollectorDashboard = ({ user, showToast }) => {
         location: '',
         notes: ''
       });
-      loadCollections();
       loadStats();
     } catch (error) {
       showToast('Failed to submit collection report', 'error');
     }
   };
 
-  const filteredCollections = collections.filter(collection => {
-    const matchesSearch = collection.herb?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         collection.batchId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         collection.farmer?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'All' || collection.status === filterStatus;
-    return matchesSearch && matchesFilter;
-  });
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Verified': return 'text-emerald-400 bg-emerald-500/20';
-      case 'Synced': return 'text-blue-400 bg-blue-500/20';
-      case 'Queued': return 'text-yellow-400 bg-yellow-500/20';
-      default: return 'text-gray-400 bg-gray-500/20';
-    }
-  };
-
-  const getHerbEmoji = (herb) => {
-    const herbEmojis = {
-      'Ashwagandha': '🌿',
-      'Turmeric': '🟡',
-      'Brahmi': '🍃',
-      'Neem': '🌱',
-      'Tulsi': '🌿',
-      'Ginger': '🫚',
-      'Allovera': '🌵'
-    };
-    return herbEmojis[herb] || '🌿';
-  };
 
   if (loading) {
     return (
@@ -192,98 +147,6 @@ const CollectorDashboard = ({ user, showToast }) => {
           </div>
         </div>
 
-        {/* Search and Filter */}
-        <div className="flex flex-col lg:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search by herb name, batch ID, or farmer..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-            />
-          </div>
-          
-          <div className="relative">
-            <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="pl-12 pr-8 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 appearance-none cursor-pointer"
-            >
-              <option value="All">All Status</option>
-              <option value="Queued">Queued</option>
-              <option value="Synced">Synced</option>
-              <option value="Verified">Verified</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Collections Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredCollections.map((collection, index) => (
-            <div
-              key={collection.id}
-              className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/10"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{getHerbEmoji(collection.herb)}</span>
-                  <div>
-                    <h3 className="text-white font-semibold text-lg">{collection.herb}</h3>
-                    <p className="text-gray-400 text-sm">{collection.speciesName || collection.herb}</p>
-                  </div>
-                </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(collection.status)}`}>
-                  {collection.status}
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Batch ID:</span>
-                  <span className="text-white font-medium">{collection.batchId}</span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Collector ID:</span>
-                  <span className="text-white font-medium">{collection.collectorId}</span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Quantity:</span>
-                  <span className="text-white font-medium">{collection.quantity}</span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Quality:</span>
-                  <span className="text-emerald-400 font-medium">{collection.qualityGrade}</span>
-                </div>
-
-                {collection.location && (
-                  <div className="flex items-center gap-2 mt-4 p-3 bg-white/5 rounded-lg">
-                    <MapPin className="w-4 h-4 text-gray-400" />
-                    <span className="text-gray-300 text-sm">{collection.location}</span>
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                  <span className="text-gray-400 text-sm">Submitted:</span>
-                  <span className="text-gray-300 text-sm">{collection.submissionDate}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {filteredCollections.length === 0 && (
-          <div className="text-center py-12">
-            <Package className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-400 mb-2">No collections found</h3>
-            <p className="text-gray-500">Try adjusting your search or filter criteria</p>
-          </div>
-        )}
       </div>
 
       {/* New Collection Form Modal */}

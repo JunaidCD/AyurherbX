@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, Search, LogOut, User, Settings } from 'lucide-react';
+import { Bell, LogOut, User, Settings } from 'lucide-react';
 import { strings } from '../../utils/strings';
 
 const Topbar = ({ user, onLogout }) => {
@@ -7,17 +7,8 @@ const Topbar = ({ user, onLogout }) => {
 
   return (
     <header className="h-16 bg-dark-800 border-b border-dark-700 flex items-center justify-between px-6">
-      {/* Search */}
-      <div className="flex-1 max-w-md">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search batches, farmers, or herbs..."
-            className="w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          />
-        </div>
-      </div>
+      {/* Empty space where search was */}
+      <div className="flex-1"></div>
 
       {/* Right side */}
       <div className="flex items-center gap-4">

@@ -2,12 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
 import Login from './pages/Login/Login';
-import AdminDashboard from './pages/Admin/AdminDashboard';
-import ProcessorDashboard from './pages/Processor/ProcessorDashboard';
-import LabDashboard from './pages/Lab/LabDashboard';
+import Dashboard from './pages/Dashboard/Dashboard';
 import CustomerPortal from './pages/Customer/CustomerPortal';
-import CustomerDashboard from './pages/Customer/CustomerDashboard';
-import CollectorDashboard from './pages/Collector/CollectorDashboard';
 import Information from './pages/Customer/Information';
 import QRDetails from './pages/QRDetails/QRDetails';
 import Collections from './pages/Collections/Collections';
@@ -53,24 +49,6 @@ function App() {
     setTimeout(() => setToast(null), 4000);
   };
 
-  const getDashboardComponent = () => {
-    if (!user) return <Navigate to="/login" />;
-    
-    switch (user.role) {
-      case 'Admin':
-        return <AdminDashboard user={user} showToast={showToast} />;
-      case 'Processor':
-        return <ProcessorDashboard user={user} showToast={showToast} />;
-      case 'Lab Tester':
-        return <LabDashboard user={user} showToast={showToast} />;
-      case 'Customer':
-        return <CustomerDashboard user={user} showToast={showToast} />;
-      case 'Collector':
-        return <CollectorDashboard user={user} showToast={showToast} />;
-      default:
-        return <Navigate to="/login" />;
-    }
-  };
 
   return (
     <ErrorBoundary>
@@ -85,18 +63,18 @@ function App() {
             } 
           />
           
-          {/* Protected routes with layout */}
+          {/* Dashboard route */}
           <Route 
             path="/dashboard" 
             element={
               user ? (
                 <Layout user={user} onLogout={handleLogout}>
-                  {getDashboardComponent()}
+                  <Dashboard user={user} showToast={showToast} />
                 </Layout>
               ) : (
                 <Navigate to="/login" />
               )
-            } 
+            }
           />
           
           
