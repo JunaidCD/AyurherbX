@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Database, X, Plus, Wallet, ExternalLink } from 'lucide-react';
 import { useWallet } from '../../contexts/WalletContext';
+import { useCollections } from '../../contexts/CollectionsContext';
 import WalletButton from '../../components/WalletButton/WalletButton';
 
 const Collections = ({ user, showToast }) => {
@@ -10,6 +11,10 @@ const Collections = ({ user, showToast }) => {
     submitCollection,
     isOnSepolia
   } = useWallet();
+
+  const {
+    addCollection
+  } = useCollections();
 
   const [formData, setFormData] = useState({
     herbName: '',
@@ -208,6 +213,16 @@ const Collections = ({ user, showToast }) => {
       const result = await submitCollection(formData);
       
       setTransactionResult(result);
+      
+      // Add to collections context for real-time updates
+      const newCollection = addCollection({
+        ...formData,
+        transactionHash: result.transactionHash,
+        blockchainId: result.collectionId,
+        collectorAddress: account,
+        status: 'Verified on Blockchain'
+      });
+      
       showToast('Collection submitted to blockchain successfully!', 'success');
       
       // Reset form

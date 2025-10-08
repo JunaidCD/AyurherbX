@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCollections } from '../../contexts/CollectionsContext';
 import { 
   Plus, 
   Package, 
@@ -11,6 +12,7 @@ import {
 
 const Dashboard = ({ user, showToast }) => {
   const navigate = useNavigate();
+  const { getCollectionsStats, getRecentCollections } = useCollections();
 
   // Check user role for different dashboard types
   const userRole = user?.role;
@@ -23,13 +25,9 @@ const Dashboard = ({ user, showToast }) => {
   // Debug log to verify role detection
   console.log('Dashboard - User role:', userRole, 'isProcessor:', isProcessor, 'isLabTester:', isLabTester, 'isAdmin:', isAdmin, 'isCustomer:', isCustomer);
 
-  // Dummy data for dashboard
-  const stats = {
-    totalCollections: 1547,
-    todayCollections: 12,
-    pendingReports: 8,
-    completedReports: 148
-  };
+  // Get real-time data from collections context
+  const stats = getCollectionsStats();
+  const recentCollections = getRecentCollections(5);
 
   const handleNewCollection = () => {
     navigate('/collections');
@@ -422,13 +420,64 @@ const Dashboard = ({ user, showToast }) => {
               </div>
             </div>
 
-            {/* Enhanced Empty State */}
-            <div className="text-center py-16">
-              <div className="relative mb-8">
-                {/* Floating elements animation */}
-                <div className="absolute top-0 left-1/4 w-3 h-3 bg-emerald-400/40 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
-                <div className="absolute top-4 right-1/4 w-2 h-2 bg-blue-400/40 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
-                <div className="absolute -top-2 left-1/3 w-1 h-1 bg-purple-400/40 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
+            {/* Collections List or Empty State */}
+            {recentCollections.length > 0 ? (
+              <div className="space-y-4">
+                {recentCollections.map((collection, index) => (
+                  <div key={collection.id} className="group relative">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                    <div className="relative bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-emerald-500/30 transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                            <Leaf className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-white">{collection.herbName}</h3>
+                            <p className="text-gray-400 text-sm">{collection.quantity} • {collection.location}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
+                            collection.status === 'Verified on Blockchain' 
+                              ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                              : collection.status === 'Pending Verification'
+                              ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                              : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                          }`}>
+                            {collection.status === 'Verified on Blockchain' && <CheckCircle className="w-3 h-3" />}
+                            {collection.status}
+                          </div>
+                          <p className="text-gray-500 text-xs mt-1">{collection.timestamp}</p>
+                        </div>
+                      </div>
+                      {collection.transactionHash && (
+                        <div className="mt-4 pt-4 border-t border-white/10">
+                          <div className="flex items-center gap-2 text-xs text-gray-400">
+                            <span>Blockchain ID:</span>
+                            <code className="bg-white/10 px-2 py-1 rounded">{collection.blockchainId}</code>
+                            <a 
+                              href={`https://sepolia.etherscan.io/tx/${collection.transactionHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-emerald-400 hover:text-emerald-300 transition-colors"
+                            >
+                              View on Etherscan ↗
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <div className="relative mb-8">
+                  {/* Floating elements animation */}
+                  <div className="absolute top-0 left-1/4 w-3 h-3 bg-emerald-400/40 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+                  <div className="absolute top-4 right-1/4 w-2 h-2 bg-blue-400/40 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
+                  <div className="absolute -top-2 left-1/3 w-1 h-1 bg-purple-400/40 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
                 
                 {/* Main icon with glow effect */}
                 <div className="relative inline-block">
@@ -465,6 +514,7 @@ const Dashboard = ({ user, showToast }) => {
                 <div className="w-20 h-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent rounded-full"></div>
               </div>
             </div>
+            )}
           </div>
         </div>
 
