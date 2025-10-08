@@ -21,6 +21,125 @@ const Collections = ({ user, showToast }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [transactionResult, setTransactionResult] = useState(null);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState(null);
+
+  // Auto-detect location when component mounts
+  React.useEffect(() => {
+    const getLocation = async () => {
+      if (!navigator.geolocation) {
+        setLocationError('Geolocation is not supported by this browser');
+        return;
+      }
+
+      setLocationLoading(true);
+      setLocationError(null);
+
+      try {
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            resolve,
+            reject,
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 300000 // 5 minutes
+            }
+          );
+        });
+
+        const { latitude, longitude } = position.coords;
+        
+        // Try reverse geocoding with free service
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
+            {
+              headers: {
+                'User-Agent': 'AyurHerb-App'
+              }
+            }
+          );
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.display_name) {
+              // Extract city, state, country from the address
+              const address = data.address;
+              let locationString = '';
+              
+              if (address) {
+                const parts = [];
+                if (address.city || address.town || address.village) {
+                  parts.push(address.city || address.town || address.village);
+                }
+                if (address.state) {
+                  parts.push(address.state);
+                }
+                if (address.country) {
+                  parts.push(address.country);
+                }
+                locationString = parts.join(', ') || data.display_name;
+              } else {
+                locationString = data.display_name;
+              }
+              
+              setFormData(prev => ({
+                ...prev,
+                location: locationString
+              }));
+              showToast('Location detected automatically', 'success');
+            } else {
+              // Fallback to coordinates
+              setFormData(prev => ({
+                ...prev,
+                location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+              }));
+              showToast('Location coordinates detected', 'info');
+            }
+          } else {
+            // Fallback to coordinates
+            setFormData(prev => ({
+              ...prev,
+              location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+            }));
+            showToast('Location coordinates detected', 'info');
+          }
+        } catch (geocodeError) {
+          // Fallback to coordinates
+          setFormData(prev => ({
+            ...prev,
+            location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+          }));
+          showToast('Location coordinates detected', 'info');
+        }
+      } catch (error) {
+        let errorMessage = 'Failed to get location';
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'Location access denied by user';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'Location information unavailable';
+            break;
+          case error.TIMEOUT:
+            errorMessage = 'Location request timed out';
+            break;
+          default:
+            errorMessage = 'An unknown error occurred while getting location';
+            break;
+        }
+        
+        setLocationError(errorMessage);
+        showToast(errorMessage, 'error');
+      } finally {
+        setLocationLoading(false);
+      }
+    };
+
+    getLocation();
+  }, [showToast]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +147,33 @@ const Collections = ({ user, showToast }) => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const validateForm = () => {
+    const errors = [];
+    
+    // Check all required fields
+    if (!formData.herbName.trim()) {
+      errors.push('Herb Name is required');
+    }
+    
+    if (!formData.quantity.trim()) {
+      errors.push('Quantity is required');
+    }
+    
+    if (!formData.batchId.trim()) {
+      errors.push('Batch ID is required');
+    }
+    
+    if (!formData.collectorId.trim()) {
+      errors.push('Collector ID is required');
+    }
+    
+    if (!formData.location.trim()) {
+      errors.push('Location is required');
+    }
+    
+    return errors;
   };
 
   const handleSubmit = async (e) => {
@@ -45,9 +191,10 @@ const Collections = ({ user, showToast }) => {
       return;
     }
 
-    // Validate form data
-    if (!formData.herbName || !formData.quantity || !formData.batchId || !formData.location) {
-      showToast('Please fill in all required fields', 'error');
+    // Validate all required fields
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+      showToast(`Please fill in all required fields: ${validationErrors.join(', ')}`, 'error');
       return;
     }
 
@@ -301,7 +448,7 @@ const Collections = ({ user, showToast }) => {
               {/* Herb Name */}
               <div>
                 <label className="block text-base font-semibold text-white mb-3">
-                  Herb Name
+                  Herb Name <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -310,14 +457,16 @@ const Collections = ({ user, showToast }) => {
                   onChange={handleInputChange}
                   placeholder="Enter herb name (e.g., Allovera, Brahmi, Ashwagandha)"
                   required
-                  className="w-full px-6 py-4 bg-white/10 border-2 border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 hover:border-white/30 backdrop-blur-sm"
+                  className={`w-full px-6 py-4 bg-white/10 border-2 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 hover:border-white/30 backdrop-blur-sm ${
+                    !formData.herbName.trim() ? 'border-red-500/50' : 'border-white/20'
+                  }`}
                 />
               </div>
 
               {/* Quantity */}
               <div>
                 <label className="block text-base font-semibold text-white mb-3">
-                  Quantity
+                  Quantity <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -326,14 +475,16 @@ const Collections = ({ user, showToast }) => {
                   onChange={handleInputChange}
                   placeholder="e.g., 25kg"
                   required
-                  className="w-full px-6 py-4 bg-white/10 border-2 border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 hover:border-white/30 backdrop-blur-sm"
+                  className={`w-full px-6 py-4 bg-white/10 border-2 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 hover:border-white/30 backdrop-blur-sm ${
+                    !formData.quantity.trim() ? 'border-red-500/50' : 'border-white/20'
+                  }`}
                 />
               </div>
 
               {/* Batch ID */}
               <div>
                 <label className="block text-base font-semibold text-white mb-3">
-                  Batch ID
+                  Batch ID <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -342,14 +493,16 @@ const Collections = ({ user, showToast }) => {
                   onChange={handleInputChange}
                   placeholder="e.g., BAT-2024-001"
                   required
-                  className="w-full px-6 py-4 bg-white/10 border-2 border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 hover:border-white/30 backdrop-blur-sm"
+                  className={`w-full px-6 py-4 bg-white/10 border-2 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 hover:border-white/30 backdrop-blur-sm ${
+                    !formData.batchId.trim() ? 'border-red-500/50' : 'border-white/20'
+                  }`}
                 />
               </div>
 
               {/* Collector ID */}
               <div>
                 <label className="block text-base font-semibold text-white mb-3">
-                  Collector ID
+                  Collector ID <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -358,24 +511,48 @@ const Collections = ({ user, showToast }) => {
                   onChange={handleInputChange}
                   placeholder="1"
                   required
-                  className="w-full px-6 py-4 bg-white/10 border-2 border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 hover:border-white/30 backdrop-blur-sm"
+                  className={`w-full px-6 py-4 bg-white/10 border-2 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 hover:border-white/30 backdrop-blur-sm ${
+                    !formData.collectorId.trim() ? 'border-red-500/50' : 'border-white/20'
+                  }`}
                 />
               </div>
 
               {/* Location */}
               <div>
                 <label className="block text-base font-semibold text-white mb-3">
-                  Location
+                  Location <span className="text-red-400">*</span>
+                  {locationLoading && (
+                    <span className="ml-2 text-sm text-emerald-400">
+                      (Detecting automatically...)
+                    </span>
+                  )}
                 </label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Kerala, India"
-                  required
-                  className="w-full px-6 py-4 bg-white/10 border-2 border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 hover:border-white/30 backdrop-blur-sm"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    placeholder={locationLoading ? "Detecting location..." : "e.g., Kerala, India"}
+                    required
+                    disabled={locationLoading}
+                    className={`w-full px-6 py-4 bg-white/10 border-2 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 hover:border-white/30 backdrop-blur-sm ${
+                      locationLoading ? 'opacity-50 cursor-not-allowed' : ''
+                    } ${
+                      !formData.location.trim() ? 'border-red-500/50' : 'border-white/20'
+                    }`}
+                  />
+                  {locationLoading && (
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                      <div className="w-5 h-5 border-2 border-emerald-400/30 border-t-emerald-400 rounded-full animate-spin"></div>
+                    </div>
+                  )}
+                </div>
+                {locationError && (
+                  <div className="mt-2 text-sm text-red-400">
+                    {locationError}
+                  </div>
+                )}
               </div>
 
               {/* Notes (Optional) */}
@@ -466,7 +643,7 @@ const Collections = ({ user, showToast }) => {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting || !isConnected || !isOnSepolia()}
+                  disabled={isSubmitting || !isConnected || !isOnSepolia() || validateForm().length > 0}
                   className="flex-1 px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 rounded-2xl text-white font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 hover:scale-105 shadow-lg hover:shadow-emerald-500/25"
                 >
                   {isSubmitting ? (
