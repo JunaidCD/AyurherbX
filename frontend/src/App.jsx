@@ -19,6 +19,7 @@ import VerificationReport from './pages/VerificationReport/VerificationReport';
 import ViewProduct from './pages/ViewProduct/ViewProduct';
 import Toast from './components/UI/Toast';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+import { WalletProvider } from './contexts/WalletContext';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -52,8 +53,9 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <Router>
-        <div className="min-h-screen bg-dark-900 text-white">
+      <WalletProvider>
+        <Router>
+          <div className="min-h-screen bg-dark-900 text-white">
         <Routes>
           <Route 
             path="/login" 
@@ -254,8 +256,9 @@ function App() {
             onClose={() => setToast(null)} 
           />
         )}
-        </div>
-      </Router>
+          </div>
+        </Router>
+      </WalletProvider>
     </ErrorBoundary>
   );
 }

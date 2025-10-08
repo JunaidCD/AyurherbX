@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
-import { Database, X, Plus } from 'lucide-react';
+import { Database, X, Plus, Wallet, ExternalLink } from 'lucide-react';
+import { useWallet } from '../../contexts/WalletContext';
+import WalletButton from '../../components/WalletButton/WalletButton';
 
 const Collections = ({ user, showToast }) => {
+  const {
+    account,
+    isConnected,
+    submitCollection,
+    isOnSepolia
+  } = useWallet();
+
   const [formData, setFormData] = useState({
     herbName: '',
     quantity: '',
@@ -11,6 +20,7 @@ const Collections = ({ user, showToast }) => {
     notes: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [transactionResult, setTransactionResult] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -22,26 +32,36 @@ const Collections = ({ user, showToast }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check wallet connection
+    if (!isConnected) {
+      showToast('Please connect your wallet first', 'error');
+      return;
+    }
+
+    // Check network
+    if (!isOnSepolia()) {
+      showToast('Please switch to Sepolia testnet', 'error');
+      return;
+    }
+
+    // Validate form data
+    if (!formData.herbName || !formData.quantity || !formData.batchId || !formData.location) {
+      showToast('Please fill in all required fields', 'error');
+      return;
+    }
+
     setIsSubmitting(true);
+    setTransactionResult(null);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      showToast('Submitting to blockchain...', 'info');
       
-      // Save to localStorage for demo purposes
-      const collections = JSON.parse(localStorage.getItem('ayurherb_collections') || '[]');
-      const newCollection = {
-        id: `COL-${Date.now()}`,
-        ...formData,
-        submissionDate: new Date().toISOString().split('T')[0],
-        status: 'Queued',
-        timestamp: new Date().toLocaleString()
-      };
+      // Submit to blockchain via wallet
+      const result = await submitCollection(formData);
       
-      collections.push(newCollection);
-      localStorage.setItem('ayurherb_collections', JSON.stringify(collections));
-      
-      showToast('Collection report submitted successfully!', 'success');
+      setTransactionResult(result);
+      showToast('Collection submitted to blockchain successfully!', 'success');
       
       // Reset form
       setFormData({
@@ -53,7 +73,8 @@ const Collections = ({ user, showToast }) => {
         notes: ''
       });
     } catch (error) {
-      showToast('Failed to submit collection report', 'error');
+      console.error('Submission error:', error);
+      showToast(`Failed to submit collection: ${error.message}`, 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -80,18 +101,24 @@ const Collections = ({ user, showToast }) => {
       
       {/* Enhanced Header */}
       <div className="relative mb-12">
-        <div className="flex items-center gap-6 mb-8">
-          <div className="relative">
-            <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400/30 to-teal-500/30 rounded-2xl blur-lg animate-pulse"></div>
-            <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-2xl">
-              <Database className="w-8 h-8 text-white" />
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400/30 to-teal-500/30 rounded-2xl blur-lg animate-pulse"></div>
+              <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                <Database className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-5xl font-black bg-gradient-to-r from-white via-emerald-200 to-teal-300 bg-clip-text text-transparent mb-2">
+                Collection Reports
+              </h1>
+              <p className="text-xl text-gray-400 font-light">Submit new herb collection data</p>
             </div>
           </div>
-          <div>
-            <h1 className="text-5xl font-black bg-gradient-to-r from-white via-emerald-200 to-teal-300 bg-clip-text text-transparent mb-2">
-              Collection Reports
-            </h1>
-            <p className="text-xl text-gray-400 font-light">Submit new herb collection data</p>
+          {/* Wallet Button in Top Right */}
+          <div className="flex items-center gap-4">
+            <WalletButton showToast={showToast} />
           </div>
         </div>
 
@@ -366,6 +393,68 @@ const Collections = ({ user, showToast }) => {
                 />
               </div>
 
+              {/* Wallet Connection Status */}
+              {!isConnected && (
+                <div className="mb-6 p-4 bg-yellow-500/20 border-2 border-yellow-500/30 rounded-2xl">
+                  <div className="flex items-center gap-3">
+                    <Wallet className="w-5 h-5 text-yellow-400" />
+                    <div>
+                      <div className="text-yellow-300 font-semibold">Wallet Required</div>
+                      <div className="text-yellow-400 text-sm">Connect your wallet to submit collections to the blockchain</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {isConnected && !isOnSepolia() && (
+                <div className="mb-6 p-4 bg-red-500/20 border-2 border-red-500/30 rounded-2xl">
+                  <div className="flex items-center gap-3">
+                    <Wallet className="w-5 h-5 text-red-400" />
+                    <div>
+                      <div className="text-red-300 font-semibold">Wrong Network</div>
+                      <div className="text-red-400 text-sm">Please switch to Sepolia testnet to submit collections</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Transaction Result */}
+              {transactionResult && (
+                <div className="mb-6 p-4 bg-green-500/20 border-2 border-green-500/30 rounded-2xl">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                        <Plus className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-green-300 font-semibold">Collection Submitted Successfully!</div>
+                        <div className="text-green-400 text-sm">Your collection has been recorded on the blockchain</div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <div className="text-gray-400">Collection ID:</div>
+                        <div className="text-white font-mono">{transactionResult.collectionId}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400">Transaction:</div>
+                        <div className="flex items-center gap-2">
+                          <code className="text-white font-mono text-xs">
+                            {transactionResult.transactionHash?.slice(0, 10)}...
+                          </code>
+                          <button
+                            onClick={() => window.open(transactionResult.explorerUrl, '_blank')}
+                            className="p-1 hover:bg-white/10 rounded transition-colors"
+                          >
+                            <ExternalLink className="w-3 h-3 text-gray-400 hover:text-white" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Enhanced Form Actions */}
               <div className="flex gap-6 pt-8">
                 <button
@@ -377,18 +466,18 @@ const Collections = ({ user, showToast }) => {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isConnected || !isOnSepolia()}
                   className="flex-1 px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 rounded-2xl text-white font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 hover:scale-105 shadow-lg hover:shadow-emerald-500/25"
                 >
                   {isSubmitting ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      Submitting...
+                      Submitting to Blockchain...
                     </>
                   ) : (
                     <>
                       <Plus className="w-5 h-5" />
-                      Submit Report
+                      {isConnected ? 'Submit to Blockchain' : 'Connect Wallet First'}
                     </>
                   )}
                 </button>

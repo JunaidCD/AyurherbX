@@ -1,0 +1,40 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "C:\\Users\\ASUS\\OneDrive\\Desktop\\Ayurherb\\backend\\contracts\\HerbCollection.sol": {
+      "lastModificationDate": 1759930807212,
+      "contentHash": "5f2de86499c8489018c849bfb9846576",
+      "sourceName": "contracts/HerbCollection.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "HerbCollection"
+      ]
+    }
+  }
+}
