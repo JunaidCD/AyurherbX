@@ -1,12 +1,18 @@
 import React from 'react';
-import { Package, Leaf, MapPin, Calendar, CheckCircle, Database } from 'lucide-react';
+import { Package, Leaf, MapPin, Calendar, CheckCircle, Database, Plus } from 'lucide-react';
 import { useCollections } from '../../contexts/CollectionsContext';
+import { useNavigate } from 'react-router-dom';
 
 const Batches = () => {
   const { collections } = useCollections();
+  const navigate = useNavigate();
 
   // Collection Card Component
   const CollectionCard = ({ collection }) => {
+    const handleAddProcessing = () => {
+      // Navigate to Add Processing page with the batch ID
+      navigate(`/add-processing/${collection.batchId || collection.id}`);
+    };
     return (
       <div className="bg-slate-800/90 backdrop-blur-xl border border-slate-600/50 rounded-xl p-6 hover:border-slate-500/70 transition-all duration-300 shadow-lg">
         {/* Header */}
@@ -60,7 +66,7 @@ const Batches = () => {
         </div>
 
         {/* Additional Information */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="bg-slate-700/30 rounded-lg p-3 border border-slate-600/30">
             <div className="flex items-center gap-2 mb-2">
               <MapPin className="w-4 h-4 text-orange-400" />
@@ -76,6 +82,17 @@ const Batches = () => {
             </div>
             <p className="text-white font-semibold text-sm">{collection.timestamp}</p>
           </div>
+        </div>
+
+        {/* Add Processing Button */}
+        <div className="flex justify-end">
+          <button
+            onClick={handleAddProcessing}
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+          >
+            <Plus className="w-5 h-5" />
+            Add Processing
+          </button>
         </div>
       </div>
     );

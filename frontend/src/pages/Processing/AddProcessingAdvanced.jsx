@@ -97,13 +97,27 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
 
   useEffect(() => {
     if (batchId) {
-      loadBatch();
+      // Auto-load collection when batchId is provided in URL
+      const foundCollection = collections.find(collection => 
+        (collection.batchId && collection.batchId === batchId) ||
+        collection.id === batchId
+      );
+      
+      if (foundCollection) {
+        setSelectedCollection(foundCollection);
+        setBatch(foundCollection);
+        setSearchQuery(batchId);
+        setLoading(false);
+      } else {
+        // Fallback to API if not found in collections
+        loadBatch();
+      }
     } else {
       // Don't set a default batch - let user search for one
       setBatch(null);
       setLoading(false);
     }
-  }, [batchId]);
+  }, [batchId, collections]);
 
   const loadBatch = async () => {
     try {
@@ -443,7 +457,7 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
                   </div>
                   <div className="text-white">
                     <span className="font-semibold">{batch.batchId || batch.id}</span>
-                    <span className="text-gray-400 ml-2">• {batch.herb} • {batch.farmer}</span>
+                    <span className="text-gray-400 ml-2">• {batch.herbName || batch.herb} • {batch.collector || batch.farmer || 'Junaid'}</span>
                   </div>
                 </div>
               </div>
