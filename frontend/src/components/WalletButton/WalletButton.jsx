@@ -69,16 +69,16 @@ const WalletButton = ({ showToast }) => {
         <button
           onClick={handleConnect}
           disabled={isConnecting}
-          className="flex items-center gap-4 px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 rounded-2xl text-white font-bold text-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 shadow-xl hover:shadow-emerald-500/30"
+          className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 rounded-xl text-white font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 shadow-lg hover:shadow-emerald-500/30"
         >
           {isConnecting ? (
             <>
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               Connecting...
             </>
           ) : (
             <>
-              <Wallet className="w-6 h-6" />
+              <Wallet className="w-5 h-5" />
               Connect Wallet
             </>
           )}
@@ -103,16 +103,16 @@ const WalletButton = ({ showToast }) => {
   }
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       {/* Network Warning */}
       {!isOnSepolia() && (
-        <div className="absolute -top-12 left-0 right-0 mb-2 p-2 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-yellow-300 text-xs backdrop-blur-sm">
+        <div className="absolute -top-16 left-0 right-0 mb-2 p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-xl text-yellow-300 text-sm backdrop-blur-sm z-50">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-3 h-3" />
+            <AlertTriangle className="w-4 h-4" />
             Wrong network
             <button
               onClick={handleSwitchNetwork}
-              className="ml-auto text-yellow-200 hover:text-white transition-colors underline"
+              className="ml-auto text-yellow-200 hover:text-white transition-colors underline font-medium"
             >
               Switch to Sepolia
             </button>
@@ -123,12 +123,12 @@ const WalletButton = ({ showToast }) => {
       <div className="relative">
         <button
           onClick={() => setShowDropdown(!showDropdown)}
-          className="flex items-center gap-4 px-8 py-4 bg-gradient-to-r from-emerald-600/20 to-teal-600/20 border-2 border-emerald-500/30 hover:border-emerald-500/50 rounded-2xl text-white font-bold text-lg transition-all duration-300 hover:scale-105 backdrop-blur-sm group"
+          className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-600/20 to-teal-600/20 border-2 border-emerald-500/30 hover:border-emerald-500/50 rounded-xl text-white font-semibold transition-all duration-300 hover:scale-105 backdrop-blur-sm group"
         >
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
-                <Wallet className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
+                <Wallet className="w-4 h-4 text-white" />
               </div>
               {isOnSepolia() && (
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900">
@@ -137,7 +137,7 @@ const WalletButton = ({ showToast }) => {
               )}
             </div>
             <div className="text-left">
-              <div className="text-sm font-bold">{formatAddress(account)}</div>
+              <div className="text-sm font-semibold">{formatAddress(account)}</div>
               <div className="text-xs text-gray-400">{parseFloat(balance).toFixed(4)} SEP</div>
             </div>
           </div>
@@ -149,12 +149,12 @@ const WalletButton = ({ showToast }) => {
           <>
             {/* Backdrop */}
             <div 
-              className="fixed inset-0 z-10"
+              className="fixed inset-0 z-40"
               onClick={() => setShowDropdown(false)}
             />
             
             {/* Dropdown Content */}
-            <div className="absolute top-full right-0 mt-2 w-80 bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-xl border-2 border-white/20 rounded-2xl shadow-2xl z-20 overflow-hidden">
+            <div className="absolute top-full right-0 mt-3 w-80 bg-gradient-to-br from-gray-900/98 to-gray-800/98 backdrop-blur-xl border-2 border-white/20 rounded-2xl shadow-2xl z-50 overflow-hidden">
               {/* Header */}
               <div className="p-6 border-b border-white/10">
                 <div className="flex items-center gap-3 mb-4">

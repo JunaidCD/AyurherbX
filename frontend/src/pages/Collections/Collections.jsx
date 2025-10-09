@@ -263,7 +263,7 @@ const Collections = ({ user, showToast }) => {
       
       {/* Enhanced Header */}
       <div className="relative mb-12">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-6">
             <div className="relative">
               <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400/30 to-teal-500/30 rounded-2xl blur-lg animate-pulse"></div>
@@ -279,7 +279,7 @@ const Collections = ({ user, showToast }) => {
             </div>
           </div>
           {/* Wallet Button in Top Right */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-start gap-4 relative z-50">
             <WalletButton showToast={showToast} />
           </div>
         </div>

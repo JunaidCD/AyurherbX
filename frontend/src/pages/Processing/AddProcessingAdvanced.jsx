@@ -3,16 +3,19 @@ import {
   Plus, Save, ArrowLeft, Thermometer, Clock, FileText, 
   Settings, CheckCircle, AlertCircle, Package, Factory,
   Zap, Sparkles, Star, Flame, Droplets, Wind, Sun, Target,
-  Shield, Link, Database, Lock, Search, Leaf, MapPin
+  Shield, Link, Database, Lock, Search, Leaf, MapPin, Wallet
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../utils/api';
 import { useCollections } from '../../contexts/CollectionsContext';
+import { useWallet } from '../../contexts/WalletContext';
+import WalletButton from '../../components/WalletButton/WalletButton';
 
 const AddProcessingAdvanced = ({ user, showToast }) => {
   const navigate = useNavigate();
   const { batchId } = useParams();
   const { collections, getCollectionById } = useCollections();
+  const { account, isConnected, connectWallet, submitToBlockchain } = useWallet();
   const [batch, setBatch] = useState(null);
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -191,77 +194,89 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
       return;
     }
 
+    if (!isConnected) {
+      showToast('Please connect your wallet first', 'error');
+      return;
+    }
+
     try {
       setSaving(true);
       
       // Show blockchain submission message
-      showToast('Submitting to blockchain...', 'info');
+      showToast('Preparing blockchain transaction...', 'info');
       
       const processingStepData = {
         batchId: batch?.batchId || batch?.id || batchId,
-        processorId: user?.id || 'PROC001', // Default processor ID
+        processorId: user?.id || 'PROC001',
+        processorAddress: account,
         stepType: processingForm.stepType,
         temperature: processingForm.temperature ? parseFloat(processingForm.temperature) : null,
         duration: processingForm.duration ? parseInt(processingForm.duration) : null,
-        notes: processingForm.notes || ''
+        notes: processingForm.notes || '',
+        timestamp: new Date().toISOString()
       };
 
-      // Simulate blockchain transaction delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Generate mock blockchain transaction data
-      const transactionHash = '0x' + Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('');
-      const blockNumber = Math.floor(Math.random() * 1000000) + 18500000;
-      const gasUsed = Math.floor(Math.random() * 50000) + 21000;
-
-      const blockchainData = {
-        transactionHash,
-        blockNumber,
-        gasUsed,
-        network: 'Hyperledger Besu',
-        contractAddress: '0x742d35Cc6634C0532925a3b8D0C9C0E2C2C2C2C2',
-        confirmed: true
-      };
-
-      // Store processing step in localStorage
-      const processingStepsData = localStorage.getItem('ayurherb_processing_steps');
-      const processingSteps = processingStepsData ? JSON.parse(processingStepsData) : {};
+      // Submit to blockchain via MetaMask
+      showToast('Please confirm the transaction in MetaMask...', 'info');
       
-      if (!processingSteps[currentBatch.batchId]) {
-        processingSteps[currentBatch.batchId] = [];
-      }
+      const blockchainResult = await submitToBlockchain(processingStepData);
       
-      const newStep = {
-        id: Date.now().toString(),
-        stepType: processingForm.stepType,
-        temperature: processingForm.temperature,
-        duration: processingForm.duration,
-        notes: processingForm.notes,
-        date: new Date().toISOString().split('T')[0],
-        timestamp: new Date().toLocaleString(),
-        status: 'Completed',
-        blockchain: blockchainData
-      };
-      
-      processingSteps[currentBatch.batchId].push(newStep);
-      localStorage.setItem('ayurherb_processing_steps', JSON.stringify(processingSteps));
+      if (blockchainResult.success) {
+        // Store processing step in localStorage with blockchain data
+        const processingStepsData = localStorage.getItem('ayurherb_processing_steps');
+        const processingSteps = processingStepsData ? JSON.parse(processingStepsData) : {};
         
-      showToast(`✅ Successfully saved to blockchain!\nTransaction: ${transactionHash.substring(0, 20)}...`, 'success');
-      
-      // Show transaction details modal with mock data
-      showTransactionModal(transactionHash, blockchainData);
-      
-      // Reset form
-      setProcessingForm({
-        stepType: '',
-        temperature: '',
-        duration: '',
-        notes: ''
-      });
+        const batchKey = batch?.batchId || batch?.id || batchId;
+        if (!processingSteps[batchKey]) {
+          processingSteps[batchKey] = [];
+        }
+        
+        const newStep = {
+          id: Date.now().toString(),
+          stepType: processingForm.stepType,
+          temperature: processingForm.temperature,
+          duration: processingForm.duration,
+          notes: processingForm.notes,
+          date: new Date().toISOString().split('T')[0],
+          timestamp: new Date().toLocaleString(),
+          status: 'Completed',
+          blockchain: {
+            transactionHash: blockchainResult.transactionHash,
+            blockNumber: blockchainResult.blockNumber,
+            gasUsed: blockchainResult.gasUsed,
+            network: 'Sepolia Testnet',
+            contractAddress: blockchainResult.contractAddress,
+            confirmed: true,
+            processorAddress: account
+          }
+        };
+        
+        processingSteps[batchKey].push(newStep);
+        localStorage.setItem('ayurherb_processing_steps', JSON.stringify(processingSteps));
+          
+        showToast(`✅ Successfully saved to blockchain!\nTransaction: ${blockchainResult.transactionHash.substring(0, 20)}...`, 'success');
+        
+        // Show transaction details modal
+        showTransactionModal(blockchainResult.transactionHash, blockchainResult);
+        
+        // Reset form
+        setProcessingForm({
+          stepType: '',
+          temperature: '',
+          duration: '',
+          notes: ''
+        });
+      } else {
+        throw new Error(blockchainResult.error || 'Transaction failed');
+      }
       
     } catch (error) {
       console.error('Error saving processing step:', error);
-      showToast('Failed to save to blockchain: ' + error.message, 'error');
+      if (error.code === 4001) {
+        showToast('Transaction cancelled by user', 'warning');
+      } else {
+        showToast('Failed to save to blockchain: ' + error.message, 'error');
+      }
     } finally {
       setSaving(false);
     }
@@ -349,7 +364,7 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
 
       <div className="relative z-10 space-y-12 p-8">
         {/* Clean Header */}
-        <div className="relative">
+        <div className="relative z-20">
           <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-lg">
             <div className="flex items-center gap-6">
               {/* Simple Back Button */}
@@ -366,7 +381,7 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
               </div>
               
               {/* Clean Typography */}
-              <div className="space-y-2">
+              <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-3">
                   <h1 className="text-4xl font-bold text-white">
                     Add Processing Step
@@ -388,20 +403,31 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
                     <span className="text-emerald-300 text-sm">Ready</span>
                   </div>
                   
-                  {/* Blockchain Status */}
-                  <div className="flex items-center gap-2 px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full">
-                    <Link className="w-3 h-3 text-blue-400" />
-                    <span className="text-blue-300 text-sm">Blockchain Connected</span>
-                  </div>
-                  
+                  {/* Wallet Connection Status */}
+                  {isConnected ? (
+                    <div className="flex items-center gap-2 px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full">
+                      <Wallet className="w-3 h-3 text-blue-400" />
+                      <span className="text-blue-300 text-sm">Wallet Connected</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 px-3 py-1 bg-orange-500/20 border border-orange-400/30 rounded-full">
+                      <AlertCircle className="w-3 h-3 text-orange-400" />
+                      <span className="text-orange-300 text-sm">Wallet Not Connected</span>
+                    </div>
+                  )}
                 </div>
+              </div>
+              
+              {/* Connect Wallet Button - Top Right */}
+              <div className="flex items-start relative z-50">
+                <WalletButton />
               </div>
             </div>
           </div>
         </div>
 
         {/* Search Bar */}
-        <div className="relative">
+        <div className="relative z-10 mt-8">
           <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-lg">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
@@ -760,13 +786,18 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
                 
                 <button
                   type="submit"
-                  disabled={saving || !processingForm.stepType || !processingForm.duration}
+                  disabled={saving || !processingForm.stepType || !processingForm.duration || !isConnected}
                   className="flex-1 py-3 px-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                 >
                   {saving ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                       Saving to Blockchain...
+                    </>
+                  ) : !isConnected ? (
+                    <>
+                      <Wallet className="w-5 h-5" />
+                      Connect Wallet to Save
                     </>
                   ) : (
                     <>

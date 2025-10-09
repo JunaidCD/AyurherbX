@@ -6,7 +6,7 @@ const Topbar = ({ user, onLogout }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   return (
-    <header className="h-16 bg-dark-800 border-b border-dark-700 flex items-center justify-between px-6">
+    <header className="h-16 bg-dark-800 border-b border-dark-700 flex items-center justify-between px-6 relative z-30">
       {/* Empty space where search was */}
       <div className="flex-1"></div>
 
@@ -34,7 +34,7 @@ const Topbar = ({ user, onLogout }) => {
           </button>
 
           {showUserMenu && (
-            <div className="absolute right-0 top-full mt-2 w-48 bg-dark-700 border border-dark-600 rounded-lg shadow-xl z-50">
+            <div className="absolute right-0 top-full mt-2 w-48 bg-dark-700 border border-dark-600 rounded-lg shadow-xl z-40">
               <div className="p-2">
                 <button className="w-full flex items-center gap-3 px-3 py-2 text-gray-300 hover:text-white hover:bg-dark-600 rounded-lg transition-colors">
                   <Settings className="w-4 h-4" />
