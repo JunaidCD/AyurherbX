@@ -47,10 +47,10 @@ export const CollectionsProvider = ({ children }) => {
       id: `COL-${Date.now()}`,
       ...newCollection,
       submissionDate: new Date().toISOString().split('T')[0],
-      status: 'Pending Verification',
+      status: 'Verified',
       timestamp: new Date().toLocaleString(),
       createdAt: new Date().toISOString(),
-      isVerified: false
+      isVerified: true
     };
 
     setCollections(prev => [collection, ...prev]); // Add to beginning for recent first
@@ -93,17 +93,17 @@ export const CollectionsProvider = ({ children }) => {
   };
 
   const getCollectionsStats = () => {
-    const total = collections.length;
-    const today = getTodaysCollections().length;
-    const pending = getCollectionsByStatus('Pending Verification').length;
-    const completed = getCollectionsByStatus('Verified').length;
+    const totalCollections = collections.length;
+    const todayCollections = getTodaysCollections().length;
+    const pendingReports = getCollectionsByStatus('Pending Verification').length;
+    const completedReports = getCollectionsByStatus('Verified').length;
     const processing = getCollectionsByStatus('Processing').length;
 
     return {
-      total,
-      today,
-      pending,
-      completed,
+      totalCollections,
+      todayCollections,
+      pendingReports,
+      completedReports,
       processing
     };
   };

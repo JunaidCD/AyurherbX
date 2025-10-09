@@ -29,11 +29,6 @@ const Dashboard = ({ user, showToast }) => {
   const stats = getCollectionsStats();
   const recentCollections = getRecentCollections(5);
 
-  // Generate random numbers for dashboard stats
-  const totalCollections = Math.floor(Math.random() * 150) + 50; // Random between 50-200
-  const todayCollections = 1; // Set to 1 as requested
-  const completedReports = Math.floor(Math.random() * 80) + 20; // Random between 20-100
-
   const handleNewCollection = () => {
     navigate('/collections');
     showToast('Redirecting to New Collection form...', 'info');
@@ -286,7 +281,7 @@ const Dashboard = ({ user, showToast }) => {
                 </div>
                 <div className="text-right">
                   <div className="text-4xl font-black bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent mb-1">
-                    {totalCollections}
+                    {stats.totalCollections}
                   </div>
                   <div className="flex items-center gap-1 text-emerald-400 text-sm font-semibold">
                     <TrendingUp className="w-3 h-3" />
@@ -317,7 +312,7 @@ const Dashboard = ({ user, showToast }) => {
                 </div>
                 <div className="text-right">
                   <div className="text-4xl font-black bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent mb-1">
-                    {todayCollections}
+                    {stats.todayCollections}
                   </div>
                   <div className="flex items-center gap-1 text-blue-400 text-sm font-semibold">
                     <TrendingUp className="w-3 h-3" />
@@ -348,7 +343,7 @@ const Dashboard = ({ user, showToast }) => {
                 </div>
                 <div className="text-right">
                   <div className="text-4xl font-black bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent mb-1">
-                    {completedReports}
+                    {stats.completedReports}
                   </div>
                   <div className="flex items-center gap-1 text-green-400 text-sm font-semibold">
                     <CheckCircle className="w-3 h-3" />
@@ -400,47 +395,56 @@ const Dashboard = ({ user, showToast }) => {
                 {recentCollections.map((collection, index) => (
                   <div key={collection.id} className="group relative">
                     <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-                    <div className="relative bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-emerald-500/30 transition-all duration-300">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-                            <Leaf className="w-6 h-6 text-white" />
+                    <div className="relative bg-gradient-to-br from-white/8 to-white/12 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:border-emerald-500/40 hover:bg-white/15 transition-all duration-300 shadow-lg hover:shadow-emerald-500/10">
+                      {/* Header Section */}
+                      <div className="flex items-start justify-between mb-6">
+                        <div className="flex items-center gap-5">
+                          <div className="relative">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-xl blur opacity-60 animate-pulse"></div>
+                            <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-xl">
+                              <Leaf className="w-8 h-8 text-white" />
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-white">{collection.herbName}</h3>
-                            <p className="text-gray-400 text-sm">{collection.quantity} • {collection.location}</p>
+                          <div className="space-y-2">
+                            <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">{collection.herbName}</h3>
+                            <div className="flex items-center gap-4 text-gray-300">
+                              <span className="flex items-center gap-2">
+                                <Package className="w-4 h-4 text-emerald-400" />
+                                <span className="font-medium">{collection.quantity}</span>
+                              </span>
+                              <span className="w-1 h-1 bg-gray-500 rounded-full"></span>
+                              <span className="font-medium">{collection.location}</span>
+                            </div>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
-                            collection.status === 'Verified on Blockchain' 
-                              ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                              : collection.status === 'Pending Verification'
-                              ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                              : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                          }`}>
-                            {collection.status === 'Verified on Blockchain' && <CheckCircle className="w-3 h-3" />}
-                            {collection.status}
+                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-400 border border-green-500/30 rounded-full text-sm font-semibold">
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Submitted</span>
                           </div>
-                          <p className="text-gray-500 text-xs mt-1">{collection.timestamp}</p>
+                          <p className="text-gray-400 text-sm mt-2 font-medium">{collection.timestamp}</p>
                         </div>
                       </div>
-                      {collection.transactionHash && (
-                        <div className="mt-4 pt-4 border-t border-white/10">
-                          <div className="flex items-center gap-2 text-xs text-gray-400">
-                            <span>Blockchain ID:</span>
-                            <code className="bg-white/10 px-2 py-1 rounded">{collection.blockchainId}</code>
-                            <a 
-                              href={`https://sepolia.etherscan.io/tx/${collection.transactionHash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-emerald-400 hover:text-emerald-300 transition-colors"
-                            >
-                              View on Etherscan ↗
-                            </a>
-                          </div>
+                      
+                      {/* Collection Details Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                          <p className="text-gray-400 text-xs uppercase tracking-wide font-medium mb-1">Collector ID</p>
+                          <p className="text-white font-bold text-sm">{collection.collectorId || 'Not specified'}</p>
                         </div>
-                      )}
+                        <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                          <p className="text-gray-400 text-xs uppercase tracking-wide font-medium mb-1">Batch ID</p>
+                          <p className="text-emerald-400 font-bold text-sm">{collection.batchId || 'Not specified'}</p>
+                        </div>
+                        <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                          <p className="text-gray-400 text-xs uppercase tracking-wide font-medium mb-1">Collector</p>
+                          <p className="text-white font-bold text-sm">{collection.collector || user?.name || 'Junaid'}</p>
+                        </div>
+                        <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                          <p className="text-gray-400 text-xs uppercase tracking-wide font-medium mb-1">Status</p>
+                          <p className="text-green-400 font-bold text-sm">Verified</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
