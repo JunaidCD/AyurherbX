@@ -29,6 +29,11 @@ const Dashboard = ({ user, showToast }) => {
   const stats = getCollectionsStats();
   const recentCollections = getRecentCollections(5);
 
+  // Generate random numbers for dashboard stats
+  const totalCollections = Math.floor(Math.random() * 150) + 50; // Random between 50-200
+  const todayCollections = 1; // Set to 1 as requested
+  const completedReports = Math.floor(Math.random() * 80) + 20; // Random between 20-100
+
   const handleNewCollection = () => {
     navigate('/collections');
     showToast('Redirecting to New Collection form...', 'info');
@@ -267,7 +272,7 @@ const Dashboard = ({ user, showToast }) => {
         </div>
 
         {/* Enhanced Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Total Collections Card */}
           <div className="group relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/30 via-teal-500/30 to-cyan-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
@@ -281,7 +286,7 @@ const Dashboard = ({ user, showToast }) => {
                 </div>
                 <div className="text-right">
                   <div className="text-4xl font-black bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent mb-1">
-                    {stats.totalCollections}
+                    {totalCollections}
                   </div>
                   <div className="flex items-center gap-1 text-emerald-400 text-sm font-semibold">
                     <TrendingUp className="w-3 h-3" />
@@ -312,7 +317,7 @@ const Dashboard = ({ user, showToast }) => {
                 </div>
                 <div className="text-right">
                   <div className="text-4xl font-black bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent mb-1">
-                    {stats.todayCollections}
+                    {todayCollections}
                   </div>
                   <div className="flex items-center gap-1 text-blue-400 text-sm font-semibold">
                     <TrendingUp className="w-3 h-3" />
@@ -325,37 +330,6 @@ const Dashboard = ({ user, showToast }) => {
                 <p className="text-blue-300/80 text-sm font-medium">Reports submitted today</p>
                 <div className="w-full h-2 bg-blue-900/30 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse" style={{width: '60%'}}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Pending Reports Card */}
-          <div className="group relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-yellow-500/30 via-orange-500/30 to-red-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
-            <div className="relative bg-gradient-to-br from-yellow-500/20 via-orange-500/15 to-red-500/10 backdrop-blur-xl border-2 border-yellow-500/30 rounded-3xl p-8 hover:border-yellow-400/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/25">
-              <div className="flex items-start justify-between mb-6">
-                <div className="relative">
-                  <div className="absolute -inset-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl blur opacity-60 animate-pulse"></div>
-                  <div className="relative w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-2xl transform group-hover:rotate-12 transition-transform duration-500">
-                    <TrendingUp className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-4xl font-black bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent mb-1">
-                    {stats.pendingReports}
-                  </div>
-                  <div className="flex items-center gap-1 text-yellow-400 text-sm font-semibold">
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
-                    <span>Processing</span>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent">Pending Reports</h3>
-                <p className="text-yellow-300/80 text-sm font-medium">Awaiting verification</p>
-                <div className="w-full h-2 bg-yellow-900/30 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full animate-pulse" style={{width: '40%'}}></div>
                 </div>
               </div>
             </div>
@@ -374,7 +348,7 @@ const Dashboard = ({ user, showToast }) => {
                 </div>
                 <div className="text-right">
                   <div className="text-4xl font-black bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent mb-1">
-                    {stats.completedReports}
+                    {completedReports}
                   </div>
                   <div className="flex items-center gap-1 text-green-400 text-sm font-semibold">
                     <CheckCircle className="w-3 h-3" />
