@@ -29,6 +29,10 @@ const Dashboard = ({ user, showToast }) => {
   const stats = getCollectionsStats();
   const recentCollections = getRecentCollections(5);
 
+  // Static dummy data for Total Collections and Completed Reports
+  const staticTotalCollections = 144;
+  const staticCompletedReports = 65;
+
   const handleNewCollection = () => {
     navigate('/collections');
     showToast('Redirecting to New Collection form...', 'info');
@@ -281,7 +285,7 @@ const Dashboard = ({ user, showToast }) => {
                 </div>
                 <div className="text-right">
                   <div className="text-4xl font-black bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent mb-1">
-                    {stats.totalCollections}
+                    {staticTotalCollections}
                   </div>
                   <div className="flex items-center gap-1 text-emerald-400 text-sm font-semibold">
                     <TrendingUp className="w-3 h-3" />
@@ -343,7 +347,7 @@ const Dashboard = ({ user, showToast }) => {
                 </div>
                 <div className="text-right">
                   <div className="text-4xl font-black bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent mb-1">
-                    {stats.completedReports}
+                    {staticCompletedReports}
                   </div>
                   <div className="flex items-center gap-1 text-green-400 text-sm font-semibold">
                     <CheckCircle className="w-3 h-3" />

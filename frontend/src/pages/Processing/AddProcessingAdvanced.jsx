@@ -3,15 +3,18 @@ import {
   Plus, Save, ArrowLeft, Thermometer, Clock, FileText, 
   Settings, CheckCircle, AlertCircle, Package, Factory,
   Zap, Sparkles, Star, Flame, Droplets, Wind, Sun, Target,
-  Shield, Link, Database, Lock, Search
+  Shield, Link, Database, Lock, Search, Leaf, MapPin
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../utils/api';
+import { useCollections } from '../../contexts/CollectionsContext';
 
 const AddProcessingAdvanced = ({ user, showToast }) => {
   const navigate = useNavigate();
   const { batchId } = useParams();
+  const { collections, getCollectionById } = useCollections();
   const [batch, setBatch] = useState(null);
+  const [selectedCollection, setSelectedCollection] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -132,11 +135,30 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
 
     try {
       setSearchLoading(true);
-      const batchData = await api.getBatchById(searchQuery.trim());
-      setBatch(batchData);
-      showToast(`Batch ${batchData.batchId || batchData.id} loaded successfully`, 'success');
+      
+      // Search for collection by batch ID
+      const foundCollection = collections.find(collection => 
+        collection.batchId && collection.batchId.toLowerCase() === searchQuery.trim().toLowerCase()
+      );
+      
+      if (foundCollection) {
+        setSelectedCollection(foundCollection);
+        setBatch(foundCollection); // Set batch data from collection
+        showToast(`Collection with Batch ID "${foundCollection.batchId}" loaded successfully`, 'success');
+      } else {
+        // Fallback to API search if not found in collections
+        try {
+          const batchData = await api.getBatchById(searchQuery.trim());
+          setBatch(batchData);
+          showToast(`Batch ${batchData.batchId || batchData.id} loaded successfully`, 'success');
+        } catch (apiError) {
+          showToast(`No collection found with Batch ID "${searchQuery}"`, 'error');
+          setSelectedCollection(null);
+          setBatch(null);
+        }
+      }
     } catch (error) {
-      showToast(`Batch "${searchQuery}" not found`, 'error');
+      showToast(`Error searching for batch: ${error.message}`, 'error');
     } finally {
       setSearchLoading(false);
     }
@@ -435,6 +457,94 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
             )}
           </div>
         </div>
+
+        {/* Collection Data Display */}
+        {selectedCollection && (
+          <div className="relative">
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-lg">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                  <Leaf className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Collection Details</h3>
+                  <p className="text-gray-400">Submitted collection data ready for processing</p>
+                </div>
+                <div className="ml-auto">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full">
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <span className="text-green-300 text-sm font-semibold">Verified</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Collection Information Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Leaf className="w-5 h-5 text-emerald-400" />
+                    <span className="text-gray-400 text-sm font-medium">Herb Name</span>
+                  </div>
+                  <p className="text-white text-lg font-bold">{selectedCollection.herbName}</p>
+                </div>
+
+                <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Package className="w-5 h-5 text-blue-400" />
+                    <span className="text-gray-400 text-sm font-medium">Quantity</span>
+                  </div>
+                  <p className="text-white text-lg font-bold">{selectedCollection.quantity}</p>
+                </div>
+
+                <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30">
+                  <div className="flex items-center gap-3 mb-2">
+                    <MapPin className="w-5 h-5 text-purple-400" />
+                    <span className="text-gray-400 text-sm font-medium">Location</span>
+                  </div>
+                  <p className="text-white text-lg font-bold">{selectedCollection.location}</p>
+                </div>
+
+                <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Database className="w-5 h-5 text-cyan-400" />
+                    <span className="text-gray-400 text-sm font-medium">Batch ID</span>
+                  </div>
+                  <p className="text-white text-lg font-bold">{selectedCollection.batchId}</p>
+                </div>
+              </div>
+
+              {/* Additional Collection Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30">
+                  <div className="flex items-center gap-3 mb-2">
+                    <FileText className="w-5 h-5 text-yellow-400" />
+                    <span className="text-gray-400 text-sm font-medium">Collector ID</span>
+                  </div>
+                  <p className="text-white font-semibold">{selectedCollection.collectorId || 'Not specified'}</p>
+                </div>
+
+                <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Clock className="w-5 h-5 text-orange-400" />
+                    <span className="text-gray-400 text-sm font-medium">Submission Date</span>
+                  </div>
+                  <p className="text-white font-semibold">{selectedCollection.timestamp}</p>
+                </div>
+              </div>
+
+              {/* Notes Section */}
+              {selectedCollection.notes && (
+                <div className="mt-6 bg-slate-700/30 rounded-xl p-4 border border-slate-600/30">
+                  <div className="flex items-center gap-3 mb-2">
+                    <FileText className="w-5 h-5 text-gray-400" />
+                    <span className="text-gray-400 text-sm font-medium">Collection Notes</span>
+                  </div>
+                  <p className="text-white">{selectedCollection.notes}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Processing Form */}
         <div className="relative">
