@@ -41,7 +41,7 @@ const Sidebar = ({ user }) => {
       ],
       'Lab Tester': [
         { path: '/see-item', icon: Eye, label: 'See Item' },
-        { path: '/lab-test', icon: Beaker, label: 'Lab Test' }
+        { path: '/lab-test', icon: Beaker, label: 'Add Lab Test' }
       ],
       'Customer': [
         { path: '/view-product', icon: Search, label: 'View Product' },
