@@ -1,5 +1,5 @@
-import React from 'react';
-import { Package, Leaf, MapPin, Calendar, CheckCircle, Database, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Package, Leaf, MapPin, Calendar, CheckCircle, Database, Plus, Shield, Clock } from 'lucide-react';
 import { useCollections } from '../../contexts/CollectionsContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,9 +9,29 @@ const Batches = () => {
 
   // Collection Card Component
   const CollectionCard = ({ collection }) => {
+    const [processingSteps, setProcessingSteps] = useState([]);
+    const [hasProcessing, setHasProcessing] = useState(false);
+
+    useEffect(() => {
+      // Check if this batch has processing steps
+      const processingStepsData = localStorage.getItem('ayurherb_processing_steps');
+      const allProcessingSteps = processingStepsData ? JSON.parse(processingStepsData) : {};
+      
+      const batchKey = collection.batchId || collection.id;
+      const batchSteps = allProcessingSteps[batchKey] || [];
+      
+      setProcessingSteps(batchSteps);
+      setHasProcessing(batchSteps.length > 0);
+    }, [collection]);
+
     const handleAddProcessing = () => {
       // Navigate to Add Processing page with the batch ID
       navigate(`/add-processing/${collection.batchId || collection.id}`);
+    };
+
+    const handleViewProcessing = () => {
+      // Navigate to view processing steps (you can implement this page later)
+      navigate(`/processing-details/${collection.batchId || collection.id}`);
     };
     return (
       <div className="bg-slate-800/90 backdrop-blur-xl border border-slate-600/50 rounded-xl p-6 hover:border-slate-500/70 transition-all duration-300 shadow-lg">
@@ -24,10 +44,17 @@ const Batches = () => {
             <h3 className="text-xl font-bold text-white">{collection.herbName}</h3>
             <p className="text-sm text-slate-400">{collection.quantity} • {collection.location}</p>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1 bg-green-500/20 border border-green-500/30 rounded-full">
-            <CheckCircle className="w-4 h-4 text-green-400" />
-            <span className="text-green-300 text-sm font-semibold">Submitted</span>
-          </div>
+          {hasProcessing ? (
+            <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
+              <Shield className="w-4 h-4 text-emerald-400" />
+              <span className="text-emerald-300 text-sm font-semibold">Processed</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 px-3 py-1 bg-green-500/20 border border-green-500/30 rounded-full">
+              <CheckCircle className="w-4 h-4 text-green-400" />
+              <span className="text-green-300 text-sm font-semibold">Submitted</span>
+            </div>
+          )}
         </div>
 
         {/* Collection Details Grid */}
@@ -84,15 +111,41 @@ const Batches = () => {
           </div>
         </div>
 
-        {/* Add Processing Button */}
-        <div className="flex justify-end">
-          <button
-            onClick={handleAddProcessing}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-          >
-            <Plus className="w-5 h-5" />
-            Add Processing
-          </button>
+        {/* Processing Status and Button */}
+        <div className="flex justify-between items-center">
+          {/* Processing Steps Summary */}
+          {hasProcessing && (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-full">
+                <Shield className="w-4 h-4 text-blue-400" />
+                <span className="text-blue-300 text-sm font-medium">
+                  {processingSteps.length} Step{processingSteps.length !== 1 ? 's' : ''} Completed
+                </span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
+                <Database className="w-4 h-4 text-emerald-400" />
+                <span className="text-emerald-300 text-sm font-medium">On-Chain</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Action Button */}
+          <div className="flex justify-end">
+            {hasProcessing ? (
+              <div className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-semibold rounded-xl shadow-lg cursor-default">
+                <CheckCircle className="w-5 h-5" />
+                Processing Complete
+              </div>
+            ) : (
+              <button
+                onClick={handleAddProcessing}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <Plus className="w-5 h-5" />
+                Add Processing
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
