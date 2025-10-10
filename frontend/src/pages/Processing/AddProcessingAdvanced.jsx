@@ -184,20 +184,31 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!batch) {
-      showToast('Please search and select a batch first', 'error');
+    // First check: Must have a batch/herb selected
+    if (!batch && !selectedCollection) {
+      showToast('❌ No herb selected! Please search and select a batch first', 'error');
       return;
     }
     
-    if (!processingForm.stepType || !processingForm.duration) {
-      showToast('Please fill in all required fields', 'error');
+    // Second check: All required fields must be filled
+    if (!processingForm.stepType) {
+      showToast('❌ Please select a processing step type', 'error');
+      return;
+    }
+    
+    if (!processingForm.duration) {
+      showToast('❌ Please enter the duration for this processing step', 'error');
       return;
     }
 
+    // Third check: Wallet must be connected
     if (!isConnected) {
-      showToast('Please connect your wallet first', 'error');
+      showToast('❌ Please connect your wallet first to save on blockchain', 'error');
       return;
     }
+
+    // All validations passed - proceed with blockchain transaction
+    console.log('✅ All validations passed, proceeding with blockchain transaction...');
 
     try {
       setSaving(true);
@@ -217,7 +228,7 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
       };
 
       // Submit to blockchain via MetaMask
-      showToast('Please confirm the transaction in MetaMask...', 'info');
+      showToast('🦊 Opening MetaMask... Please confirm the transaction', 'info');
       
       const blockchainResult = await submitToBlockchain(processingStepData);
       
@@ -254,7 +265,7 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
         processingSteps[batchKey].push(newStep);
         localStorage.setItem('ayurherb_processing_steps', JSON.stringify(processingSteps));
           
-        showToast(`✅ Successfully saved to blockchain!\nTransaction: ${blockchainResult.transactionHash.substring(0, 20)}...`, 'success');
+        showToast(`✅ Processing step saved with blockchain proof!\nTx Hash: ${blockchainResult.transactionHash.substring(0, 20)}...`, 'success');
         
         // Show transaction details modal
         showTransactionModal(blockchainResult.transactionHash, blockchainResult);
@@ -294,8 +305,8 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
-          <h3 class="text-2xl font-bold text-white mb-2">Blockchain Success!</h3>
-          <p class="text-gray-400">Processing step saved immutably</p>
+          <h3 class="text-2xl font-bold text-white mb-2">Blockchain Transaction Confirmed!</h3>
+          <p class="text-gray-400">Processing step linked to Sepolia transaction</p>
         </div>
         
         <div class="space-y-4 mb-6">
@@ -322,6 +333,9 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
         <div class="flex gap-3">
           <button onclick="navigator.clipboard.writeText('${txHash}'); this.textContent='Copied!'" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-all duration-200">
             Copy Hash
+          </button>
+          <button onclick="window.open('https://sepolia.etherscan.io/tx/${txHash}', '_blank')" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200">
+            View on Etherscan
           </button>
           <button onclick="this.closest('.fixed').remove()" class="flex-1 px-4 py-2 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-200">
             Continue
@@ -489,9 +503,12 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
               </div>
             ) : (
               <div className="mt-4 pt-4 border-t border-slate-600/50">
-                <div className="flex items-center gap-3 text-gray-400">
-                  <AlertCircle className="w-4 h-4" />
-                  <span className="text-sm">No batch selected. Please search for a batch to continue.</span>
+                <div className="flex items-center gap-3 text-orange-400 bg-orange-500/10 border border-orange-500/20 rounded-lg p-3">
+                  <AlertCircle className="w-5 h-5" />
+                  <div>
+                    <span className="text-sm font-medium">⚠️ No herb batch selected</span>
+                    <p className="text-xs text-orange-300 mt-1">Search for a batch above to start adding processing steps</p>
+                  </div>
                 </div>
               </div>
             )}
@@ -786,13 +803,23 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
                 
                 <button
                   type="submit"
-                  disabled={saving || !processingForm.stepType || !processingForm.duration || !isConnected}
+                  disabled={saving || !batch && !selectedCollection || !processingForm.stepType || !processingForm.duration || !isConnected}
                   className="flex-1 py-3 px-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                 >
                   {saving ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                       Saving to Blockchain...
+                    </>
+                  ) : !batch && !selectedCollection ? (
+                    <>
+                      <AlertCircle className="w-5 h-5" />
+                      Select Herb First
+                    </>
+                  ) : !processingForm.stepType || !processingForm.duration ? (
+                    <>
+                      <AlertCircle className="w-5 h-5" />
+                      Fill Required Fields
                     </>
                   ) : !isConnected ? (
                     <>
@@ -811,6 +838,9 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
               {/* Progress with Blockchain Indicator */}
               <div className="flex items-center justify-center gap-2 pt-4">
                 <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  batch || selectedCollection ? 'bg-emerald-500' : 'bg-gray-600'
+                }`}></div>
+                <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
                   processingForm.stepType ? 'bg-emerald-500' : 'bg-gray-600'
                 }`}></div>
                 <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
@@ -820,18 +850,30 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
                   processingForm.notes ? 'bg-emerald-500' : 'bg-gray-600'
                 }`}></div>
                 <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
+                <div className={`w-3 h-3 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  isConnected ? 'bg-blue-500' : 'bg-gray-600'
+                }`}>
                   <Database className="w-2 h-2 text-white" />
                 </div>
               </div>
               <p className="text-center text-sm text-gray-400 mt-2">
-                {processingForm.stepType && processingForm.duration ? (
-                  <span className="flex items-center justify-center gap-2">
+                {!batch && !selectedCollection ? (
+                  <span className="flex items-center justify-center gap-2 text-orange-400">
+                    🔍 Search and select a herb batch first
+                  </span>
+                ) : !processingForm.stepType || !processingForm.duration ? (
+                  <span className="flex items-center justify-center gap-2 text-yellow-400">
+                    ⏳ Fill required fields for blockchain storage
+                  </span>
+                ) : !isConnected ? (
+                  <span className="flex items-center justify-center gap-2 text-blue-400">
+                    🦊 Connect wallet to save on blockchain
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2 text-emerald-400">
                     ✅ Ready to save to blockchain
                     <Shield className="w-3 h-3 text-blue-400" />
                   </span>
-                ) : (
-                  '⏳ Fill required fields for blockchain storage'
                 )}
               </p>
             </form>

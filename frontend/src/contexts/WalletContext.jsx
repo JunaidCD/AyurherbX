@@ -141,6 +141,21 @@ export const WalletProvider = ({ children }) => {
     }
   };
 
+  const submitToBlockchain = async (processingStepData) => {
+    try {
+      setError(null);
+      const result = await walletService.submitToBlockchain(processingStepData);
+      
+      // Update balance after transaction
+      setTimeout(updateBalance, 2000);
+      
+      return result;
+    } catch (error) {
+      setError(error.message);
+      throw error;
+    }
+  };
+
   const switchToSepolia = async () => {
     try {
       await walletService.switchToSepolia();
@@ -175,6 +190,7 @@ export const WalletProvider = ({ children }) => {
     connectWallet,
     disconnectWallet,
     submitCollection,
+    submitToBlockchain,
     getCollectorCollections,
     getCollection,
     switchToSepolia,
