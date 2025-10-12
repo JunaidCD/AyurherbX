@@ -20,12 +20,13 @@ const LabTest = ({ user, showToast = console.log }) => {
     testType: '',
     resultValue: '',
     status: 'Passed',
-    technician: user?.name || 'Dr. Sarah Wilson',
+    tester: user?.name || 'Dr. Sarah Wilson',
     notes: '',
     certificate: null
   });
   const [submittingTest, setSubmittingTest] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [validationErrors, setValidationErrors] = useState({});
 
   useEffect(() => {
     // Check for selected batch FIRST, then clear old data
@@ -65,6 +66,30 @@ const LabTest = ({ user, showToast = console.log }) => {
     loadTestResults();
   }, []);
 
+  // Real-time validation function
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!newTest.testType) {
+      errors.testType = 'Test Type is required';
+    }
+    if (!newTest.resultValue || newTest.resultValue.trim() === '') {
+      errors.resultValue = 'Result Value is required';
+    }
+    if (!newTest.status) {
+      errors.status = 'Test Status is required';
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Update validation when form changes
+  useEffect(() => {
+    if (Object.keys(validationErrors).length > 0) {
+      validateForm();
+    }
+  }, [newTest.testType, newTest.resultValue, newTest.status]);
 
   // Check for selected batch from navigation
   const checkForSelectedBatch = () => {
@@ -219,7 +244,7 @@ const LabTest = ({ user, showToast = console.log }) => {
         result: '8.5%',
         status: 'Passed',
         testDate: '2024-09-23',
-        technician: 'Dr. Sarah Wilson',
+        tester: 'Dr. Sarah Wilson',
         blockchainStatus: 'On-Chain Verified ✅',
         txId: '0x1a2b3c4d5e6f7890abcdef1234567890'
       },
@@ -230,7 +255,7 @@ const LabTest = ({ user, showToast = console.log }) => {
         result: 'Not Detected',
         status: 'Passed',
         testDate: '2024-09-23',
-        technician: 'Dr. Sarah Wilson',
+        tester: 'Dr. Sarah Wilson',
         blockchainStatus: 'On-Chain Verified ✅',
         txId: '0x2b3c4d5e6f7890abcdef1234567890ab'
       },
@@ -241,7 +266,7 @@ const LabTest = ({ user, showToast = console.log }) => {
         result: 'Confirmed',
         status: 'Passed',
         testDate: '2024-09-22',
-        technician: 'Dr. Mike Chen',
+        tester: 'Dr. Mike Chen',
         blockchainStatus: 'On-Chain Verified ✅',
         txId: '0x3c4d5e6f7890abcdef1234567890abcd'
       }
@@ -302,13 +327,23 @@ const LabTest = ({ user, showToast = console.log }) => {
   // Submit new test to real blockchain
   const handleSubmitTest = async () => {
     try {
-      // Validation
+      // Enhanced Validation
       if (!selectedBatch) {
         showToast('Please select a batch first', 'error');
         return;
       }
-      if (!newTest.testType || !newTest.resultValue) {
-        showToast('Please fill in all required fields', 'error');
+      
+      // Validate form and show specific errors
+      if (!validateForm()) {
+        const missingFields = Object.keys(validationErrors).map(key => {
+          switch(key) {
+            case 'testType': return 'Test Type';
+            case 'resultValue': return 'Result Value';
+            case 'status': return 'Test Status';
+            default: return key;
+          }
+        });
+        showToast(`Please fill in the following required fields: ${missingFields.join(', ')}`, 'error');
         return;
       }
 
@@ -327,7 +362,7 @@ const LabTest = ({ user, showToast = console.log }) => {
         resultValue: newTest.resultValue,
         unit: selectedTestType.unit || '',
         status: newTest.status,
-        technician: newTest.technician,
+        tester: newTest.tester,
         notes: newTest.notes,
         certificateHash: newTest.certificate ? `cert_${Math.random().toString(16).substr(2, 16)}` : null
       };
@@ -357,7 +392,7 @@ const LabTest = ({ user, showToast = console.log }) => {
         testType: newTest.testType,
         result: newTest.result,
         status: newTest.status,
-        technician: newTest.technician,
+        tester: newTest.tester,
         batch: selectedBatch
       });
 
@@ -372,7 +407,7 @@ const LabTest = ({ user, showToast = console.log }) => {
         result: newTest.result,
         status: newTest.status,
         testDate: new Date().toLocaleDateString(),
-        technician: newTest.technician,
+        tester: newTest.tester,
         blockchainStatus: 'On-Chain Verified ✅',
         txId: transactionHash,
         blockNumber: blockNumber,
@@ -387,7 +422,7 @@ const LabTest = ({ user, showToast = console.log }) => {
         testType: '',
         resultValue: '',
         status: 'Passed',
-        technician: user?.name || 'Dr. Sarah Wilson',
+        tester: user?.name || 'Dr. Sarah Wilson',
         notes: '',
         certificate: null
       });
@@ -571,7 +606,7 @@ const LabTest = ({ user, showToast = console.log }) => {
 
                 <div>
                   <label className="block text-lg font-medium text-gray-300 mb-3">
-                    Test Status
+                    Test Status <span className="text-red-400">*</span>
                   </label>
                   <div className="flex gap-4">
                     <button
@@ -600,15 +635,15 @@ const LabTest = ({ user, showToast = console.log }) => {
                 </div>
               </div>
 
-              {/* Technician */}
+              {/* Tester */}
               <div>
                 <label className="block text-lg font-medium text-gray-300 mb-3">
-                  Technician
+                  Tester
                 </label>
                 <input
                   type="text"
-                  value={newTest.technician}
-                  onChange={(e) => setNewTest(prev => ({ ...prev, technician: e.target.value }))}
+                  value={newTest.tester}
+                  onChange={(e) => setNewTest(prev => ({ ...prev, tester: e.target.value }))}
                   className="w-full px-4 py-4 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 focus:border-emerald-500 focus:outline-none transition-all duration-200 text-lg"
                 />
               </div>
@@ -684,7 +719,7 @@ const LabTest = ({ user, showToast = console.log }) => {
               {/* Submit Button */}
               <button
                 onClick={handleSubmitTest}
-                disabled={submittingTest || !newTest.testType || !newTest.resultValue}
+                disabled={submittingTest || !newTest.testType || !newTest.resultValue || !newTest.resultValue.trim() || !newTest.status}
                 className="w-full px-8 py-5 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
               >
                 {submittingTest ? (
@@ -782,8 +817,8 @@ const LabTest = ({ user, showToast = console.log }) => {
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-400">Technician:</span>
-                      <span className="text-white font-medium ml-2">{transactionDetails.technician}</span>
+                      <span className="text-gray-400">Tester:</span>
+                      <span className="text-white font-medium ml-2">{transactionDetails.tester}</span>
                     </div>
                     <div>
                       <span className="text-gray-400">Herb Type:</span>
