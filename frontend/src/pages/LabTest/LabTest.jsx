@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   TestTube, Beaker, FlaskConical, Microscope, Upload, Save, 
   CheckCircle, XCircle, Clock, Hash, Shield, Eye, Download,
-  Plus, RefreshCw, AlertCircle, FileText, Activity, Search, Copy, X
+  Plus, RefreshCw, AlertCircle, FileText, Activity, Copy, X
 } from 'lucide-react';
 import { api } from '../../utils/api';
 
@@ -11,8 +11,6 @@ const LabTest = ({ user, showToast = console.log }) => {
   const [selectedBatch, setSelectedBatch] = useState(null);
   const [testResults, setTestResults] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchLoading, setSearchLoading] = useState(false);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [transactionDetails, setTransactionDetails] = useState(null);
   
@@ -82,6 +80,10 @@ const LabTest = ({ user, showToast = console.log }) => {
       ];
       
       setBatches(mockBatches);
+      // Set the first batch as default selected batch
+      if (mockBatches.length > 0) {
+        setSelectedBatch(mockBatches[0]);
+      }
       
     } catch (error) {
       console.error('Error loading batches:', error);
@@ -91,44 +93,6 @@ const LabTest = ({ user, showToast = console.log }) => {
     }
   };
 
-  // Search batch by ID
-  const handleSearchBatch = async () => {
-    if (!searchQuery.trim()) {
-      showToast('Please enter a Batch ID to search', 'error');
-      return;
-    }
-
-    try {
-      setSearchLoading(true);
-      
-      // Find batch in the loaded batches
-      const foundBatch = batches.find(batch => 
-        batch.batchId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        batch.id.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-
-      if (foundBatch) {
-        setSelectedBatch(foundBatch);
-        showToast(`Batch ${foundBatch.batchId} loaded for testing`, 'success');
-        setSearchQuery(''); // Clear search after successful search
-      } else {
-        showToast(`Batch "${searchQuery}" not found`, 'error');
-      }
-      
-    } catch (error) {
-      console.error('Error searching batch:', error);
-      showToast('Error searching batch', 'error');
-    } finally {
-      setSearchLoading(false);
-    }
-  };
-
-  // Handle Enter key press in search
-  const handleSearchKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSearchBatch();
-    }
-  };
 
   const loadTestResults = () => {
     const mockResults = [
@@ -401,60 +365,8 @@ const LabTest = ({ user, showToast = console.log }) => {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="max-w-2xl mx-auto">
-        <div className="relative">
-          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-emerald-500/20 to-purple-500/20 rounded-2xl blur"></div>
-          <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl p-6">
-            <div className="flex items-center gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search by Batch ID (e.g., BAT 2024 001)"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={handleSearchKeyPress}
-                  className="w-full pl-12 pr-4 py-4 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 focus:border-emerald-500 focus:outline-none transition-all duration-200 text-lg"
-                />
-              </div>
-              <button
-                onClick={handleSearchBatch}
-                disabled={searchLoading || !searchQuery.trim()}
-                className="px-6 py-4 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {searchLoading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Searching...
-                  </>
-                ) : (
-                  <>
-                    <Search className="w-5 h-5" />
-                    Search
-                  </>
-                )}
-              </button>
-            </div>
-            
-            {/* Selected Batch Display */}
-            {selectedBatch && (
-              <div className="mt-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-emerald-400" />
-                  <div>
-                    <span className="text-emerald-300 font-medium">Batch Loaded: </span>
-                    <span className="text-white font-semibold">{selectedBatch.batchId}</span>
-                    <span className="text-gray-400 ml-2">• {selectedBatch.herb} • {selectedBatch.quantity}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
 
-      {/* Centered Add Quality Test Form */}
+      {/* Add Quality Test Form */}
       {selectedBatch ? (
         <div className="max-w-4xl mx-auto">
           <div className="relative">
@@ -657,9 +569,9 @@ const LabTest = ({ user, showToast = console.log }) => {
             <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl p-12">
               <div className="text-center">
                 <TestTube className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-white mb-4">Search for a Batch to Test</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">No Batches Available</h3>
                 <p className="text-gray-400 text-lg">
-                  Use the search bar above to find a batch by its ID (e.g., "BAT 2024 001")
+                  No batches are currently available for testing.
                 </p>
               </div>
             </div>
