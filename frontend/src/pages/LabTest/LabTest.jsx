@@ -13,6 +13,7 @@ const LabTest = ({ user, showToast = console.log }) => {
   const [loading, setLoading] = useState(true);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [transactionDetails, setTransactionDetails] = useState(null);
+  const [loadedFromNavigation, setLoadedFromNavigation] = useState(false);
   
   // Test form state
   const [newTest, setNewTest] = useState({
@@ -27,9 +28,112 @@ const LabTest = ({ user, showToast = console.log }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
-    loadBatches();
+    // Check for selected batch first, then load other batches
+    const selectedFromNavigation = localStorage.getItem('selectedBatchForTesting');
+    const currentSelected = localStorage.getItem('currentSelectedBatch');
+    
+    if (selectedFromNavigation) {
+      checkForSelectedBatch();
+    } else if (currentSelected) {
+      try {
+        const batchData = JSON.parse(currentSelected);
+        setSelectedBatch(batchData);
+        setLoadedFromNavigation(true);
+        setLoading(false);
+        setBatches([]);
+      } catch (error) {
+        console.error('Error restoring selected batch:', error);
+        loadBatches();
+      }
+    } else {
+      // Only load mock batches if no batch was selected from navigation
+      loadBatches();
+    }
     loadTestResults();
   }, []);
+
+
+  // Check for selected batch from navigation
+  const checkForSelectedBatch = () => {
+    const selectedFromNavigation = localStorage.getItem('selectedBatchForTesting');
+    if (selectedFromNavigation) {
+      try {
+        const batchData = JSON.parse(selectedFromNavigation);
+        
+        
+        // Store in a different localStorage key to persist the selection
+        localStorage.setItem('currentSelectedBatch', JSON.stringify(batchData));
+        
+        setSelectedBatch(batchData);
+        setLoadedFromNavigation(true);
+        localStorage.removeItem('selectedBatchForTesting');
+        showToast(`Batch ${batchData.batchId} loaded for testing`, 'success');
+        setLoading(false);
+        
+        // Load empty batches array to avoid any conflicts
+        setBatches([]);
+      } catch (error) {
+        console.error('Error parsing selected batch data:', error);
+        localStorage.removeItem('selectedBatchForTesting');
+      }
+    }
+  };
+
+  const loadBatchesWithoutSelection = async () => {
+    try {
+      console.log('📦 Loading batches without changing selection...');
+      // Mock batches for testing - including BAT 2024 001
+      const mockBatches = [
+        {
+          id: 'BAT 2024 001',
+          batchId: 'BAT 2024 001',
+          farmer: 'COL 2024',
+          herb: 'Allovera',
+          quantity: '5kg',
+          location: 'Bangalore, Karnataka',
+          harvestDate: '2024-09-24',
+          status: 'Ready for Testing'
+        },
+        {
+          id: 'COL001',
+          batchId: 'BAT-2024-001',
+          farmer: 'Rajesh Kumar',
+          herb: 'Ashwagandha',
+          quantity: '500kg',
+          location: 'Kerala, India',
+          harvestDate: '2024-09-20',
+          status: 'Ready for Testing'
+        },
+        {
+          id: 'COL002',
+          batchId: 'BAT-2024-002',
+          farmer: 'Priya Sharma',
+          herb: 'Turmeric',
+          quantity: '750kg',
+          location: 'Tamil Nadu, India',
+          harvestDate: '2024-09-21',
+          status: 'Ready for Testing'
+        },
+        {
+          id: 'COL003',
+          batchId: 'BAT-2024-003',
+          farmer: 'Amit Patel',
+          herb: 'Brahmi',
+          quantity: '300kg',
+          location: 'Gujarat, India',
+          harvestDate: '2024-09-19',
+          status: 'Testing Complete'
+        }
+      ];
+      
+      setBatches(mockBatches);
+      console.log('📦 Batches loaded, selectedBatch should remain unchanged');
+      // Don't set selected batch here - keep the one from navigation
+      
+    } catch (error) {
+      console.error('Error loading batches:', error);
+    }
+  };
 
   const loadBatches = async () => {
     try {
@@ -80,7 +184,8 @@ const LabTest = ({ user, showToast = console.log }) => {
       ];
       
       setBatches(mockBatches);
-      // Set the first batch as default selected batch
+      
+      // Set the first batch as default only when loading mock data
       if (mockBatches.length > 0) {
         setSelectedBatch(mockBatches[0]);
       }
@@ -375,8 +480,32 @@ const LabTest = ({ user, showToast = console.log }) => {
               <div className="flex items-center gap-3 mb-8">
                 <Microscope className="w-8 h-8 text-emerald-400" />
                 <h2 className="text-3xl font-bold text-white">Add Quality Test</h2>
-                <div className="text-gray-400">for {selectedBatch.herb} ({selectedBatch.batchId})</div>
+                <div className="text-gray-400">for {selectedBatch.herb || 'null'} ({selectedBatch.batchId || 'null'})</div>
               </div>
+              
+              {/* Batch Information Display */}
+              {selectedBatch && (
+                <div className="mb-8 p-6 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-purple-500/10 border border-emerald-500/30 rounded-xl">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                      <p className="text-gray-400 text-sm font-medium mb-1">Batch ID</p>
+                      <p className="text-emerald-300 font-bold">{selectedBatch.batchId || 'null'}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-sm font-medium mb-1">Herb Type</p>
+                      <p className="text-blue-300 font-bold">{selectedBatch.herb || 'null'}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-sm font-medium mb-1">Quantity</p>
+                      <p className="text-purple-300 font-bold">{selectedBatch.quantity || 'null'}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-sm font-medium mb-1">Location</p>
+                      <p className="text-cyan-300 font-bold">{selectedBatch.location || 'null'}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             
               <div className="space-y-8">
               {/* Test Type Selection */}

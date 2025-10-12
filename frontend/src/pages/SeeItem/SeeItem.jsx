@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Package, TestTube, AlertCircle, Eye, Sparkles, Download, Calendar, BarChart3, CheckCircle, Clock, Leaf, Shield, Database, Thermometer, Settings, Factory } from 'lucide-react';
 import { useCollections } from '../../contexts/CollectionsContext';
 
@@ -6,6 +7,7 @@ const SeeItem = () => {
   const [processedBatches, setProcessedBatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const { collections } = useCollections();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadProcessedBatches();
@@ -71,6 +73,29 @@ const SeeItem = () => {
   };
 
   // CSV Export Function for BAT 2024 001
+  // Handle Add Lab Test navigation
+  const handleAddLabTest = (batch) => {
+    // Store the selected batch data in localStorage for LabTest to access
+    const batchForTesting = {
+      id: batch.batchId,
+      batchId: batch.batchId,
+      farmer: batch.collection?.collector || batch.collection?.collectorId || 'Unknown',
+      herb: batch.collection?.herbName || 'Unknown Herb',
+      quantity: batch.collection?.quantity || 'N/A',
+      location: batch.collection?.location || 'N/A',
+      harvestDate: batch.collection?.harvestDate || batch.collection?.submissionDate || 'N/A',
+      status: 'Ready for Testing',
+      processingSteps: batch.processingSteps,
+      totalSteps: batch.totalSteps,
+      onChainVerified: batch.onChainVerified
+    };
+    
+    localStorage.setItem('selectedBatchForTesting', JSON.stringify(batchForTesting));
+    
+    // Navigate to lab test page
+    navigate('/lab-test');
+  };
+
   const downloadBatchCSV = () => {
     const batchData = {
       batchId: 'BAT 2024 001',
@@ -239,7 +264,10 @@ const SeeItem = () => {
                           </div>
                           
                           {/* Add Lab Test Button */}
-                          <button className="group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/25 transform hover:scale-105">
+                          <button 
+                            onClick={() => handleAddLabTest(batch)}
+                            className="group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/25 transform hover:scale-105"
+                          >
                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             <div className="relative flex items-center gap-2">
                               <TestTube className="w-5 h-5" />
