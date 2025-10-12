@@ -435,12 +435,6 @@ const LabTest = ({ user, showToast = console.log }) => {
         return;
       }
       
-      // Check wallet connection first
-      if (!walletAddress) {
-        showToast('Please connect your wallet before submitting lab test results', 'error');
-        return;
-      }
-      
       // Validate form and show specific errors
       if (!validateForm()) {
         const missingFields = Object.keys(validationErrors).map(key => {
@@ -620,50 +614,13 @@ const LabTest = ({ user, showToast = console.log }) => {
                 </div>
               </div>
             </div>
-            
-            {/* Connect Wallet Button */}
-            <div className="flex items-center gap-4">
-              {walletAddress ? (
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-xl backdrop-blur-sm">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                    <span className="text-emerald-300 text-sm font-medium">
-                      {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-                    </span>
-                  </div>
-                  <button
-                    onClick={disconnectWallet}
-                    className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 hover:border-red-500/50 rounded-xl text-red-300 hover:text-red-200 transition-all duration-200 text-sm font-medium"
-                  >
-                    Disconnect
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={connectWallet}
-                  disabled={isConnecting}
-                  className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500/20 to-emerald-500/20 hover:from-blue-500/30 hover:to-emerald-500/30 border border-blue-500/30 hover:border-emerald-500/50 rounded-xl text-white font-semibold transition-all duration-200 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isConnecting ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      Connecting...
-                    </>
-                  ) : (
-                    <>
-                      <Wallet className="w-5 h-5" />
-                      Connect Wallet
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
           </div>
         </div>
       </div>
 
 
       {/* Add Quality Test Form */}
+      {console.log('🎯 RENDER - selectedBatch:', selectedBatch)}
       {selectedBatch ? (
         <div className="max-w-4xl mx-auto">
           <div className="relative">
@@ -864,7 +821,7 @@ const LabTest = ({ user, showToast = console.log }) => {
               {/* Submit Button */}
               <button
                 onClick={handleSubmitTest}
-                disabled={submittingTest || !newTest.testType || !newTest.resultValue || !newTest.resultValue.trim() || !newTest.status || !walletAddress}
+                disabled={submittingTest || !newTest.testType || !newTest.resultValue || !newTest.resultValue.trim() || !newTest.status}
                 className="w-full px-8 py-5 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
               >
                 {submittingTest ? (
@@ -879,19 +836,6 @@ const LabTest = ({ user, showToast = console.log }) => {
                   </>
                 )}
               </button>
-              
-              {/* Wallet Connection Requirement Notice */}
-              {!walletAddress && (
-                <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <Wallet className="w-5 h-5 text-amber-400" />
-                    <div>
-                      <p className="text-amber-300 font-semibold">Wallet Connection Required</p>
-                      <p className="text-amber-200 text-sm">Connect your wallet to submit lab test results to the blockchain</p>
-                    </div>
-                  </div>
-                </div>
-              )}
               </div>
             </div>
           </div>
