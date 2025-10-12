@@ -28,13 +28,19 @@ const LabTest = ({ user, showToast = console.log }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
-    // Check for selected batch first, then load other batches
+    // Check for selected batch FIRST, then clear old data
     const selectedFromNavigation = localStorage.getItem('selectedBatchForTesting');
     const currentSelected = localStorage.getItem('currentSelectedBatch');
     
+    console.log('🚀 CHECKING BATCH DATA');
+    console.log('🚀 selectedFromNavigation:', selectedFromNavigation);
+    console.log('🚀 currentSelected:', currentSelected);
+    
     if (selectedFromNavigation) {
+      console.log('🚀 LOADING FROM NAVIGATION');
       checkForSelectedBatch();
     } else if (currentSelected) {
+      console.log('🚀 LOADING FROM CURRENT SELECTED');
       try {
         const batchData = JSON.parse(currentSelected);
         setSelectedBatch(batchData);
@@ -43,10 +49,17 @@ const LabTest = ({ user, showToast = console.log }) => {
         setBatches([]);
       } catch (error) {
         console.error('Error restoring selected batch:', error);
+        // Clear bad data and load empty state
+        localStorage.removeItem('currentSelectedBatch');
+        setSelectedBatch(null);
         loadBatches();
       }
     } else {
-      // Only load mock batches if no batch was selected from navigation
+      console.log('🚀 NO BATCH DATA - SHOWING NO BATCH MESSAGE');
+      // Clear any old data and ensure no batch is selected
+      localStorage.removeItem('currentSelectedBatch');
+      setSelectedBatch(null);
+      setLoadedFromNavigation(false);
       loadBatches();
     }
     loadTestResults();
@@ -185,10 +198,8 @@ const LabTest = ({ user, showToast = console.log }) => {
       
       setBatches(mockBatches);
       
-      // Set the first batch as default only when loading mock data
-      if (mockBatches.length > 0) {
-        setSelectedBatch(mockBatches[0]);
-      }
+      // Don't automatically select any batch - let user choose or come from navigation
+      // setSelectedBatch will remain null, showing "No Batch Loaded" message
       
     } catch (error) {
       console.error('Error loading batches:', error);
@@ -472,6 +483,7 @@ const LabTest = ({ user, showToast = console.log }) => {
 
 
       {/* Add Quality Test Form */}
+      {console.log('🎯 RENDER - selectedBatch:', selectedBatch)}
       {selectedBatch ? (
         <div className="max-w-4xl mx-auto">
           <div className="relative">
@@ -480,7 +492,7 @@ const LabTest = ({ user, showToast = console.log }) => {
               <div className="flex items-center gap-3 mb-8">
                 <Microscope className="w-8 h-8 text-emerald-400" />
                 <h2 className="text-3xl font-bold text-white">Add Quality Test</h2>
-                <div className="text-gray-400">for {selectedBatch.herb || 'null'} ({selectedBatch.batchId || 'null'})</div>
+                <div className="text-gray-400">for {selectedBatch.herb || 'N/A'} ({selectedBatch.batchId || 'N/A'})</div>
               </div>
               
               {/* Batch Information Display */}
@@ -489,19 +501,19 @@ const LabTest = ({ user, showToast = console.log }) => {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
                       <p className="text-gray-400 text-sm font-medium mb-1">Batch ID</p>
-                      <p className="text-emerald-300 font-bold">{selectedBatch.batchId || 'null'}</p>
+                      <p className="text-emerald-300 font-bold">{selectedBatch.batchId || 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-gray-400 text-sm font-medium mb-1">Herb Type</p>
-                      <p className="text-blue-300 font-bold">{selectedBatch.herb || 'null'}</p>
+                      <p className="text-blue-300 font-bold">{selectedBatch.herb || 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-gray-400 text-sm font-medium mb-1">Quantity</p>
-                      <p className="text-purple-300 font-bold">{selectedBatch.quantity || 'null'}</p>
+                      <p className="text-purple-300 font-bold">{selectedBatch.quantity || 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-gray-400 text-sm font-medium mb-1">Location</p>
-                      <p className="text-cyan-300 font-bold">{selectedBatch.location || 'null'}</p>
+                      <p className="text-cyan-300 font-bold">{selectedBatch.location || 'N/A'}</p>
                     </div>
                   </div>
                 </div>
@@ -698,10 +710,21 @@ const LabTest = ({ user, showToast = console.log }) => {
             <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl p-12">
               <div className="text-center">
                 <TestTube className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-white mb-4">No Batches Available</h3>
-                <p className="text-gray-400 text-lg">
-                  No batches are currently available for testing.
+                <h3 className="text-2xl font-bold text-white mb-4">No Batch Loaded</h3>
+                <p className="text-gray-400 text-lg mb-6">
+                  Please add a batch first before starting lab tests.
                 </p>
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-amber-500/20 rounded-full flex items-center justify-center">
+                      <span className="text-amber-400 font-bold">!</span>
+                    </div>
+                    <div>
+                      <p className="text-amber-300 font-semibold">Action Required</p>
+                      <p className="text-amber-200 text-sm">Navigate to "See Items" and click "Add Lab Test" on a processed batch</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -80,24 +80,30 @@ const Dashboard = ({ user, showToast }) => {
         console.log('Collections data:', collectionsData);
         console.log('Collections length:', collectionsData.length);
         
-        // Calculate today's submitted collections
-        const todaySubmitted = collectionsData.filter(collection => {
-          const submissionDate = collection.timestamp || collection.submissionDate || collection.date || '';
-          console.log('Checking collection:', collection.herbName, 'Date:', submissionDate, 'Today:', today);
+        // Calculate today's processed batches submitted by processors (not raw collections by collectors)
+        const todayProcessedBatches = Object.keys(processingSteps).filter(batchId => {
+          const steps = processingSteps[batchId];
+          if (steps.length === 0) return false;
           
-          // Check multiple date formats
-          if (submissionDate.startsWith(today)) {
-            return true;
-          }
-          
-          // Check if it's today's date in different formats
-          const submissionDateObj = new Date(submissionDate);
-          const todayDateObj = new Date(today);
-          
-          return submissionDateObj.toDateString() === todayDateObj.toDateString();
+          // Check if any processing step was completed today
+          return steps.some(step => {
+            const stepDate = step.timestamp || step.date || '';
+            console.log('Checking processing step:', step.step, 'Date:', stepDate, 'Today:', today);
+            
+            // Check multiple date formats
+            if (stepDate.startsWith(today)) {
+              return true;
+            }
+            
+            // Check if it's today's date in different formats
+            const stepDateObj = new Date(stepDate);
+            const todayDateObj = new Date(today);
+            
+            return stepDateObj.toDateString() === todayDateObj.toDateString();
+          });
         }).length;
         
-        console.log('Today submitted count:', todaySubmitted);
+        console.log('Today processed batches count:', todayProcessedBatches);
         
         // Calculate pending batches (collections without processing steps)
         const processedBatchIds = Object.keys(processingSteps).filter(batchId => 
@@ -137,7 +143,7 @@ const Dashboard = ({ user, showToast }) => {
         setProcessedBatches(processedData);
         setProcessingStats({
           totalSubmitted: 247, // Static random number
-          todaySubmitted: todaySubmitted, // Real-time count of today's submissions
+          todaySubmitted: todayProcessedBatches, // Real-time count of today's processed batches by processors
           pending: pendingBatches.length
         });
         
@@ -244,8 +250,8 @@ const Dashboard = ({ user, showToast }) => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">Today Submitted</h3>
-                  <p className="text-blue-300/80 text-sm font-medium">Collections submitted today</p>
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">Today Processed</h3>
+                  <p className="text-blue-300/80 text-sm font-medium">Batches processed today</p>
                 </div>
               </div>
             </div>
