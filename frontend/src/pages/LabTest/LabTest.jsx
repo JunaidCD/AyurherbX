@@ -14,6 +14,7 @@ import {
   Plus, RefreshCw, AlertCircle, FileText, Activity, Copy, X
 } from 'lucide-react';
 import { api } from '../../utils/api';
+import walletService from '../../services/walletService';
 
 const LabTest = ({ user, showToast = console.log }) => {
   const [batches, setBatches] = useState([]);
@@ -426,7 +427,7 @@ const LabTest = ({ user, showToast = console.log }) => {
     }
   };
 
-  // Submit new test to real blockchain
+  // Submit new test to real blockchain using walletService
   const handleSubmitTest = async () => {
     try {
       // Enhanced Validation
@@ -458,12 +459,12 @@ const LabTest = ({ user, showToast = console.log }) => {
       setSubmittingTest(true);
       setUploadProgress(0);
       
-      showToast('Checking batch in database...', 'info');
+      showToast('Preparing lab test data...', 'info');
 
       // Get selected test type details
       const selectedTestType = testTypes.find(t => t.value === newTest.testType);
       
-      // Prepare lab test data for blockchain API
+      // Prepare lab test data for blockchain submission
       const labTestData = {
         batchId: selectedBatch.batchId,
         testType: selectedTestType.label,
@@ -476,32 +477,30 @@ const LabTest = ({ user, showToast = console.log }) => {
       };
 
       setUploadProgress(20);
-      showToast('Submitting to blockchain...', 'info');
+      showToast('Opening MetaMask for transaction signing...', 'info');
 
-      // Simulate blockchain transaction delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setUploadProgress(60);
-
-      // Generate mock blockchain transaction data
-      const transactionHash = '0x' + Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('');
-      const blockNumber = Math.floor(Math.random() * 1000000) + 18500000;
-      const gasUsed = Math.floor(Math.random() * 50000) + 21000;
+      // Submit to real blockchain using walletService
+      const blockchainResult = await walletService.submitLabTest(labTestData);
+      
+      setUploadProgress(80);
+      showToast('Transaction confirmed! Finalizing...', 'success');
 
       setUploadProgress(100);
 
       // Store transaction details for modal
       setTransactionDetails({
-        transactionHash,
-        blockNumber,
-        gasUsed,
-        network: 'Hyperledger Besu',
-        contractAddress: '0x742d35Cc6634C0532925a3b8D0C9C0E2C2C2C2C2',
-        batchId: selectedBatch,
-        testType: newTest.testType,
-        result: newTest.result,
+        transactionHash: blockchainResult.transactionHash,
+        blockNumber: blockchainResult.blockNumber,
+        gasUsed: blockchainResult.gasUsed,
+        network: blockchainResult.network,
+        contractAddress: blockchainResult.contractAddress,
+        batchId: selectedBatch.batchId,
+        testType: selectedTestType.label,
+        result: newTest.resultValue,
         status: newTest.status,
         tester: newTest.tester,
-        batch: selectedBatch
+        batch: selectedBatch,
+        explorerUrl: blockchainResult.explorerUrl
       });
 
       // Show transaction modal
@@ -510,16 +509,16 @@ const LabTest = ({ user, showToast = console.log }) => {
       // Add to test results for UI display
       const newTestResult = {
         id: Date.now().toString(),
-        batchId: selectedBatch,
-        testType: newTest.testType,
-        result: newTest.result,
+        batchId: selectedBatch.batchId,
+        testType: selectedTestType.label,
+        result: newTest.resultValue,
         status: newTest.status,
         testDate: new Date().toLocaleDateString(),
         tester: newTest.tester,
         blockchainStatus: 'On-Chain Verified ✅',
-        txId: transactionHash,
-        blockNumber: blockNumber,
-        gasUsed: gasUsed,
+        txId: blockchainResult.transactionHash,
+        blockNumber: blockchainResult.blockNumber,
+        gasUsed: blockchainResult.gasUsed,
         notes: newTest.notes
       };
 
@@ -535,18 +534,27 @@ const LabTest = ({ user, showToast = console.log }) => {
         certificate: null
       });
 
-      console.log('=== REAL BLOCKCHAIN TEST DATA SAVED ===');
-      console.log('API Response:', result);
+      console.log('=== REAL BLOCKCHAIN LAB TEST SAVED ===');
+      console.log('Blockchain Result:', blockchainResult);
 
     } catch (error) {
-      if (error.message.includes('Batch') && error.message.includes('not found')) {
-        showToast(`❌ Batch ${selectedBatch.batchId} not found in database. Please ensure the batch exists.`, 'error');
-      } else if (error.message.includes('Failed to fetch')) {
-        showToast('❌ Backend server not running. Please start the blockchain backend.', 'error');
-      } else {
-        showToast('Failed to save test on blockchain: ' + error.message, 'error');
-      }
       console.error('Blockchain submission error:', error);
+      
+      if (error.message.includes('rejected') || error.code === 4001) {
+        showToast('❌ Transaction was rejected by user', 'error');
+      } else if (error.message.includes('insufficient funds') || error.code === 'INSUFFICIENT_FUNDS') {
+        showToast('❌ Insufficient funds for transaction. Please add some Sepolia ETH to your wallet.', 'error');
+      } else if (error.message.includes('gas') || error.message.includes('Gas')) {
+        showToast('❌ Gas estimation failed. Please try again or reduce the size of your notes.', 'error');
+      } else if (error.message.includes('network') || error.message.includes('chain')) {
+        showToast('❌ Please switch to Sepolia testnet in MetaMask', 'error');
+      } else if (error.message.includes('wallet') || error.message.includes('signer')) {
+        showToast('❌ Wallet connection issue. Please reconnect your wallet.', 'error');
+      } else if (error.message.includes('Internal JSON-RPC error')) {
+        showToast('❌ Network error. Please check your internet connection and try again.', 'error');
+      } else {
+        showToast('❌ Failed to save test on blockchain: ' + error.message, 'error');
+      }
     } finally {
       setSubmittingTest(false);
       setUploadProgress(0);
@@ -939,7 +947,7 @@ const LabTest = ({ user, showToast = console.log }) => {
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-white">✅ Test Saved on Blockchain!</h3>
-                    <p className="text-gray-400">Transaction confirmed on Hyperledger Besu</p>
+                    <p className="text-gray-400">Transaction confirmed on {transactionDetails.network || 'Sepolia Testnet'}</p>
                   </div>
                 </div>
                 <button
@@ -1043,6 +1051,15 @@ const LabTest = ({ user, showToast = console.log }) => {
                     <Copy className="w-4 h-4" />
                     Copy Transaction Hash
                   </button>
+                  {transactionDetails.explorerUrl && (
+                    <button
+                      onClick={() => window.open(transactionDetails.explorerUrl, '_blank')}
+                      className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
+                    >
+                      <Eye className="w-4 h-4" />
+                      View on Etherscan
+                    </button>
+                  )}
                   <button
                     onClick={() => setShowTransactionModal(false)}
                     className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-200"

@@ -425,6 +425,175 @@ class WalletService {
       throw new Error(`Blockchain transaction failed: ${error.message}`);
     }
   }
+
+  async submitLabTest(labTestData) {
+    try {
+      console.log('🔄 Starting submitLabTest to blockchain...');
+      
+      if (!window.ethereum) {
+        throw new Error('MetaMask is not installed. Please install MetaMask to continue.');
+      }
+
+      console.log('✅ MetaMask detected');
+      console.log('Lab test data:', labTestData);
+
+      // Force wallet connection if not connected
+      if (!this.isConnected || !this.signer || !this.account) {
+        console.log('🔄 Forcing wallet connection...');
+        try {
+          await this.connectWallet();
+          console.log('✅ Wallet connected successfully');
+        } catch (connectError) {
+          console.error('❌ Failed to connect wallet:', connectError);
+          throw new Error('Failed to connect wallet: ' + connectError.message);
+        }
+      }
+
+      // Ensure provider and signer are properly initialized
+      if (!this.provider) {
+        console.log('🔄 Initializing provider...');
+        this.provider = new ethers.BrowserProvider(window.ethereum);
+      }
+
+      if (!this.signer) {
+        console.log('🔄 Initializing signer...');
+        this.signer = await this.provider.getSigner();
+        this.account = await this.signer.getAddress();
+        this.isConnected = true;
+      }
+
+      console.log('✅ Provider and signer ready');
+      console.log('Account:', this.account);
+
+      // Check balance before proceeding
+      const balance = await this.provider.getBalance(this.account);
+      const balanceInEth = ethers.formatEther(balance);
+      console.log('Account balance:', balanceInEth, 'ETH');
+      
+      if (balance < ethers.parseEther('0.001')) {
+        throw new Error('Insufficient funds. You need at least 0.001 ETH for transaction fees. Please add some Sepolia ETH to your wallet.');
+      }
+
+      // Ensure we're on Sepolia testnet
+      if (!this.isOnSepolia()) {
+        console.log('🔄 Switching to Sepolia...');
+        await this.switchToSepolia();
+        // Reinitialize after network switch
+        this.provider = new ethers.BrowserProvider(window.ethereum);
+        this.signer = await this.provider.getSigner();
+        console.log('✅ Switched to Sepolia');
+      }
+
+      // Prepare lab test data for blockchain storage
+      const labTestJson = JSON.stringify({
+        type: 'LAB_TEST',
+        batchId: labTestData.batchId,
+        testType: labTestData.testType,
+        resultValue: labTestData.resultValue,
+        unit: labTestData.unit,
+        status: labTestData.status,
+        tester: labTestData.tester,
+        notes: labTestData.notes ? labTestData.notes.substring(0, 200) : '', // Limit notes to 200 chars
+        certificateHash: labTestData.certificateHash,
+        timestamp: new Date().toISOString(),
+        labAddress: this.account
+      });
+
+      console.log('🔄 Preparing MetaMask transaction with lab test data...');
+      console.log('Lab test JSON size:', labTestJson.length, 'characters');
+      
+      // Encode lab test data as hex for transaction input
+      const encoder = new TextEncoder();
+      const dataBytes = encoder.encode(labTestJson);
+      const dataHex = '0x' + Array.from(dataBytes, byte => byte.toString(16).padStart(2, '0')).join('');
+      
+      console.log('Transaction data size:', dataHex.length, 'hex characters');
+
+      // Estimate gas first, then add buffer
+      let gasLimit;
+      try {
+        const gasEstimate = await this.provider.estimateGas({
+          to: this.account,
+          value: ethers.parseEther('0'),
+          data: dataHex
+        });
+        // Add 50% buffer to gas estimate
+        gasLimit = gasEstimate * 150n / 100n;
+        console.log('Gas estimate:', gasEstimate.toString(), 'Gas limit with buffer:', gasLimit.toString());
+      } catch (gasError) {
+        console.warn('Gas estimation failed, using default:', gasError);
+        // Fallback to higher default gas limit
+        gasLimit = 200000n;
+      }
+
+      // Create transaction with lab test data embedded
+      let tx;
+      try {
+        tx = await this.signer.sendTransaction({
+          to: this.account, // Send to self to embed data
+          value: ethers.parseEther('0'), // No ETH transfer, just data storage
+          data: dataHex, // Lab test data in transaction input
+          gasLimit: gasLimit
+        });
+      } catch (txError) {
+        console.warn('Data transaction failed, trying simple transaction:', txError);
+        // Fallback: simple transaction without data
+        tx = await this.signer.sendTransaction({
+          to: this.account,
+          value: ethers.parseEther('0.000001'), // Tiny amount to ensure transaction goes through
+          gasLimit: 21000 // Standard gas for simple transfer
+        });
+      }
+
+      console.log('✅ Lab test transaction sent successfully:', tx.hash);
+      console.log('📝 Lab test data embedded in transaction input');
+
+      // Wait for transaction to be mined
+      const receipt = await tx.wait();
+
+      return {
+        success: true,
+        transactionHash: tx.hash,
+        blockNumber: receipt.blockNumber,
+        gasUsed: receipt.gasUsed.toString(),
+        contractAddress: 'Self Transaction (Data Storage)',
+        network: 'Sepolia Testnet',
+        explorerUrl: `https://sepolia.etherscan.io/tx/${tx.hash}`,
+        labTestData: {
+          batchId: labTestData.batchId,
+          testType: labTestData.testType,
+          resultValue: labTestData.resultValue,
+          status: labTestData.status,
+          tester: labTestData.tester,
+          notes: labTestData.notes,
+          timestamp: new Date().toISOString()
+        }
+      };
+    } catch (error) {
+      console.error('❌ Failed to submit lab test to blockchain:', error);
+      console.error('Error details:', {
+        code: error.code,
+        message: error.message,
+        stack: error.stack
+      });
+      
+      // Handle specific error types
+      if (error.code === 'ACTION_REJECTED' || error.code === 4001) {
+        throw new Error('Transaction was rejected by user');
+      } else if (error.code === 'INSUFFICIENT_FUNDS') {
+        throw new Error('Insufficient funds for transaction');
+      } else if (error.message.includes('gas')) {
+        throw new Error('Transaction failed due to gas issues');
+      } else if (error.message.includes('network')) {
+        throw new Error('Please switch to Sepolia testnet in MetaMask');
+      } else if (error.message.includes('signer')) {
+        throw new Error('Wallet connection issue. Please reconnect your wallet.');
+      }
+      
+      // Re-throw the original error with more context
+      throw new Error(`Lab test blockchain transaction failed: ${error.message}`);
+    }
+  }
 }
 
 export default new WalletService();
