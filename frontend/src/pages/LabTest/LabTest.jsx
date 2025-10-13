@@ -42,6 +42,23 @@ const LabTest = ({ user, showToast = console.log }) => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [walletError, setWalletError] = useState(null);
+  
+  // Test submission restriction state
+  const [hasExistingTest, setHasExistingTest] = useState(false);
+
+  // Check if test already exists for the selected batch
+  const checkExistingTest = (batchData) => {
+    if (!batchData) return false;
+    
+    const labTestsData = localStorage.getItem('ayurherb_lab_tests');
+    const labTests = labTestsData ? JSON.parse(labTestsData) : {};
+    
+    const batchId = batchData.batchId || batchData.id;
+    const hasTest = labTests[batchId] && labTests[batchId].length > 0;
+    
+    setHasExistingTest(hasTest);
+    return hasTest;
+  };
 
   useEffect(() => {
     // Check for selected batch FIRST, then clear old data
@@ -61,6 +78,7 @@ const LabTest = ({ user, showToast = console.log }) => {
         const batchData = JSON.parse(currentSelected);
         setSelectedBatch(batchData);
         setLoadedFromNavigation(true);
+        checkExistingTest(batchData);
         setLoading(false);
         setBatches([]);
       } catch (error) {
@@ -207,6 +225,7 @@ const LabTest = ({ user, showToast = console.log }) => {
         
         setSelectedBatch(batchData);
         setLoadedFromNavigation(true);
+        checkExistingTest(batchData);
         localStorage.removeItem('selectedBatchForTesting');
         showToast(`Batch ${batchData.batchId} loaded for testing`, 'success');
         setLoading(false);
@@ -433,6 +452,12 @@ const LabTest = ({ user, showToast = console.log }) => {
       // Enhanced Validation
       if (!selectedBatch) {
         showToast('Please select a batch first', 'error');
+        return;
+      }
+      
+      // Check if test already exists for this batch
+      if (hasExistingTest) {
+        showToast('❌ Lab test already completed for this batch. Cannot submit duplicate tests.', 'error');
         return;
       }
       
@@ -746,9 +771,12 @@ const LabTest = ({ user, showToast = console.log }) => {
                   {testTypes.map((type) => (
                     <button
                       key={type.value}
-                      onClick={() => setNewTest(prev => ({ ...prev, testType: type.value }))}
+                      onClick={() => !hasExistingTest && setNewTest(prev => ({ ...prev, testType: type.value }))}
+                      disabled={hasExistingTest}
                       className={`p-6 rounded-xl border-2 transition-all duration-200 text-left ${
-                        newTest.testType === type.value
+                        hasExistingTest
+                          ? 'border-gray-600 bg-gray-700/20 opacity-50 cursor-not-allowed'
+                          : newTest.testType === type.value
                           ? 'border-emerald-500 bg-emerald-500/10'
                           : 'border-slate-600 bg-slate-700/30 hover:border-slate-500'
                       }`}
@@ -774,9 +802,14 @@ const LabTest = ({ user, showToast = console.log }) => {
                     <input
                       type="text"
                       value={newTest.resultValue}
-                      onChange={(e) => setNewTest(prev => ({ ...prev, resultValue: e.target.value }))}
-                      placeholder="Enter result value"
-                      className="w-full px-4 py-4 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 focus:border-emerald-500 focus:outline-none transition-all duration-200 text-lg"
+                      onChange={(e) => !hasExistingTest && setNewTest(prev => ({ ...prev, resultValue: e.target.value }))}
+                      placeholder={hasExistingTest ? "Test already completed" : "Enter result value"}
+                      disabled={hasExistingTest}
+                      className={`w-full px-4 py-4 border rounded-xl text-white placeholder-gray-400 focus:outline-none transition-all duration-200 text-lg ${
+                        hasExistingTest
+                          ? 'bg-gray-700/30 border-gray-600 cursor-not-allowed opacity-50'
+                          : 'bg-slate-700/50 border-slate-600 focus:border-emerald-500'
+                      }`}
                     />
                     {newTest.testType && (
                       <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">
@@ -792,9 +825,12 @@ const LabTest = ({ user, showToast = console.log }) => {
                   </label>
                   <div className="flex gap-4">
                     <button
-                      onClick={() => setNewTest(prev => ({ ...prev, status: 'Passed' }))}
+                      onClick={() => !hasExistingTest && setNewTest(prev => ({ ...prev, status: 'Passed' }))}
+                      disabled={hasExistingTest}
                       className={`flex-1 px-6 py-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center gap-3 ${
-                        newTest.status === 'Passed'
+                        hasExistingTest
+                          ? 'border-gray-600 bg-gray-700/20 text-gray-500 cursor-not-allowed opacity-50'
+                          : newTest.status === 'Passed'
                           ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300'
                           : 'border-slate-600 bg-slate-700/30 text-gray-400 hover:border-slate-500'
                       }`}
@@ -803,9 +839,12 @@ const LabTest = ({ user, showToast = console.log }) => {
                       Pass
                     </button>
                     <button
-                      onClick={() => setNewTest(prev => ({ ...prev, status: 'Failed' }))}
+                      onClick={() => !hasExistingTest && setNewTest(prev => ({ ...prev, status: 'Failed' }))}
+                      disabled={hasExistingTest}
                       className={`flex-1 px-6 py-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-center gap-3 ${
-                        newTest.status === 'Failed'
+                        hasExistingTest
+                          ? 'border-gray-600 bg-gray-700/20 text-gray-500 cursor-not-allowed opacity-50'
+                          : newTest.status === 'Failed'
                           ? 'border-red-500 bg-red-500/20 text-red-300'
                           : 'border-slate-600 bg-slate-700/30 text-gray-400 hover:border-slate-500'
                       }`}
@@ -901,13 +940,22 @@ const LabTest = ({ user, showToast = console.log }) => {
               {/* Submit Button */}
               <button
                 onClick={handleSubmitTest}
-                disabled={submittingTest || !newTest.testType || !newTest.resultValue || !newTest.resultValue.trim() || !newTest.status || !walletAddress}
-                className="w-full px-8 py-5 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                disabled={submittingTest || !newTest.testType || !newTest.resultValue || !newTest.resultValue.trim() || !newTest.status || !walletAddress || hasExistingTest}
+                className={`w-full px-8 py-5 text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed text-lg ${
+                  hasExistingTest 
+                    ? 'bg-gradient-to-r from-red-500 to-red-600' 
+                    : 'bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600'
+                }`}
               >
                 {submittingTest ? (
                   <>
                     <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     Processing...
+                  </>
+                ) : hasExistingTest ? (
+                  <>
+                    <XCircle className="w-6 h-6" />
+                    Test Already Completed
                   </>
                 ) : (
                   <>
@@ -917,8 +965,21 @@ const LabTest = ({ user, showToast = console.log }) => {
                 )}
               </button>
               
+              {/* Test Already Exists Warning */}
+              {hasExistingTest && (
+                <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-400" />
+                    <div>
+                      <p className="text-red-300 font-semibold">Test Already Completed</p>
+                      <p className="text-red-200 text-sm">This batch has already been tested. Duplicate test submissions are not allowed.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               {/* Wallet Connection Requirement Notice */}
-              {!walletAddress && (
+              {!walletAddress && !hasExistingTest && (
                 <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
                   <div className="flex items-center gap-3">
                     <Wallet className="w-5 h-5 text-amber-400" />
