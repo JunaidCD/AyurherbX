@@ -960,7 +960,7 @@ const LabTest = ({ user, showToast = console.log }) => {
                 ) : (
                   <>
                     <Save className="w-6 h-6" />
-                    Save Test & Verify on Blockchain
+                    Save On Blockchain
                   </>
                 )}
               </button>
