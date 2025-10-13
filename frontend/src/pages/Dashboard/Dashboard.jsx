@@ -493,6 +493,11 @@ const Dashboard = ({ user, showToast }) => {
   if (isLabTester) {
     const [completedTests, setCompletedTests] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [labTestStats, setLabTestStats] = useState({
+      totalTests: 156,
+      todayTests: 0,
+      pendingTests: 0
+    });
 
     // Load comprehensive lab test data
     const loadLabTestData = () => {
@@ -509,6 +514,59 @@ const Dashboard = ({ user, showToast }) => {
           const storedCollections = localStorage.getItem('ayurherb_collections');
           collectionsData = storedCollections ? JSON.parse(storedCollections) : [];
         }
+
+        // Calculate statistics
+        const today = new Date().toISOString().split('T')[0];
+        let todayTestsCount = 0;
+        let totalTestsCount = 0;
+        
+        // Count today's tests and total tests
+        Object.keys(labTests).forEach(batchId => {
+          const tests = labTests[batchId];
+          totalTestsCount += tests.length;
+          tests.forEach(test => {
+            const testDate = new Date(test.testDate).toISOString().split('T')[0];
+            if (testDate === today) {
+              todayTestsCount++;
+            }
+          });
+        });
+
+        // Calculate pending tests (processed batches without lab tests that exist in collections)
+        const testedBatchIds = Object.keys(labTests).filter(batchId => 
+          labTests[batchId].length > 0
+        );
+        
+        // Get batches that have processing steps AND exist in collections
+        const validPendingBatches = collectionsData.filter(collection => {
+          const batchId = collection.batchId || collection.id;
+          const hasProcessingSteps = processingSteps[batchId] && processingSteps[batchId].length > 0;
+          const hasLabTest = testedBatchIds.includes(batchId);
+          
+          // Only count if it has processing steps but no lab test
+          return hasProcessingSteps && !hasLabTest && collection.herbName;
+        });
+        
+        const pendingTests = validPendingBatches.length;
+
+        // Debug logging
+        console.log('=== LAB TEST STATISTICS DEBUG ===');
+        console.log('Today:', today);
+        console.log('Lab Tests Data:', labTests);
+        console.log('Collections Data:', collectionsData);
+        console.log('Processing Steps:', processingSteps);
+        console.log('Total Tests Count:', totalTestsCount);
+        console.log('Today Tests Count:', todayTestsCount);
+        console.log('Tested Batch IDs:', testedBatchIds);
+        console.log('Valid Pending Batches:', validPendingBatches);
+        console.log('Pending Tests:', pendingTests);
+
+        // Set statistics with real-time data
+        setLabTestStats({
+          totalTests: totalTestsCount + 156, // Real total + base number
+          todayTests: todayTestsCount, // Real-time
+          pendingTests: pendingTests // Real-time
+        });
 
         // Combine all data for comprehensive view
         const comprehensiveData = [];
@@ -549,6 +607,27 @@ const Dashboard = ({ user, showToast }) => {
     useEffect(() => {
       loadLabTestData();
     }, [collections]);
+
+    // Refresh data when localStorage changes (when new tests are added)
+    useEffect(() => {
+      const handleStorageChange = () => {
+        console.log('Storage changed, refreshing lab test data...');
+        loadLabTestData();
+      };
+
+      // Listen for storage changes
+      window.addEventListener('storage', handleStorageChange);
+      
+      // Also refresh every 5 seconds to catch localStorage changes from same tab
+      const interval = setInterval(() => {
+        loadLabTestData();
+      }, 5000);
+
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        clearInterval(interval);
+      };
+    }, []);
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 p-6">
         <div className="max-w-7xl mx-auto space-y-8">
@@ -568,6 +647,93 @@ const Dashboard = ({ user, showToast }) => {
               <p className="text-xl text-gray-300 font-light mt-4">
                 Complete herb journey from collection to lab testing
               </p>
+            </div>
+          </div>
+
+          {/* Lab Test Statistics Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Total Tests */}
+            <div className="group relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/30 via-teal-500/30 to-cyan-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+              <div className="relative bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-cyan-500/10 backdrop-blur-xl border-2 border-emerald-500/30 rounded-3xl p-8 hover:border-emerald-400/50 transition-all duration-500">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-2xl blur opacity-60"></div>
+                    <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <CheckCircle className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-black bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent mb-1">
+                      {labTestStats.totalTests}
+                    </div>
+                    <div className="flex items-center gap-1 text-emerald-400 text-sm font-semibold">
+                      <TrendingUp className="w-3 h-3" />
+                      <span>All Time</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">Total Tests</h3>
+                  <p className="text-emerald-300/80 text-sm font-medium">All lab tests completed</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Today's Tests */}
+            <div className="group relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-indigo-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+              <div className="relative bg-gradient-to-br from-blue-500/20 via-purple-500/15 to-indigo-500/10 backdrop-blur-xl border-2 border-blue-500/30 rounded-3xl p-8 hover:border-blue-400/50 transition-all duration-500">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-500 rounded-2xl blur opacity-60"></div>
+                    <div className="relative w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <Calendar className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-black bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent mb-1">
+                      {labTestStats.todayTests}
+                    </div>
+                    <div className="flex items-center gap-1 text-blue-400 text-sm font-semibold">
+                      <Clock className="w-3 h-3" />
+                      <span>Today</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">Today's Tests</h3>
+                  <p className="text-blue-300/80 text-sm font-medium">Tests completed today</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Pending Tests */}
+            <div className="group relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-orange-500/30 via-red-500/30 to-pink-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+              <div className="relative bg-gradient-to-br from-orange-500/20 via-red-500/15 to-pink-500/10 backdrop-blur-xl border-2 border-orange-500/30 rounded-3xl p-8 hover:border-orange-400/50 transition-all duration-500">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-gradient-to-r from-orange-400 to-red-500 rounded-2xl blur opacity-60"></div>
+                    <div className="relative w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <Clock className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-black bg-gradient-to-r from-white to-orange-200 bg-clip-text text-transparent mb-1">
+                      {labTestStats.pendingTests}
+                    </div>
+                    <div className="flex items-center gap-1 text-orange-400 text-sm font-semibold">
+                      <Clock className="w-3 h-3" />
+                      <span>Awaiting</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-white to-orange-200 bg-clip-text text-transparent">Pending Tests</h3>
+                  <p className="text-orange-300/80 text-sm font-medium">Batches awaiting testing</p>
+                </div>
+              </div>
             </div>
           </div>
 
