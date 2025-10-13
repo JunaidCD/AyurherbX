@@ -390,43 +390,43 @@ const Dashboard = ({ user, showToast }) => {
                               {batch.processingSteps.map((step, stepIndex) => {
                                 const StepIcon = getStepIcon(step.stepType);
                                 return (
-                                  <div key={stepIndex} className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/20 hover:border-emerald-500/30 transition-all duration-300 shadow-lg">
-                                    <div className="flex items-start gap-4 mb-4">
+                                  <div key={stepIndex} className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/20 hover:border-emerald-500/30 transition-all duration-300 shadow-lg">
+                                    <div className="flex items-start gap-5 mb-6">
                                       <div className="relative">
                                         <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl blur opacity-60"></div>
-                                        <div className="relative w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl">
-                                          <StepIcon className="w-6 h-6 text-white" />
+                                        <div className="relative w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl">
+                                          <StepIcon className="w-8 h-8 text-white" />
                                         </div>
                                       </div>
                                       <div className="flex-1">
-                                        <h5 className="text-white font-bold text-lg mb-1">{step.stepType}</h5>
-                                        <p className="text-gray-300 text-sm font-medium">{step.timestamp || step.date}</p>
+                                        <h5 className="text-white font-bold text-2xl mb-2">{step.stepType}</h5>
+                                        <p className="text-gray-300 text-lg font-semibold">{step.timestamp || step.date}</p>
                                       </div>
                                       {step.blockchain?.confirmed && (
-                                        <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/20 border border-blue-500/30 rounded-full">
-                                          <Shield className="w-3 h-3 text-blue-400" />
-                                          <span className="text-blue-400 text-xs font-semibold">On-Chain</span>
+                                        <div className="flex items-center gap-3 px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-full">
+                                          <Shield className="w-5 h-5 text-blue-400" />
+                                          <span className="text-blue-400 text-base font-bold">On-Chain</span>
                                         </div>
                                       )}
                                     </div>
                                     
-                                    <div className="space-y-2">
+                                    <div className="space-y-4">
                                       {step.temperature && (
-                                        <div className="flex items-center gap-2 text-orange-300">
-                                          <Thermometer className="w-4 h-4" />
-                                          <span className="text-sm font-medium">Temperature: {step.temperature}</span>
+                                        <div className="flex items-center gap-4 text-orange-300">
+                                          <Thermometer className="w-6 h-6" />
+                                          <span className="text-xl font-bold">Temperature: {step.temperature}</span>
                                         </div>
                                       )}
                                       {step.duration && (
-                                        <div className="flex items-center gap-2 text-blue-300">
-                                          <Clock className="w-4 h-4" />
-                                          <span className="text-sm font-medium">Duration: {step.duration}</span>
+                                        <div className="flex items-center gap-4 text-blue-300">
+                                          <Clock className="w-6 h-6" />
+                                          <span className="text-xl font-bold">Duration: {step.duration}</span>
                                         </div>
                                       )}
                                       {step.notes && (
-                                        <div className="flex items-start gap-2 text-gray-300 mt-3">
-                                          <FileText className="w-4 h-4 mt-0.5" />
-                                          <span className="text-sm leading-relaxed">Notes: {step.notes}</span>
+                                        <div className="flex items-start gap-4 text-gray-300 mt-5">
+                                          <FileText className="w-6 h-6 mt-1" />
+                                          <span className="text-lg leading-relaxed font-semibold">Notes: {step.notes}</span>
                                         </div>
                                       )}
                                     </div>
