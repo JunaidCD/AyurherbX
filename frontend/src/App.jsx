@@ -17,6 +17,7 @@ import BatchDetails from './pages/Lab/BatchDetails';
 import AddProcessingAdvanced from './pages/Processing/AddProcessingAdvanced';
 import VerificationReport from './pages/VerificationReport/VerificationReport';
 import ViewProduct from './pages/ViewProduct/ViewProduct';
+import SeeItems from './pages/Admin/SeeItems';
 import Toast from './components/UI/Toast';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import { WalletProvider } from './contexts/WalletContext';
@@ -119,6 +120,23 @@ function App() {
                 <Layout user={user} onLogout={handleLogout}>
                   <VerificationReport user={user} showToast={showToast} />
                 </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            } 
+          />
+          
+          <Route 
+            path="/see-items" 
+            element={
+              user ? (
+                user.role === 'Admin' ? (
+                  <Layout user={user} onLogout={handleLogout}>
+                    <SeeItems user={user} showToast={showToast} />
+                  </Layout>
+                ) : (
+                  <Navigate to="/dashboard" />
+                )
               ) : (
                 <Navigate to="/login" />
               )
