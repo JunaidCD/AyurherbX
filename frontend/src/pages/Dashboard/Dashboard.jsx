@@ -719,27 +719,29 @@ const Dashboard = ({ user, showToast }) => {
                                   <p className="text-blue-300 font-medium">Steps completed by processor</p>
                                 </div>
                               </div>
-                              <div className="space-y-4">
+                              <div className="space-y-6">
                                 {testData.processingSteps.map((step, stepIndex) => (
-                                  <div key={stepIndex} className="bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-sm rounded-xl p-4 border border-white/30">
-                                    <div className="flex items-center gap-3 mb-3">
-                                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                                        <Factory className="w-4 h-4 text-white" />
+                                  <div key={stepIndex} className="bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-sm rounded-xl p-8 border border-white/30">
+                                    <div className="flex items-center gap-5 mb-6">
+                                      <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                        <Factory className="w-7 h-7 text-white" />
                                       </div>
                                       <div>
-                                        <h5 className="text-white font-bold">{step.stepType}</h5>
-                                        <p className="text-gray-300 text-sm">{step.timestamp || step.date}</p>
+                                        <h5 className="text-white font-black text-2xl">{step.stepType}</h5>
+                                        <p className="text-gray-300 text-lg font-medium">{step.timestamp || step.date}</p>
                                       </div>
                                     </div>
-                                    {step.temperature && (
-                                      <p className="text-orange-300 text-sm"><Thermometer className="w-3 h-3 inline mr-1" />Temperature: {step.temperature}</p>
-                                    )}
-                                    {step.duration && (
-                                      <p className="text-blue-300 text-sm"><Clock className="w-3 h-3 inline mr-1" />Duration: {step.duration}</p>
-                                    )}
-                                    {step.notes && (
-                                      <p className="text-gray-300 text-sm mt-2"><FileText className="w-3 h-3 inline mr-1" />Notes: {step.notes}</p>
-                                    )}
+                                    <div className="space-y-4">
+                                      {step.temperature && (
+                                        <p className="text-orange-300 text-xl font-bold"><Thermometer className="w-6 h-6 inline mr-3" />Temperature: {step.temperature}</p>
+                                      )}
+                                      {step.duration && (
+                                        <p className="text-blue-300 text-xl font-bold"><Clock className="w-6 h-6 inline mr-3" />Duration: {step.duration}</p>
+                                      )}
+                                      {step.notes && (
+                                        <p className="text-gray-300 text-lg mt-4 leading-relaxed font-medium"><FileText className="w-5 h-5 inline mr-3" />Notes: {step.notes}</p>
+                                      )}
+                                    </div>
                                   </div>
                                 ))}
                               </div>
@@ -762,20 +764,20 @@ const Dashboard = ({ user, showToast }) => {
                                   <p className="text-emerald-300 font-medium">Quality tests performed by tester</p>
                                 </div>
                               </div>
-                              <div className="space-y-4">
+                              <div className="space-y-6">
                                 {testData.labTests.map((test, testIndex) => (
-                                  <div key={testIndex} className="bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-sm rounded-xl p-4 border border-white/30">
-                                    <div className="flex items-center justify-between mb-3">
-                                      <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
-                                          <CheckCircle className="w-4 h-4 text-white" />
+                                  <div key={testIndex} className="bg-gradient-to-br from-white/12 to-white/8 backdrop-blur-sm rounded-xl p-8 border border-white/30">
+                                    <div className="flex items-center justify-between mb-6">
+                                      <div className="flex items-center gap-5">
+                                        <div className="w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+                                          <CheckCircle className="w-7 h-7 text-white" />
                                         </div>
                                         <div>
-                                          <h5 className="text-white font-bold">{test.testType}</h5>
-                                          <p className="text-gray-300 text-sm">Tester: {test.tester}</p>
+                                          <h5 className="text-white font-black text-2xl">{test.testType}</h5>
+                                          <p className="text-gray-300 text-lg font-medium">Tester: {test.tester}</p>
                                         </div>
                                       </div>
-                                      <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                      <div className={`px-6 py-3 rounded-full text-lg font-black ${
                                         test.status === 'Passed' 
                                           ? 'bg-green-500/20 text-green-300 border border-green-500/40' 
                                           : 'bg-red-500/20 text-red-300 border border-red-500/40'
@@ -783,14 +785,14 @@ const Dashboard = ({ user, showToast }) => {
                                         {test.status}
                                       </div>
                                     </div>
-                                    <div className="space-y-2">
-                                      <p className="text-emerald-300 text-sm font-semibold">Result: {test.resultValue} {test.unit}</p>
-                                      <p className="text-blue-300 text-sm">Date: {new Date(test.testDate).toLocaleDateString()}</p>
+                                    <div className="space-y-4">
+                                      <p className="text-emerald-300 text-xl font-black">Result: {test.resultValue} {test.unit}</p>
+                                      <p className="text-blue-300 text-xl font-bold">Date: {new Date(test.testDate).toLocaleDateString()}</p>
                                       {test.notes && (
-                                        <p className="text-gray-300 text-sm">Notes: {test.notes}</p>
+                                        <p className="text-gray-300 text-lg leading-relaxed font-medium">Notes: {test.notes}</p>
                                       )}
                                       {test.blockchainTx && (
-                                        <p className="text-purple-300 text-xs">Blockchain: {test.blockchainTx.substring(0, 20)}...</p>
+                                        <p className="text-purple-300 text-lg font-bold">Blockchain: {test.blockchainTx.substring(0, 20)}...</p>
                                       )}
                                     </div>
                                   </div>
