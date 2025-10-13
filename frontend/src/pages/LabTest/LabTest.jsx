@@ -524,6 +524,34 @@ const LabTest = ({ user, showToast = console.log }) => {
 
       setTestResults(prev => [...prev, newTestResult]);
       
+      // Save lab test result to localStorage for SeeItem page to detect
+      const labTestsData = localStorage.getItem('ayurherb_lab_tests');
+      const labTests = labTestsData ? JSON.parse(labTestsData) : {};
+      
+      const batchId = selectedBatch.batchId || selectedBatch.id;
+      if (!labTests[batchId]) {
+        labTests[batchId] = [];
+      }
+      
+      labTests[batchId].push({
+        id: newTestResult.id,
+        testType: selectedTestType.label,
+        resultValue: newTest.resultValue,
+        unit: selectedTestType.unit || '',
+        status: newTest.status,
+        tester: newTest.tester,
+        notes: newTest.notes,
+        certificateHash: labTestData.certificateHash,
+        testDate: new Date().toISOString(),
+        blockchainTx: blockchainResult.transactionHash,
+        blockNumber: blockchainResult.blockNumber,
+        gasUsed: blockchainResult.gasUsed,
+        explorerUrl: blockchainResult.explorerUrl,
+        batchId: batchId
+      });
+      
+      localStorage.setItem('ayurherb_lab_tests', JSON.stringify(labTests));
+      
       // Reset form
       setNewTest({
         testType: '',
@@ -536,6 +564,7 @@ const LabTest = ({ user, showToast = console.log }) => {
 
       console.log('=== REAL BLOCKCHAIN LAB TEST SAVED ===');
       console.log('Blockchain Result:', blockchainResult);
+      console.log('Lab test saved to localStorage for batch:', batchId);
 
     } catch (error) {
       console.error('Blockchain submission error:', error);

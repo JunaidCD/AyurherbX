@@ -19,6 +19,10 @@ const SeeItem = () => {
       const processingStepsData = localStorage.getItem('ayurherb_processing_steps');
       const processingSteps = processingStepsData ? JSON.parse(processingStepsData) : {};
       
+      // Get lab test results from localStorage
+      const labTestsData = localStorage.getItem('ayurherb_lab_tests');
+      const labTests = labTestsData ? JSON.parse(labTestsData) : {};
+      
       // Get collections from context or localStorage as fallback
       let collectionsData = collections;
       if (!collectionsData || collectionsData.length === 0) {
@@ -37,6 +41,9 @@ const SeeItem = () => {
             c.batchId === batchId || c.id === batchId
           );
           
+          // Check if lab test has been completed for this batch
+          const hasLabTest = labTests[batchId] && labTests[batchId].length > 0;
+          
           // Only add if we have valid collection data
           if (collection && collection.herbName) {
             processedData.push({
@@ -45,7 +52,9 @@ const SeeItem = () => {
               processingSteps: steps,
               totalSteps: steps.length,
               lastProcessed: steps[steps.length - 1]?.timestamp || steps[steps.length - 1]?.date,
-              onChainVerified: steps.some(step => step.blockchain?.confirmed)
+              onChainVerified: steps.some(step => step.blockchain?.confirmed),
+              hasLabTest: hasLabTest,
+              labTests: labTests[batchId] || []
             });
           }
         }
@@ -257,23 +266,45 @@ const SeeItem = () => {
                                 <span className="text-blue-300 text-sm font-bold">On-Chain</span>
                               </div>
                             )}
-                            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-500/40 rounded-xl backdrop-blur-sm">
-                              <TestTube className="w-4 h-4 text-emerald-400" />
-                              <span className="text-emerald-300 text-sm font-bold">Ready for Testing</span>
+                            <div className={`flex items-center gap-2 px-4 py-2 rounded-xl backdrop-blur-sm ${
+                              batch.hasLabTest 
+                                ? 'bg-green-500/20 border border-green-500/40' 
+                                : 'bg-emerald-500/20 border border-emerald-500/40'
+                            }`}>
+                              {batch.hasLabTest ? (
+                                <>
+                                  <CheckCircle className="w-4 h-4 text-green-400" />
+                                  <span className="text-green-300 text-sm font-bold">Test Completed</span>
+                                </>
+                              ) : (
+                                <>
+                                  <TestTube className="w-4 h-4 text-emerald-400" />
+                                  <span className="text-emerald-300 text-sm font-bold">Ready for Testing</span>
+                                </>
+                              )}
                             </div>
                           </div>
                           
-                          {/* Add Lab Test Button */}
-                          <button 
-                            onClick={() => handleAddLabTest(batch)}
-                            className="group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/25 transform hover:scale-105"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <div className="relative flex items-center gap-2">
-                              <TestTube className="w-5 h-5" />
-                              <span>Add Lab Test</span>
+                          {/* Lab Test Button - Dynamic based on test status */}
+                          {batch.hasLabTest ? (
+                            <div className="group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white font-bold rounded-xl cursor-default opacity-90">
+                              <div className="relative flex items-center gap-2">
+                                <CheckCircle className="w-5 h-5" />
+                                <span>Test Done</span>
+                              </div>
                             </div>
-                          </button>
+                          ) : (
+                            <button 
+                              onClick={() => handleAddLabTest(batch)}
+                              className="group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/25 transform hover:scale-105"
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              <div className="relative flex items-center gap-2">
+                                <TestTube className="w-5 h-5" />
+                                <span>Add Lab Test</span>
+                              </div>
+                            </button>
+                          )}
                         </div>
                       </div>
 
