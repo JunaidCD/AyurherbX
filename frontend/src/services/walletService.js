@@ -273,10 +273,29 @@ class WalletService {
     }
   }
 
-  handleChainChanged(chainId) {
+  async handleChainChanged(chainId) {
     this.chainId = chainId;
-    // Reload the page to reset the provider
-    window.location.reload();
+    console.log('Network changed to:', chainId);
+    
+    // Instead of reloading the page, reinitialize the provider and contract
+    try {
+      if (this.isConnected && window.ethereum) {
+        // Reinitialize provider and signer with new network
+        this.provider = new ethers.BrowserProvider(window.ethereum);
+        this.signer = await this.provider.getSigner();
+        
+        // Reload contract with new provider if we have an account
+        if (this.account) {
+          await this.loadContract();
+        }
+        
+        console.log('✅ Successfully handled network change without page reload');
+      }
+    } catch (error) {
+      console.error('Failed to handle chain change:', error);
+      // Only reload as last resort if reinitialization fails
+      // window.location.reload();
+    }
   }
 
   getAccount() {
