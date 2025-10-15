@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Search, CheckCircle, Beaker, Package, Leaf, MapPin, Calendar, Factory, XCircle, Clock, Copy, Database } from 'lucide-react';
+import { Shield, FileCheck, Database, Award, Search, CheckCircle, Thermometer, Timer, Beaker, FileText, Download, Medal, Package, Leaf, MapPin, Calendar, User, Factory, XCircle, Clock, Copy } from 'lucide-react';
 
 const VerificationReport = ({ user, showToast }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,7 +38,12 @@ const VerificationReport = ({ user, showToast }) => {
           labTests: tests,
           hasProcessing: processing.length > 0,
           hasTesting: tests.length > 0,
-          status: tests.length > 0 ? 'tested' : processing.length > 0 ? 'processed' : 'collected'
+          status: tests.length > 0 ? 'tested' : processing.length > 0 ? 'processed' : 'collected',
+          lastActivity: tests.length > 0 
+            ? tests[tests.length - 1].testDate 
+            : processing.length > 0 
+              ? processing[processing.length - 1].timestamp || processing[processing.length - 1].date
+              : collection.submissionDate || collection.date
         };
       });
 
@@ -52,15 +57,19 @@ const VerificationReport = ({ user, showToast }) => {
   // Search herb by ID
   const searchHerbById = (herbId) => {
     const allHerbs = loadHerbData();
+    // Since IDs are randomly generated, we'll match by herb name pattern
     const herbPrefix = herbId.split('-')[0];
     const matchingHerb = allHerbs.find(herb => 
-      herb.herbName?.toUpperCase().slice(0, 3) === herbPrefix
+      herb.herbName?.toUpperCase().slice(0, 3) === herbPrefix ||
+      herb.herbId === herbId
     );
     
     if (matchingHerb) {
+      // Ensure the herb has the searched ID
       matchingHerb.herbId = herbId;
       return matchingHerb;
     }
+    
     return null;
   };
 
@@ -88,6 +97,7 @@ const VerificationReport = ({ user, showToast }) => {
 
     setIsSearching(true);
     
+    // Simulate search delay
     setTimeout(() => {
       const herb = searchHerbById(searchQuery.trim());
       if (herb) {
@@ -109,7 +119,7 @@ const VerificationReport = ({ user, showToast }) => {
 
   return (
     <div className="space-y-8 p-6">
-      {/* Header */}
+      {/* Modern Header with Glassmorphism */}
       <div className="relative">
         <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-xl"></div>
         <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-3xl p-8">
@@ -128,6 +138,29 @@ const VerificationReport = ({ user, showToast }) => {
                 <p className="text-xl text-gray-300 font-light">
                   Comprehensive verification and reporting system for supply chain integrity
                 </p>
+                <div className="flex items-center gap-4 mt-4">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span className="text-emerald-300 text-sm font-medium">Verification Active</span>
+                  </div>
+                  <div className="text-gray-400 text-sm">
+                    Last updated: {new Date().toLocaleTimeString()}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="p-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition-all duration-200">
+                  <FileCheck className="w-5 h-5 text-white" />
+                </div>
+                <div className="p-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition-all duration-200">
+                  <Database className="w-5 h-5 text-white" />
+                </div>
+                <div className="p-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition-all duration-200">
+                  <Award className="w-5 h-5 text-white" />
+                </div>
               </div>
             </div>
           </div>
@@ -182,7 +215,7 @@ const VerificationReport = ({ user, showToast }) => {
           <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-xl"></div>
           <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-3xl p-8">
             
-            {/* Herb Header */}
+            {/* Herb Header - Same as SeeItems */}
             <div className="flex items-start justify-between mb-6">
               <div className="flex items-center gap-5">
                 <div className="relative">
@@ -476,7 +509,7 @@ const VerificationReport = ({ user, showToast }) => {
         </div>
       )}
 
-      {/* Empty State */}
+      {/* Empty State (when no search results) */}
       {!searchResults && !isSearching && (
         <div className="flex items-center justify-center min-h-64">
           <div className="text-center">

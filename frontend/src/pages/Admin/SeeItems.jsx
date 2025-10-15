@@ -84,6 +84,7 @@ const SeeItems = ({ showToast }) => {
         return {
           ...collection,
           batchId,
+          herbId: generateHerbId(collection.herbName), // Generate ID once and store it
           processingSteps: processing,
           labTests: tests,
           hasProcessing: processing.length > 0,
@@ -360,10 +361,10 @@ const SeeItems = ({ showToast }) => {
                               </h3>
                               <div className="flex items-center gap-3 px-5 py-3 bg-emerald-500/30 border-2 border-emerald-500/50 rounded-xl shadow-lg backdrop-blur-sm">
                                 <span className="text-emerald-200 text-lg font-mono font-bold tracking-wide">
-                                  ID: {generateHerbId(item.herbName)}
+                                  ID: {item.herbId}
                                 </span>
                                 <button
-                                  onClick={() => copyToClipboard(generateHerbId(item.herbName))}
+                                  onClick={() => copyToClipboard(item.herbId)}
                                   className="p-2 hover:bg-emerald-500/40 rounded-lg transition-colors duration-200 group"
                                   title="Copy ID to clipboard"
                                 >
