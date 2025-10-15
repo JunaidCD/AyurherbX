@@ -7,7 +7,7 @@ export const strings = {
 
   // Navigation
   nav: {
-    dashboard: 'Dashboard',
+    dashboard: 'Sales',
     batches: 'Batches',
     processing: 'Processing',
     labTesting: 'Lab Testing',
