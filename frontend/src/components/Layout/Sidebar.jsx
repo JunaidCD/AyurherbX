@@ -21,11 +21,16 @@ const Sidebar = ({ user }) => {
   const location = useLocation();
 
   const getNavigationItems = () => {
+    // Get dashboard label based on user role
+    const getDashboardLabel = () => {
+      return (user?.role === 'Collector' || user?.role === 'Processor' || user?.role === 'Lab Tester') ? 'Dashboard' : strings.nav.dashboard;
+    };
+
     const baseItems = [
       { 
         path: '/dashboard', 
         icon: LayoutDashboard, 
-        label: strings.nav.dashboard,
+        label: getDashboardLabel(),
         roles: ['Admin', 'Processor', 'Lab Tester', 'Customer', 'Collector']
       }
     ];
