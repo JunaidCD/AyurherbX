@@ -1270,13 +1270,13 @@ const Dashboard = ({ user, showToast }) => {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 p-4">
-        <div className="w-full space-y-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 p-6 lg:p-8 xl:p-12">
+        <div className="w-full space-y-8 xl:space-y-12">
           
           {/* Header */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 xl:gap-12">
             <div>
-              <h1 className="relative text-6xl font-black tracking-tight">
+              <h1 className="relative text-6xl xl:text-7xl font-black tracking-tight">
                 <span className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent blur-sm opacity-50">
                   Sales
                 </span>
@@ -1285,49 +1285,49 @@ const Dashboard = ({ user, showToast }) => {
                 </span>
                 <div className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-full animate-pulse" style={{width: '100%'}}></div>
               </h1>
-              <p className="text-xl text-gray-300 font-light mt-4">
+              <p className="text-xl xl:text-2xl text-gray-300 font-light mt-6">
                 Comprehensive herb sales analytics and business insights
               </p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <button
                 onClick={downloadSalesReport}
-                className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-blue-500/25 group"
+                className="flex items-center gap-3 px-8 py-4 xl:px-10 xl:py-5 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold text-lg rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-blue-500/25 group"
               >
-                <Download className="w-5 h-5 group-hover:animate-bounce" />
+                <Download className="w-6 h-6 group-hover:animate-bounce" />
                 Download Sales Report
               </button>
-              <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                <span className="text-emerald-300 text-sm font-medium">Live Analytics</span>
+              <div className="flex items-center gap-3 px-6 py-3 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
+                <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span className="text-emerald-300 text-lg font-medium">Live Analytics</span>
               </div>
             </div>
           </div>
 
           {/* Sales Statistics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 xl:gap-10">
             {/* Total Revenue */}
             <div className="group relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/30 via-teal-500/30 to-cyan-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="relative bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-cyan-500/10 backdrop-blur-xl border-2 border-emerald-500/30 rounded-3xl p-6 hover:border-emerald-400/50 transition-all duration-500">
+              <div className="relative bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-cyan-500/10 backdrop-blur-xl border-2 border-emerald-500/30 rounded-3xl p-8 xl:p-10 hover:border-emerald-400/50 transition-all duration-500">
                 <div className="flex items-start justify-between mb-4">
                   <div className="relative">
                     <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-2xl blur opacity-60"></div>
-                    <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-2xl">
-                      <DollarSign className="w-6 h-6 text-white" />
+                    <div className="relative w-16 h-16 xl:w-20 xl:h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <DollarSign className="w-8 h-8 xl:w-10 xl:h-10 text-white" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-emerald-400 text-xs font-semibold">
-                    <ArrowUpRight className="w-3 h-3" />
+                  <div className="flex items-center gap-2 text-emerald-400 text-sm xl:text-base font-semibold">
+                    <ArrowUpRight className="w-4 h-4 xl:w-5 xl:h-5" />
                     <span>+{salesData.monthlyGrowth}%</span>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">Total Revenue</h3>
-                  <div className="text-2xl font-black bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
+                <div className="space-y-2 xl:space-y-3">
+                  <h3 className="text-xl xl:text-2xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">Total Revenue</h3>
+                  <div className="text-3xl xl:text-4xl font-black bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
                     ₹{salesData.totalRevenue.toLocaleString()}
                   </div>
-                  <p className="text-emerald-300/80 text-xs font-medium">This month</p>
+                  <p className="text-emerald-300/80 text-sm xl:text-base font-medium">This month</p>
                 </div>
               </div>
             </div>
@@ -1335,25 +1335,25 @@ const Dashboard = ({ user, showToast }) => {
             {/* Total Sales */}
             <div className="group relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-indigo-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="relative bg-gradient-to-br from-blue-500/20 via-purple-500/15 to-indigo-500/10 backdrop-blur-xl border-2 border-blue-500/30 rounded-3xl p-6 hover:border-blue-400/50 transition-all duration-500">
+              <div className="relative bg-gradient-to-br from-blue-500/20 via-purple-500/15 to-indigo-500/10 backdrop-blur-xl border-2 border-blue-500/30 rounded-3xl p-8 xl:p-10 hover:border-blue-400/50 transition-all duration-500">
                 <div className="flex items-start justify-between mb-4">
                   <div className="relative">
                     <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-500 rounded-2xl blur opacity-60"></div>
-                    <div className="relative w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
-                      <ShoppingCart className="w-6 h-6 text-white" />
+                    <div className="relative w-16 h-16 xl:w-20 xl:h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <ShoppingCart className="w-8 h-8 xl:w-10 xl:h-10 text-white" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-blue-400 text-xs font-semibold">
-                    <ArrowUpRight className="w-3 h-3" />
+                  <div className="flex items-center gap-2 text-blue-400 text-sm xl:text-base font-semibold">
+                    <ArrowUpRight className="w-4 h-4 xl:w-5 xl:h-5" />
                     <span>+12.3%</span>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">Total Sales</h3>
-                  <div className="text-2xl font-black bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+                <div className="space-y-2 xl:space-y-3">
+                  <h3 className="text-xl xl:text-2xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">Total Sales</h3>
+                  <div className="text-3xl xl:text-4xl font-black bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
                     {salesData.totalSales.toLocaleString()}
                   </div>
-                  <p className="text-blue-300/80 text-xs font-medium">Orders completed</p>
+                  <p className="text-blue-300/80 text-sm xl:text-base font-medium">Orders completed</p>
                 </div>
               </div>
             </div>
@@ -1361,25 +1361,25 @@ const Dashboard = ({ user, showToast }) => {
             {/* Active Customers */}
             <div className="group relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-orange-500/30 via-red-500/30 to-pink-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="relative bg-gradient-to-br from-orange-500/20 via-red-500/15 to-pink-500/10 backdrop-blur-xl border-2 border-orange-500/30 rounded-3xl p-6 hover:border-orange-400/50 transition-all duration-500">
+              <div className="relative bg-gradient-to-br from-orange-500/20 via-red-500/15 to-pink-500/10 backdrop-blur-xl border-2 border-orange-500/30 rounded-3xl p-8 xl:p-10 hover:border-orange-400/50 transition-all duration-500">
                 <div className="flex items-start justify-between mb-4">
                   <div className="relative">
                     <div className="absolute -inset-2 bg-gradient-to-r from-orange-400 to-red-500 rounded-2xl blur opacity-60"></div>
-                    <div className="relative w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-2xl">
-                      <Users className="w-6 h-6 text-white" />
+                    <div className="relative w-16 h-16 xl:w-20 xl:h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <Users className="w-8 h-8 xl:w-10 xl:h-10 text-white" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-orange-400 text-xs font-semibold">
-                    <ArrowUpRight className="w-3 h-3" />
+                  <div className="flex items-center gap-2 text-orange-400 text-sm xl:text-base font-semibold">
+                    <ArrowUpRight className="w-4 h-4 xl:w-5 xl:h-5" />
                     <span>+8.7%</span>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-white to-orange-200 bg-clip-text text-transparent">Active Customers</h3>
-                  <div className="text-2xl font-black bg-gradient-to-r from-white to-orange-200 bg-clip-text text-transparent">
+                <div className="space-y-2 xl:space-y-3">
+                  <h3 className="text-xl xl:text-2xl font-bold bg-gradient-to-r from-white to-orange-200 bg-clip-text text-transparent">Active Customers</h3>
+                  <div className="text-3xl xl:text-4xl font-black bg-gradient-to-r from-white to-orange-200 bg-clip-text text-transparent">
                     {salesData.activeCustomers.toLocaleString()}
                   </div>
-                  <p className="text-orange-300/80 text-xs font-medium">This month</p>
+                  <p className="text-orange-300/80 text-sm xl:text-base font-medium">This month</p>
                 </div>
               </div>
             </div>
@@ -1387,25 +1387,25 @@ const Dashboard = ({ user, showToast }) => {
             {/* Growth Rate */}
             <div className="group relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-green-500/30 via-emerald-500/30 to-teal-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="relative bg-gradient-to-br from-green-500/20 via-emerald-500/15 to-teal-500/10 backdrop-blur-xl border-2 border-green-500/30 rounded-3xl p-6 hover:border-green-400/50 transition-all duration-500">
+              <div className="relative bg-gradient-to-br from-green-500/20 via-emerald-500/15 to-teal-500/10 backdrop-blur-xl border-2 border-green-500/30 rounded-3xl p-8 xl:p-10 hover:border-green-400/50 transition-all duration-500">
                 <div className="flex items-start justify-between mb-4">
                   <div className="relative">
                     <div className="absolute -inset-2 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl blur opacity-60"></div>
-                    <div className="relative w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl">
-                      <Activity className="w-6 h-6 text-white" />
+                    <div className="relative w-16 h-16 xl:w-20 xl:h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <Activity className="w-8 h-8 xl:w-10 xl:h-10 text-white" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-green-400 text-xs font-semibold">
-                    <TrendingUp className="w-3 h-3" />
+                  <div className="flex items-center gap-2 text-green-400 text-sm xl:text-base font-semibold">
+                    <TrendingUp className="w-4 h-4 xl:w-5 xl:h-5" />
                     <span>Trending</span>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent">Growth Rate</h3>
-                  <div className="text-2xl font-black bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent">
+                <div className="space-y-2 xl:space-y-3">
+                  <h3 className="text-xl xl:text-2xl font-bold bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent">Growth Rate</h3>
+                  <div className="text-3xl xl:text-4xl font-black bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent">
                     +{salesData.monthlyGrowth}%
                   </div>
-                  <p className="text-green-300/80 text-xs font-medium">Monthly increase</p>
+                  <p className="text-green-300/80 text-sm xl:text-base font-medium">Monthly increase</p>
                 </div>
               </div>
             </div>
@@ -1415,8 +1415,8 @@ const Dashboard = ({ user, showToast }) => {
           <div className="relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-xl"></div>
             
-            <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-3xl p-8">
-              <div className="flex items-center justify-between mb-8">
+            <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-3xl p-10 xl:p-12">
+              <div className="flex items-center justify-between mb-10 xl:mb-12">
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl blur opacity-60"></div>
@@ -1425,10 +1425,10 @@ const Dashboard = ({ user, showToast }) => {
                     </div>
                   </div>
                   <div>
-                    <h2 className="text-3xl font-black bg-gradient-to-r from-white via-emerald-200 to-teal-300 bg-clip-text text-transparent">
+                    <h2 className="text-4xl xl:text-5xl font-black bg-gradient-to-r from-white via-emerald-200 to-teal-300 bg-clip-text text-transparent">
                       Top Selling Herbs
                     </h2>
-                    <p className="text-gray-400 mt-1">Best performing products this month</p>
+                    <p className="text-gray-400 mt-2 xl:mt-3 text-lg xl:text-xl">Best performing products this month</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
@@ -1437,7 +1437,7 @@ const Dashboard = ({ user, showToast }) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-6 xl:gap-8">
                 {salesData.topSellingHerbs.map((herb, index) => (
                   <div key={herb.name} className="group relative">
                     <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
