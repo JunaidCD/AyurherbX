@@ -18,7 +18,8 @@ import {
   Eye, 
   Search,
   TrendingUp,
-  BarChart3
+  BarChart3,
+  Copy
 } from 'lucide-react';
 
 const SeeItems = ({ showToast }) => {
@@ -34,6 +35,29 @@ const SeeItems = ({ showToast }) => {
     pendingProcessing: 0,
     pendingTesting: 0
   });
+
+  // Generate random ID for herb
+  const generateHerbId = (herbName) => {
+    const randomNumber = Math.floor(Math.random() * 900000) + 100000; // 6-digit random number
+    return `${herbName?.toUpperCase().slice(0, 3) || 'HRB'}-${randomNumber}`;
+  };
+
+  // Copy to clipboard function
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast(`ID copied to clipboard: ${text}`, 'success');
+    } catch (error) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      showToast(`ID copied to clipboard: ${text}`, 'success');
+    }
+  };
 
   // Load comprehensive data from all sources
   const loadAllData = () => {
@@ -330,9 +354,23 @@ const SeeItems = ({ showToast }) => {
                             </div>
                           </div>
                           <div className="space-y-2">
-                            <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
-                              {item.herbName || 'Unknown Herb'}
-                            </h3>
+                            <div className="flex items-center gap-3">
+                              <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
+                                {item.herbName || 'Unknown Herb'}
+                              </h3>
+                              <div className="flex items-center gap-3 px-5 py-3 bg-emerald-500/30 border-2 border-emerald-500/50 rounded-xl shadow-lg backdrop-blur-sm">
+                                <span className="text-emerald-200 text-lg font-mono font-bold tracking-wide">
+                                  ID: {generateHerbId(item.herbName)}
+                                </span>
+                                <button
+                                  onClick={() => copyToClipboard(generateHerbId(item.herbName))}
+                                  className="p-2 hover:bg-emerald-500/40 rounded-lg transition-colors duration-200 group"
+                                  title="Copy ID to clipboard"
+                                >
+                                  <Copy className="w-4 h-4 text-emerald-300 group-hover:text-emerald-100" />
+                                </button>
+                              </div>
+                            </div>
                             <div className="flex items-center gap-4 text-gray-300">
                               <span className="flex items-center gap-2">
                                 <Package className="w-4 h-4 text-emerald-400" />
