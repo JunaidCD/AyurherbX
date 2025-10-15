@@ -25,7 +25,8 @@ import {
   Eye,
   ArrowUpRight,
   ArrowDownRight,
-  Activity
+  Activity,
+  Download
 } from 'lucide-react';
 
 const Dashboard = ({ user, showToast }) => {
@@ -1046,14 +1047,14 @@ const Dashboard = ({ user, showToast }) => {
         { name: 'Neem', sales: 176, revenue: 7650, growth: -5.3, stock: 89 }
       ],
       recentSales: [
-        { id: 'ORD-2024-001', customer: 'Sarah Johnson', herb: 'Turmeric', quantity: '2.5 kg', amount: 450, date: '2024-10-15', status: 'Completed' },
-        { id: 'ORD-2024-002', customer: 'Michael Chen', herb: 'Ashwagandha', quantity: '1.8 kg', amount: 720, date: '2024-10-15', status: 'Processing' },
-        { id: 'ORD-2024-003', customer: 'Emma Davis', herb: 'Ginseng', quantity: '0.9 kg', amount: 890, date: '2024-10-14', status: 'Shipped' },
-        { id: 'ORD-2024-004', customer: 'James Wilson', herb: 'Echinacea', quantity: '3.2 kg', amount: 320, date: '2024-10-14', status: 'Completed' },
-        { id: 'ORD-2024-005', customer: 'Lisa Anderson', herb: 'Ginkgo Biloba', quantity: '1.5 kg', amount: 675, date: '2024-10-13', status: 'Completed' },
-        { id: 'ORD-2024-006', customer: 'David Brown', herb: 'Holy Basil', quantity: '1.2 kg', amount: 540, date: '2024-10-13', status: 'Shipped' },
-        { id: 'ORD-2024-007', customer: 'Jennifer White', herb: 'Brahmi', quantity: '0.8 kg', amount: 480, date: '2024-10-12', status: 'Completed' },
-        { id: 'ORD-2024-008', customer: 'Robert Garcia', herb: 'Neem', quantity: '2.1 kg', amount: 315, date: '2024-10-12', status: 'Processing' }
+        { id: 'ORD-2024-001', customer: 'Priya Sharma', herb: 'Turmeric', quantity: '2.5 kg', amount: 450, date: '2024-10-15', status: 'Completed' },
+        { id: 'ORD-2024-002', customer: 'Rajesh Kumar', herb: 'Ashwagandha', quantity: '1.8 kg', amount: 720, date: '2024-10-15', status: 'Processing' },
+        { id: 'ORD-2024-003', customer: 'Anita Patel', herb: 'Ginseng', quantity: '0.9 kg', amount: 890, date: '2024-10-14', status: 'Shipped' },
+        { id: 'ORD-2024-004', customer: 'Vikram Singh', herb: 'Echinacea', quantity: '3.2 kg', amount: 320, date: '2024-10-14', status: 'Completed' },
+        { id: 'ORD-2024-005', customer: 'Meera Gupta', herb: 'Ginkgo Biloba', quantity: '1.5 kg', amount: 675, date: '2024-10-13', status: 'Completed' },
+        { id: 'ORD-2024-006', customer: 'Arjun Reddy', herb: 'Holy Basil', quantity: '1.2 kg', amount: 540, date: '2024-10-13', status: 'Shipped' },
+        { id: 'ORD-2024-007', customer: 'Kavya Nair', herb: 'Brahmi', quantity: '0.8 kg', amount: 480, date: '2024-10-12', status: 'Completed' },
+        { id: 'ORD-2024-008', customer: 'Rohit Agarwal', herb: 'Neem', quantity: '2.1 kg', amount: 315, date: '2024-10-12', status: 'Processing' }
       ],
       monthlyTrends: [
         { month: 'Jan', sales: 1850, revenue: 89500 },
@@ -1079,13 +1080,193 @@ const Dashboard = ({ user, showToast }) => {
         { segment: 'New Customers', count: 311, revenue: 21340, avgOrder: 69 }
       ],
       recentActivities: [
-        { type: 'order', message: 'New order #ORD-2024-001 from Sarah Johnson', time: '2 minutes ago', icon: 'ShoppingCart' },
+        { type: 'order', message: 'New order #ORD-2024-001 from Priya Sharma', time: '2 minutes ago', icon: 'ShoppingCart' },
         { type: 'stock', message: 'Ginseng stock running low (67 kg remaining)', time: '15 minutes ago', icon: 'Package' },
-        { type: 'customer', message: 'New customer Jennifer White registered', time: '1 hour ago', icon: 'Users' },
-        { type: 'payment', message: 'Payment of $890 received for order #ORD-2024-003', time: '2 hours ago', icon: 'DollarSign' },
+        { type: 'customer', message: 'New customer Kavya Nair registered', time: '1 hour ago', icon: 'Users' },
+        { type: 'payment', message: 'Payment of ₹890 received for order #ORD-2024-003', time: '2 hours ago', icon: 'DollarSign' },
         { type: 'inventory', message: 'Ginkgo Biloba restocked - 203 kg added', time: '3 hours ago', icon: 'Package' },
         { type: 'order', message: 'Order #ORD-2024-002 marked as processing', time: '4 hours ago', icon: 'Clock' }
       ]
+    };
+
+    // Function to generate and download PDF sales report
+    const downloadSalesReport = () => {
+      try {
+        // Create HTML content for the PDF
+        const reportContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>AyurHerb Sales Report</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+              .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #10b981; padding-bottom: 20px; }
+              .header h1 { color: #10b981; margin: 0; font-size: 28px; }
+              .header p { color: #666; margin: 5px 0; }
+              .section { margin: 30px 0; }
+              .section h2 { color: #10b981; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; }
+              .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 20px 0; }
+              .stat-card { border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; text-align: center; }
+              .stat-value { font-size: 24px; font-weight: bold; color: #10b981; }
+              .stat-label { color: #666; font-size: 14px; }
+              table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+              th, td { border: 1px solid #e5e7eb; padding: 12px; text-align: left; }
+              th { background-color: #f9fafb; font-weight: bold; color: #374151; }
+              .status-completed { color: #10b981; font-weight: bold; }
+              .status-processing { color: #f59e0b; font-weight: bold; }
+              .status-shipped { color: #3b82f6; font-weight: bold; }
+              .herbs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; }
+              .herb-card { border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; }
+              .herb-rank { font-weight: bold; color: #10b981; }
+              .growth-positive { color: #10b981; }
+              .growth-negative { color: #ef4444; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>AyurHerb Sales Report</h1>
+              <p>Generated on ${new Date().toLocaleDateString('en-IN')}</p>
+              <p>Comprehensive herb sales analytics and business insights</p>
+            </div>
+
+            <div class="section">
+              <h2>Sales Overview</h2>
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <div class="stat-value">₹${salesData.totalRevenue.toLocaleString()}</div>
+                  <div class="stat-label">Total Revenue</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value">${salesData.totalSales.toLocaleString()}</div>
+                  <div class="stat-label">Total Sales</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value">${salesData.activeCustomers.toLocaleString()}</div>
+                  <div class="stat-label">Active Customers</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value">+${salesData.monthlyGrowth}%</div>
+                  <div class="stat-label">Growth Rate</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <h2>Top Selling Herbs</h2>
+              <div class="herbs-grid">
+                ${salesData.topSellingHerbs.map((herb, index) => `
+                  <div class="herb-card">
+                    <div class="herb-rank">#${index + 1} ${herb.name}</div>
+                    <p>Sales: ${herb.sales}</p>
+                    <p>Revenue: ₹${herb.revenue.toLocaleString()}</p>
+                    <p>Stock: ${herb.stock} kg</p>
+                    <p class="${herb.growth >= 0 ? 'growth-positive' : 'growth-negative'}">
+                      Growth: ${herb.growth >= 0 ? '+' : ''}${herb.growth}%
+                    </p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="section">
+              <h2>Recent Sales History</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Herb</th>
+                    <th>Quantity</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${salesData.recentSales.map(sale => `
+                    <tr>
+                      <td>${sale.id}</td>
+                      <td>${sale.customer}</td>
+                      <td>${sale.herb}</td>
+                      <td>${sale.quantity}</td>
+                      <td>₹${sale.amount}</td>
+                      <td>${sale.date}</td>
+                      <td class="status-${sale.status.toLowerCase()}">${sale.status}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <div class="section">
+              <h2>Customer Analytics</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Customer Segment</th>
+                    <th>Customer Count</th>
+                    <th>Total Revenue</th>
+                    <th>Average Order</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${salesData.customerAnalytics.map(segment => `
+                    <tr>
+                      <td>${segment.segment}</td>
+                      <td>${segment.count}</td>
+                      <td>₹${segment.revenue.toLocaleString()}</td>
+                      <td>₹${segment.avgOrder}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <div class="section">
+              <h2>Inventory Status</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Herb</th>
+                    <th>Current Stock</th>
+                    <th>Reorder Level</th>
+                    <th>Status</th>
+                    <th>Last Restocked</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${salesData.inventoryStatus.map(item => `
+                    <tr>
+                      <td>${item.herb}</td>
+                      <td>${item.stock} kg</td>
+                      <td>${item.reorderLevel} kg</td>
+                      <td class="${item.status === 'Good' ? 'growth-positive' : 'growth-negative'}">${item.status}</td>
+                      <td>${item.lastRestocked}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </body>
+          </html>
+        `;
+
+        // Create a new window and write the content
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(reportContent);
+        printWindow.document.close();
+        
+        // Wait for content to load then trigger print
+        printWindow.onload = () => {
+          printWindow.print();
+          printWindow.close();
+        };
+
+        showToast('Sales report is being generated...', 'success');
+      } catch (error) {
+        console.error('Error generating sales report:', error);
+        showToast('Error generating sales report', 'error');
+      }
     };
 
     return (
@@ -1097,10 +1278,10 @@ const Dashboard = ({ user, showToast }) => {
             <div>
               <h1 className="relative text-6xl font-black tracking-tight">
                 <span className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent blur-sm opacity-50">
-                  Admin Dashboard
+                  Sales
                 </span>
                 <span className="relative bg-gradient-to-r from-white via-emerald-200 to-teal-300 bg-clip-text text-transparent">
-                  Admin Dashboard
+                  Sales
                 </span>
                 <div className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-full animate-pulse" style={{width: '100%'}}></div>
               </h1>
@@ -1108,9 +1289,18 @@ const Dashboard = ({ user, showToast }) => {
                 Comprehensive herb sales analytics and business insights
               </p>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-              <span className="text-emerald-300 text-sm font-medium">Live Analytics</span>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={downloadSalesReport}
+                className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-blue-500/25 group"
+              >
+                <Download className="w-5 h-5 group-hover:animate-bounce" />
+                Download Sales Report
+              </button>
+              <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span className="text-emerald-300 text-sm font-medium">Live Analytics</span>
+              </div>
             </div>
           </div>
 
@@ -1135,7 +1325,7 @@ const Dashboard = ({ user, showToast }) => {
                 <div className="space-y-1">
                   <h3 className="text-lg font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">Total Revenue</h3>
                   <div className="text-2xl font-black bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
-                    ${salesData.totalRevenue.toLocaleString()}
+                    ₹{salesData.totalRevenue.toLocaleString()}
                   </div>
                   <p className="text-emerald-300/80 text-xs font-medium">This month</p>
                 </div>
@@ -1266,7 +1456,7 @@ const Dashboard = ({ user, showToast }) => {
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-400">Revenue:</span>
-                          <span className="text-blue-400 font-semibold">${herb.revenue.toLocaleString()}</span>
+                          <span className="text-blue-400 font-semibold">₹{herb.revenue.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-400">Growth:</span>
@@ -1341,7 +1531,7 @@ const Dashboard = ({ user, showToast }) => {
                           <span className="text-gray-300">{sale.quantity}</span>
                         </td>
                         <td className="py-4 px-4">
-                          <span className="text-blue-400 font-semibold">${sale.amount}</span>
+                          <span className="text-blue-400 font-semibold">₹{sale.amount}</span>
                         </td>
                         <td className="py-4 px-4">
                           <span className="text-gray-300">{sale.date}</span>
@@ -1550,11 +1740,11 @@ const Dashboard = ({ user, showToast }) => {
                       <div className="space-y-3">
                         <div className="flex justify-between">
                           <span className="text-gray-400">Total Revenue:</span>
-                          <span className="text-cyan-400 font-semibold">${segment.revenue.toLocaleString()}</span>
+                          <span className="text-cyan-400 font-semibold">₹{segment.revenue.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Avg Order:</span>
-                          <span className="text-blue-400 font-semibold">${segment.avgOrder}</span>
+                          <span className="text-blue-400 font-semibold">₹{segment.avgOrder}</span>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
                           <div 
