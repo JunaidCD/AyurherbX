@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Package, TestTube, AlertCircle, Eye, Sparkles, Download, Calendar, BarChart3, CheckCircle, Clock, Leaf, Shield, Database, Thermometer, Settings, Factory } from 'lucide-react';
+import { Package, TestTube, AlertCircle, Eye, Sparkles, Download, Calendar, BarChart3, CheckCircle, Clock, Leaf, Shield, Database, Thermometer, Settings, Factory, Award, X } from 'lucide-react';
 import { useCollections } from '../../contexts/CollectionsContext';
+import { useWallet } from '../../contexts/WalletContext';
+import WalletButton from '../../components/WalletButton/WalletButton';
 
-const SeeItem = () => {
+const SeeItem = ({ user, showToast }) => {
   const [processedBatches, setProcessedBatches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [verificationModal, setVerificationModal] = useState({ isOpen: false, batch: null });
+  const [verificationChecks, setVerificationChecks] = useState({ quality: false, purity: false, authenticity: false });
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [successModal, setSuccessModal] = useState({ isOpen: false, txHash: null });
   const { collections } = useCollections();
+  const { isConnected, submitToBlockchain, connectWallet } = useWallet();
   const navigate = useNavigate();
+
+  // Check if user is Admin
+  const isAdmin = user?.role === 'Admin';
 
   useEffect(() => {
     loadProcessedBatches();
@@ -22,6 +32,10 @@ const SeeItem = () => {
       // Get lab test results from localStorage
       const labTestsData = localStorage.getItem('ayurherb_lab_tests');
       const labTests = labTestsData ? JSON.parse(labTestsData) : {};
+      
+      // Get verification data from localStorage
+      const verificationsData = localStorage.getItem('ayurherb_verifications');
+      const verifications = verificationsData ? JSON.parse(verificationsData) : {};
       
       // Get collections from context or localStorage as fallback
       let collectionsData = collections;
@@ -44,6 +58,9 @@ const SeeItem = () => {
           // Check if lab test has been completed for this batch
           const hasLabTest = labTests[batchId] && labTests[batchId].length > 0;
           
+          // Check if verification has been completed for this batch
+          const isVerified = verifications[batchId] && verifications[batchId].verified;
+          
           // Only add if we have valid collection data
           if (collection && collection.herbName) {
             processedData.push({
@@ -54,7 +71,9 @@ const SeeItem = () => {
               lastProcessed: steps[steps.length - 1]?.timestamp || steps[steps.length - 1]?.date,
               onChainVerified: steps.some(step => step.blockchain?.confirmed),
               hasLabTest: hasLabTest,
-              labTests: labTests[batchId] || []
+              labTests: labTests[batchId] || [],
+              isVerified: isVerified,
+              verificationData: verifications[batchId] || null
             });
           }
         }
@@ -103,6 +122,82 @@ const SeeItem = () => {
     
     // Navigate to lab test page
     navigate('/lab-test');
+  };
+
+  // Handle verification modal
+  const handleVerifyClick = (batch) => {
+    if (!isAdmin) {
+      showToast && showToast('Access denied. Admin privileges required.', 'error');
+      return;
+    }
+    setVerificationModal({ isOpen: true, batch });
+    setVerificationChecks({ quality: false, purity: false, authenticity: false });
+  };
+
+  const handleVerificationSubmit = async () => {
+    const { batch } = verificationModal;
+    const allChecked = Object.values(verificationChecks).every(check => check);
+    
+    if (!allChecked) {
+      showToast && showToast('Please complete all verification checks before proceeding.', 'warning');
+      return;
+    }
+
+    if (!isConnected) {
+      showToast && showToast('Please connect your wallet to verify on blockchain.', 'warning');
+      try {
+        await connectWallet();
+      } catch (error) {
+        showToast && showToast('Failed to connect wallet. Please try again.', 'error');
+        return;
+      }
+    }
+
+    setIsVerifying(true);
+    
+    try {
+      const verificationData = {
+        batchId: batch.batchId,
+        herbName: batch.collection?.herbName,
+        verificationChecks,
+        verifiedBy: user?.name || user?.email || 'Admin',
+        verificationDate: new Date().toISOString(),
+        adminAddress: user?.walletAddress || 'Admin',
+        verificationStatus: 'VERIFIED',
+        qualityCheck: verificationChecks.quality,
+        purityCheck: verificationChecks.purity,
+        authenticityCheck: verificationChecks.authenticity
+      };
+
+      const result = await submitToBlockchain(verificationData);
+      
+      if (result.success) {
+        // Store verification in localStorage
+        const existingVerifications = JSON.parse(localStorage.getItem('ayurherb_verifications') || '{}');
+        existingVerifications[batch.batchId] = {
+          ...verificationData,
+          blockchain: result.blockchain,
+          txHash: result.blockchain?.transactionHash,
+          blockNumber: result.blockchain?.blockNumber,
+          verified: true,
+          verifiedAt: new Date().toISOString()
+        };
+        localStorage.setItem('ayurherb_verifications', JSON.stringify(existingVerifications));
+        
+        setVerificationModal({ isOpen: false, batch: null });
+        setSuccessModal({ isOpen: true, txHash: result.blockchain?.transactionHash });
+        
+        // Refresh the data
+        loadProcessedBatches();
+        
+        showToast && showToast('Herb verification completed successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Verification failed:', error);
+      showToast && showToast('Verification failed. Please try again.', 'error');
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   const downloadBatchCSV = () => {
@@ -283,28 +378,60 @@ const SeeItem = () => {
                                 </>
                               )}
                             </div>
+                            {batch.isVerified && (
+                              <div className="flex items-center gap-2 px-4 py-2 bg-yellow-500/20 border border-yellow-500/40 rounded-xl backdrop-blur-sm">
+                                <Award className="w-4 h-4 text-yellow-400" />
+                                <span className="text-yellow-300 text-sm font-bold">Admin Verified</span>
+                              </div>
+                            )}
                           </div>
                           
-                          {/* Lab Test Button - Dynamic based on test status */}
-                          {batch.hasLabTest ? (
-                            <div className="group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white font-bold rounded-xl cursor-default opacity-90">
-                              <div className="relative flex items-center gap-2">
-                                <CheckCircle className="w-5 h-5" />
-                                <span>Test Done</span>
+                          {/* Action Buttons */}
+                          <div className="flex flex-col gap-3">
+                            {/* Lab Test Button - Dynamic based on test status */}
+                            {batch.hasLabTest ? (
+                              <div className="group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white font-bold rounded-xl cursor-default opacity-90">
+                                <div className="relative flex items-center gap-2">
+                                  <CheckCircle className="w-5 h-5" />
+                                  <span>Test Done</span>
+                                </div>
                               </div>
-                            </div>
-                          ) : (
-                            <button 
-                              onClick={() => handleAddLabTest(batch)}
-                              className="group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/25 transform hover:scale-105"
-                            >
-                              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                              <div className="relative flex items-center gap-2">
-                                <TestTube className="w-5 h-5" />
-                                <span>Add Lab Test</span>
-                              </div>
-                            </button>
-                          )}
+                            ) : (
+                              <button 
+                                onClick={() => handleAddLabTest(batch)}
+                                className="group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/25 transform hover:scale-105"
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div className="relative flex items-center gap-2">
+                                  <TestTube className="w-5 h-5" />
+                                  <span>Add Lab Test</span>
+                                </div>
+                              </button>
+                            )}
+                            
+                            {/* Admin Verification Button */}
+                            {isAdmin && (
+                              batch.isVerified ? (
+                                <div className="group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white font-bold rounded-xl cursor-default opacity-90">
+                                  <div className="relative flex items-center gap-2">
+                                    <Award className="w-5 h-5" />
+                                    <span>Verified</span>
+                                  </div>
+                                </div>
+                              ) : (
+                                <button 
+                                  onClick={() => handleVerifyClick(batch)}
+                                  className="group relative overflow-hidden px-6 py-3 bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-yellow-500/25 transform hover:scale-105"
+                                >
+                                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                  <div className="relative flex items-center gap-2">
+                                    <Award className="w-5 h-5" />
+                                    <span>Verify</span>
+                                  </div>
+                                </button>
+                              )
+                            )}
+                          </div>
                         </div>
                       </div>
 
@@ -452,6 +579,230 @@ const SeeItem = () => {
               </div>
             </div>
           )}
+        </div>
+      )}
+      
+      {/* Verification Modal */}
+      {verificationModal.isOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="relative max-w-2xl w-full">
+            <div className="absolute -inset-1 bg-gradient-to-r from-yellow-500/30 via-amber-500/30 to-orange-500/30 rounded-3xl blur-xl"></div>
+            <div className="relative bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 backdrop-blur-xl border border-yellow-500/30 rounded-3xl p-8">
+              
+              {/* Modal Header */}
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 rounded-2xl blur-lg opacity-60"></div>
+                    <div className="relative w-16 h-16 bg-gradient-to-br from-yellow-500 via-amber-600 to-orange-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <Award className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-black bg-gradient-to-r from-white via-yellow-200 to-amber-300 bg-clip-text text-transparent">
+                      Admin Verification
+                    </h3>
+                    <p className="text-yellow-300 font-medium">
+                      {verificationModal.batch?.collection?.herbName || 'Unknown Herb'} - {verificationModal.batch?.batchId}
+                    </p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setVerificationModal({ isOpen: false, batch: null })}
+                  className="w-10 h-10 bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110"
+                >
+                  <X className="w-5 h-5 text-red-400" />
+                </button>
+              </div>
+
+              {/* Verification Checks */}
+              <div className="space-y-6 mb-8">
+                <h4 className="text-xl font-bold text-white mb-4">Complete all verification checks:</h4>
+                
+                {/* Quality Check */}
+                <div className="group relative">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                  <div className="relative bg-gradient-to-br from-white/8 to-white/12 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:border-green-500/40 transition-all duration-300">
+                    <label className="flex items-center gap-4 cursor-pointer">
+                      <div className="relative">
+                        <input 
+                          type="checkbox" 
+                          checked={verificationChecks.quality}
+                          onChange={(e) => setVerificationChecks(prev => ({ ...prev, quality: e.target.checked }))}
+                          className="sr-only"
+                        />
+                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
+                          verificationChecks.quality 
+                            ? 'bg-green-500 border-green-500' 
+                            : 'border-gray-400 hover:border-green-400'
+                        }`}>
+                          {verificationChecks.quality && <CheckCircle className="w-4 h-4 text-white" />}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h5 className="text-lg font-bold text-white mb-1">Quality Verification</h5>
+                        <p className="text-gray-300 text-sm">Confirm that the herb meets quality standards and specifications</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Purity Check */}
+                <div className="group relative">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                  <div className="relative bg-gradient-to-br from-white/8 to-white/12 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:border-blue-500/40 transition-all duration-300">
+                    <label className="flex items-center gap-4 cursor-pointer">
+                      <div className="relative">
+                        <input 
+                          type="checkbox" 
+                          checked={verificationChecks.purity}
+                          onChange={(e) => setVerificationChecks(prev => ({ ...prev, purity: e.target.checked }))}
+                          className="sr-only"
+                        />
+                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
+                          verificationChecks.purity 
+                            ? 'bg-blue-500 border-blue-500' 
+                            : 'border-gray-400 hover:border-blue-400'
+                        }`}>
+                          {verificationChecks.purity && <CheckCircle className="w-4 h-4 text-white" />}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h5 className="text-lg font-bold text-white mb-1">Purity Verification</h5>
+                        <p className="text-gray-300 text-sm">Verify that the herb is free from contaminants and adulterants</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Authenticity Check */}
+                <div className="group relative">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                  <div className="relative bg-gradient-to-br from-white/8 to-white/12 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:border-purple-500/40 transition-all duration-300">
+                    <label className="flex items-center gap-4 cursor-pointer">
+                      <div className="relative">
+                        <input 
+                          type="checkbox" 
+                          checked={verificationChecks.authenticity}
+                          onChange={(e) => setVerificationChecks(prev => ({ ...prev, authenticity: e.target.checked }))}
+                          className="sr-only"
+                        />
+                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
+                          verificationChecks.authenticity 
+                            ? 'bg-purple-500 border-purple-500' 
+                            : 'border-gray-400 hover:border-purple-400'
+                        }`}>
+                          {verificationChecks.authenticity && <CheckCircle className="w-4 h-4 text-white" />}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h5 className="text-lg font-bold text-white mb-1">Authenticity Verification</h5>
+                        <p className="text-gray-300 text-sm">Confirm the herb's identity and origin authenticity</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Wallet Connection Status */}
+              {!isConnected && (
+                <div className="mb-6 p-4 bg-orange-500/20 border border-orange-500/40 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <AlertCircle className="w-5 h-5 text-orange-400" />
+                    <div>
+                      <p className="text-orange-300 font-medium">Wallet Connection Required</p>
+                      <p className="text-orange-200 text-sm">Connect your wallet to verify on Sepolia blockchain</p>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <WalletButton />
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => setVerificationModal({ isOpen: false, batch: null })}
+                  className="flex-1 px-6 py-3 bg-gray-600/50 hover:bg-gray-600/70 border border-gray-500/50 rounded-xl text-white font-medium transition-all duration-300"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleVerificationSubmit}
+                  disabled={isVerifying || !Object.values(verificationChecks).every(check => check)}
+                  className={`flex-1 px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
+                    isVerifying || !Object.values(verificationChecks).every(check => check)
+                      ? 'bg-gray-500/50 text-gray-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white hover:shadow-2xl hover:shadow-yellow-500/25 transform hover:scale-105'
+                  }`}>
+                  {isVerifying ? (
+                    <div className="flex items-center gap-2 justify-center">
+                      <div className="animate-spin w-5 h-5 border-2 border-white/30 border-t-white rounded-full"></div>
+                      <span>Verifying...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 justify-center">
+                      <Shield className="w-5 h-5" />
+                      <span>Verify on Blockchain</span>
+                    </div>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {successModal.isOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="relative max-w-lg w-full">
+            <div className="absolute -inset-1 bg-gradient-to-r from-green-500/30 via-emerald-500/30 to-teal-500/30 rounded-3xl blur-xl"></div>
+            <div className="relative bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 backdrop-blur-xl border border-green-500/30 rounded-3xl p-8 text-center">
+              
+              {/* Success Icon */}
+              <div className="relative mb-6">
+                <div className="absolute -inset-4 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500 rounded-full blur-2xl opacity-60 animate-pulse"></div>
+                <div className="relative w-20 h-20 bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600 rounded-full flex items-center justify-center shadow-2xl mx-auto">
+                  <CheckCircle className="w-10 h-10 text-white" />
+                </div>
+              </div>
+
+              {/* Success Message */}
+              <h3 className="text-3xl font-black bg-gradient-to-r from-white via-green-200 to-emerald-300 bg-clip-text text-transparent mb-4">
+                Verification Confirmed!
+              </h3>
+              <p className="text-green-300 font-medium mb-6">
+                The herb has been successfully verified and recorded on the Sepolia blockchain.
+              </p>
+
+              {/* Transaction Details */}
+              {successModal.txHash && (
+                <div className="mb-6 p-4 bg-green-500/20 border border-green-500/40 rounded-xl">
+                  <p className="text-green-300 text-sm font-medium mb-2">Transaction Hash:</p>
+                  <p className="text-white text-xs font-mono break-all">{successModal.txHash}</p>
+                  <a 
+                    href={`https://sepolia.etherscan.io/tx/${successModal.txHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-green-500/30 hover:bg-green-500/40 border border-green-500/50 rounded-lg text-green-300 text-sm font-medium transition-all duration-300"
+                  >
+                    <Database className="w-4 h-4" />
+                    View on Etherscan
+                  </a>
+                </div>
+              )}
+
+              {/* Close Button */}
+              <button 
+                onClick={() => setSuccessModal({ isOpen: false, txHash: null })}
+                className="w-full px-6 py-3 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-green-500/25 transform hover:scale-105"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
