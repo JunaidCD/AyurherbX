@@ -17,6 +17,7 @@ import BatchDetails from './pages/Lab/BatchDetails';
 import AddProcessingAdvanced from './pages/Processing/AddProcessingAdvanced';
 import VerificationReport from './pages/VerificationReport/VerificationReport';
 import ViewProduct from './pages/ViewProduct/ViewProduct';
+import Cart from './pages/Cart/Cart';
 import SeeItems from './pages/Admin/SeeItems';
 import Toast from './components/UI/Toast';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
@@ -215,6 +216,23 @@ function App() {
                 <Layout user={user} onLogout={handleLogout}>
                   <ViewProduct user={user} showToast={showToast} />
                 </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            } 
+          />
+          
+          <Route 
+            path="/cart" 
+            element={
+              user ? (
+                user.role === 'Customer' ? (
+                  <Layout user={user} onLogout={handleLogout}>
+                    <Cart user={user} showToast={showToast} />
+                  </Layout>
+                ) : (
+                  <Navigate to="/dashboard" />
+                )
               ) : (
                 <Navigate to="/login" />
               )
