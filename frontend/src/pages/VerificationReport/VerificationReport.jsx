@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Shield, Search, CheckCircle, Beaker, Package, Leaf, MapPin, Calendar, Factory, XCircle, Clock, Copy, Database, Award, X, AlertCircle } from 'lucide-react';
+import { Shield, Search, CheckCircle, Beaker, Package, Leaf, MapPin, Calendar, Factory, XCircle, Clock, Copy, Database, Award, X, AlertCircle, Download } from 'lucide-react';
 import { useWallet } from '../../contexts/WalletContext';
 import WalletButton from '../../components/WalletButton/WalletButton';
+import jsPDF from 'jspdf';
 
 const VerificationReport = ({ user, showToast }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -207,6 +208,191 @@ const VerificationReport = ({ user, showToast }) => {
     }
   };
 
+  // Generate comprehensive PDF report
+  const generatePDFReport = (herb) => {
+    const pdf = new jsPDF();
+    const pageWidth = pdf.internal.pageSize.width;
+    const pageHeight = pdf.internal.pageSize.height;
+    let yPosition = 20;
+    
+    // Helper function to add text with word wrapping
+    const addText = (text, x, y, maxWidth = pageWidth - 20, fontSize = 10) => {
+      pdf.setFontSize(fontSize);
+      const lines = pdf.splitTextToSize(text, maxWidth);
+      pdf.text(lines, x, y);
+      return y + (lines.length * (fontSize * 0.5));
+    };
+    
+    // Helper function to check if we need a new page
+    const checkNewPage = (requiredSpace = 30) => {
+      if (yPosition + requiredSpace > pageHeight - 20) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+    };
+    
+    try {
+      // Header
+      pdf.setFillColor(34, 197, 94); // Emerald color
+      pdf.rect(0, 0, pageWidth, 40, 'F');
+      
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(24);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('AyurHerb Supply Chain Report', pageWidth / 2, 25, { align: 'center' });
+      
+      yPosition = 50;
+      pdf.setTextColor(0, 0, 0);
+      
+      // Herb Basic Information
+      pdf.setFillColor(240, 240, 240);
+      pdf.rect(10, yPosition, pageWidth - 20, 8, 'F');
+      pdf.setFontSize(16);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('HERB INFORMATION', 15, yPosition + 6);
+      yPosition += 15;
+      
+      pdf.setFont('helvetica', 'normal');
+      yPosition = addText(`Herb Name: ${herb.herbName || 'N/A'}`, 15, yPosition, pageWidth - 30, 12);
+      yPosition = addText(`Unique ID: ${herb.herbId || 'N/A'}`, 15, yPosition + 5, pageWidth - 30, 12);
+      yPosition = addText(`Batch ID: ${herb.batchId || 'N/A'}`, 15, yPosition + 5, pageWidth - 30, 12);
+      yPosition = addText(`Quantity: ${herb.quantity || 'N/A'}`, 15, yPosition + 5, pageWidth - 30, 12);
+      yPosition = addText(`Location: ${herb.location || 'N/A'}`, 15, yPosition + 5, pageWidth - 30, 12);
+      yPosition = addText(`Collector: ${herb.collector || herb.collectorId || 'N/A'}`, 15, yPosition + 5, pageWidth - 30, 12);
+      yPosition = addText(`Status: ${herb.status ? herb.status.charAt(0).toUpperCase() + herb.status.slice(1) : 'N/A'}`, 15, yPosition + 5, pageWidth - 30, 12);
+      yPosition = addText(`Collection Date: ${herb.harvestDate || herb.submissionDate || new Date().toLocaleDateString()}`, 15, yPosition + 5, pageWidth - 30, 12);
+      
+      // Verification Status
+      if (herb.isVerified) {
+        yPosition += 10;
+        pdf.setFillColor(255, 193, 7); // Yellow color
+        pdf.rect(10, yPosition, pageWidth - 20, 8, 'F');
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('✓ ADMIN VERIFIED', 15, yPosition + 6);
+        yPosition += 15;
+        
+        if (herb.verificationData) {
+          pdf.setFont('helvetica', 'normal');
+          yPosition = addText(`Verified By: ${herb.verificationData.verifiedBy || 'Admin'}`, 15, yPosition, pageWidth - 30, 10);
+          yPosition = addText(`Verification Date: ${new Date(herb.verificationData.verificationDate).toLocaleString()}`, 15, yPosition + 3, pageWidth - 30, 10);
+          yPosition = addText(`Quality Check: ${herb.verificationData.qualityCheck ? '✓ Passed' : '✗ Not Verified'}`, 15, yPosition + 3, pageWidth - 30, 10);
+          yPosition = addText(`Purity Check: ${herb.verificationData.purityCheck ? '✓ Passed' : '✗ Not Verified'}`, 15, yPosition + 3, pageWidth - 30, 10);
+          yPosition = addText(`Authenticity Check: ${herb.verificationData.authenticityCheck ? '✓ Passed' : '✗ Not Verified'}`, 15, yPosition + 3, pageWidth - 30, 10);
+          
+          if (herb.verificationData.txHash) {
+            yPosition = addText(`Blockchain TX: ${herb.verificationData.txHash}`, 15, yPosition + 3, pageWidth - 30, 8);
+          }
+        }
+      }
+      
+      yPosition += 15;
+      checkNewPage(50);
+      
+      // Processing Steps
+      if (herb.processingSteps && herb.processingSteps.length > 0) {
+        pdf.setFillColor(59, 130, 246); // Blue color
+        pdf.rect(10, yPosition, pageWidth - 20, 8, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(`PROCESSING STEPS (${herb.processingSteps.length})`, 15, yPosition + 6);
+        yPosition += 15;
+        pdf.setTextColor(0, 0, 0);
+        
+        herb.processingSteps.forEach((step, index) => {
+          checkNewPage(40);
+          
+          pdf.setFillColor(245, 245, 245);
+          pdf.rect(15, yPosition, pageWidth - 30, 6, 'F');
+          pdf.setFontSize(12);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text(`Step ${index + 1}: ${step.stepType || 'Unknown Step'}`, 20, yPosition + 4);
+          yPosition += 10;
+          
+          pdf.setFont('helvetica', 'normal');
+          yPosition = addText(`Date: ${step.timestamp || step.date || 'N/A'}`, 20, yPosition, pageWidth - 40, 10);
+          if (step.temperature) {
+            yPosition = addText(`Temperature: ${step.temperature}`, 20, yPosition + 3, pageWidth - 40, 10);
+          }
+          if (step.duration) {
+            yPosition = addText(`Duration: ${step.duration}`, 20, yPosition + 3, pageWidth - 40, 10);
+          }
+          if (step.notes) {
+            yPosition = addText(`Notes: ${step.notes}`, 20, yPosition + 3, pageWidth - 40, 10);
+          }
+          if (step.blockchain?.confirmed) {
+            yPosition = addText('✓ Blockchain Verified', 20, yPosition + 3, pageWidth - 40, 10);
+          }
+          yPosition += 8;
+        });
+      }
+      
+      yPosition += 10;
+      checkNewPage(50);
+      
+      // Lab Tests
+      if (herb.labTests && herb.labTests.length > 0) {
+        pdf.setFillColor(16, 185, 129); // Emerald color
+        pdf.rect(10, yPosition, pageWidth - 20, 8, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(`LAB TEST RESULTS (${herb.labTests.length})`, 15, yPosition + 6);
+        yPosition += 15;
+        pdf.setTextColor(0, 0, 0);
+        
+        herb.labTests.forEach((test, index) => {
+          checkNewPage(40);
+          
+          const statusColor = test.status?.toLowerCase() === 'passed' ? [34, 197, 94] : 
+                             test.status?.toLowerCase() === 'failed' ? [239, 68, 68] : [245, 158, 11];
+          
+          pdf.setFillColor(...statusColor);
+          pdf.rect(15, yPosition, pageWidth - 30, 6, 'F');
+          pdf.setTextColor(255, 255, 255);
+          pdf.setFontSize(12);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text(`Test ${index + 1}: ${test.testType || 'Unknown Test'}`, 20, yPosition + 4);
+          yPosition += 10;
+          pdf.setTextColor(0, 0, 0);
+          
+          pdf.setFont('helvetica', 'normal');
+          yPosition = addText(`Result: ${test.resultValue || 'N/A'} ${test.unit || ''}`, 20, yPosition, pageWidth - 40, 10);
+          yPosition = addText(`Status: ${test.status || 'Pending'}`, 20, yPosition + 3, pageWidth - 40, 10);
+          yPosition = addText(`Tester: ${test.tester || 'Lab Technician'}`, 20, yPosition + 3, pageWidth - 40, 10);
+          yPosition = addText(`Test Date: ${test.testDate || new Date().toLocaleDateString()}`, 20, yPosition + 3, pageWidth - 40, 10);
+          if (test.notes) {
+            yPosition = addText(`Notes: ${test.notes}`, 20, yPosition + 3, pageWidth - 40, 10);
+          }
+          yPosition += 8;
+        });
+      }
+      
+      // Footer
+      checkNewPage(30);
+      yPosition = Math.max(yPosition + 20, pageHeight - 40);
+      pdf.setFillColor(100, 100, 100);
+      pdf.rect(0, yPosition, pageWidth, 30, 'F');
+      
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text('Generated by AyurHerb Supply Chain System', pageWidth / 2, yPosition + 10, { align: 'center' });
+      pdf.text(`Report Generated: ${new Date().toLocaleString()}`, pageWidth / 2, yPosition + 20, { align: 'center' });
+      
+      // Save the PDF
+      const fileName = `AyurHerb_Report_${herb.herbId || herb.batchId || 'Unknown'}_${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
+      
+      showToast && showToast('PDF report downloaded successfully!', 'success');
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      showToast && showToast('Failed to generate PDF report. Please try again.', 'error');
+    }
+  };
+
   return (
     <div className="space-y-8 p-6">
       {/* Header */}
@@ -297,16 +483,26 @@ const VerificationReport = ({ user, showToast }) => {
                     <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
                       {searchResults.herbName || 'Unknown Herb'}
                     </h3>
-                    <div className="flex items-center gap-3 px-5 py-3 bg-emerald-500/30 border-2 border-emerald-500/50 rounded-xl shadow-lg backdrop-blur-sm">
-                      <span className="text-emerald-200 text-lg font-mono font-bold tracking-wide">
-                        ID: {searchResults.herbId}
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 px-5 py-3 bg-emerald-500/30 border-2 border-emerald-500/50 rounded-xl shadow-lg backdrop-blur-sm">
+                        <span className="text-emerald-200 text-lg font-mono font-bold tracking-wide">
+                          ID: {searchResults.herbId}
+                        </span>
+                        <button
+                          onClick={() => copyToClipboard(searchResults.herbId)}
+                          className="p-2 hover:bg-emerald-500/40 rounded-lg transition-colors duration-200 group"
+                          title="Copy ID to clipboard"
+                        >
+                          <Copy className="w-4 h-4 text-emerald-300 group-hover:text-emerald-100" />
+                        </button>
+                      </div>
                       <button
-                        onClick={() => copyToClipboard(searchResults.herbId)}
-                        className="p-2 hover:bg-emerald-500/40 rounded-lg transition-colors duration-200 group"
-                        title="Copy ID to clipboard"
+                        onClick={() => generatePDFReport(searchResults)}
+                        className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/40 transform hover:scale-110 border-2 border-blue-400/30"
+                        title="Download comprehensive PDF report"
                       >
-                        <Copy className="w-4 h-4 text-emerald-300 group-hover:text-emerald-100" />
+                        <Download className="w-5 h-5" />
+                        <span className="text-base font-extrabold">Download Report</span>
                       </button>
                     </div>
                   </div>
@@ -359,20 +555,20 @@ const VerificationReport = ({ user, showToast }) => {
                   {/* Admin Verification Button */}
                   {isAdmin && (
                     searchResults.isVerified ? (
-                      <div className="px-4 py-2 bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white font-bold rounded-lg cursor-default opacity-90">
-                        <div className="flex items-center gap-2">
-                          <Award className="w-4 h-4" />
-                          <span className="text-sm">Verified</span>
+                      <div className="px-6 py-3 bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white font-bold rounded-xl cursor-default opacity-90 border-2 border-yellow-400/30 shadow-lg">
+                        <div className="flex items-center gap-3">
+                          <Award className="w-5 h-5" />
+                          <span className="text-base font-extrabold">Verified</span>
                         </div>
                       </div>
                     ) : (
                       <button 
                         onClick={() => handleVerifyClick(searchResults)}
-                        className="px-4 py-2 bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white font-bold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-yellow-500/25 transform hover:scale-105"
+                        className="px-6 py-3 bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 hover:from-yellow-600 hover:via-amber-600 hover:to-orange-600 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:shadow-yellow-500/40 transform hover:scale-110 border-2 border-yellow-400/30"
                       >
-                        <div className="flex items-center gap-2">
-                          <Award className="w-4 h-4" />
-                          <span className="text-sm">Verify</span>
+                        <div className="flex items-center gap-3">
+                          <Award className="w-5 h-5" />
+                          <span className="text-base font-extrabold">Verify</span>
                         </div>
                       </button>
                     )
