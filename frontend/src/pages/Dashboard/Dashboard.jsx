@@ -1769,8 +1769,29 @@ const Dashboard = ({ user, showToast }) => {
     );
   }
 
-  // Customer Dashboard - Simple Empty State
+  // Customer Sales Dashboard
   if (isCustomer) {
+    // Customer sales dummy data
+    const customerSalesData = {
+      totalOrders: 47,
+      currentOrders: 3,
+      totalSpent: 18750,
+      loyaltyPoints: 1250
+    };
+
+    const trendingHerbs = [
+      { name: 'Ashwagandha', sales: 156, growth: '+23%', price: 450, image: '🌿', status: 'Hot' },
+      { name: 'Turmeric', sales: 134, growth: '+18%', price: 280, image: '🟡', status: 'Trending' },
+      { name: 'Brahmi', sales: 98, growth: '+15%', price: 380, image: '🍃', status: 'Popular' },
+      { name: 'Neem', sales: 87, growth: '+12%', price: 220, image: '🌱', status: 'Rising' }
+    ];
+
+    const recentOrders = [
+      { id: 'ORD-001', herb: 'Ashwagandha Powder', quantity: '500g', amount: 450, status: 'Delivered', date: '2025-10-15' },
+      { id: 'ORD-002', herb: 'Turmeric Capsules', quantity: '60 caps', amount: 280, status: 'Shipped', date: '2025-10-14' },
+      { id: 'ORD-003', herb: 'Brahmi Oil', quantity: '100ml', amount: 380, status: 'Processing', date: '2025-10-13' }
+    ];
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 p-6">
         <div className="max-w-7xl mx-auto space-y-8">
@@ -1780,35 +1801,270 @@ const Dashboard = ({ user, showToast }) => {
             <div>
               <h1 className="relative text-6xl font-black tracking-tight">
                 <span className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent blur-sm opacity-50">
-                  Dashboard
+                  Sales Dashboard
                 </span>
-                <span className="relative bg-gradient-to-r from-white via-emerald-200 to-teal-300 bg-clip-text text-transparent animate-pulse">
-                  Dashboard
+                <span className="relative bg-gradient-to-r from-white via-emerald-200 to-teal-300 bg-clip-text text-transparent">
+                  Sales Dashboard
                 </span>
                 <div className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-full animate-pulse" style={{width: '100%'}}></div>
               </h1>
+              <p className="text-xl text-gray-300 font-light mt-4">
+                Welcome back, {user?.name || 'Customer'}! Track your orders and discover trending herbs
+              </p>
             </div>
+            <button className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-emerald-500/25">
+              <ShoppingCart className="w-5 h-5" />
+              New Order
+            </button>
           </div>
 
-          {/* Simple Empty State */}
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-xl animate-pulse"></div>
-            
-            <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-3xl p-12">
-              <div className="text-center py-16">
-                <div className="relative mb-8">
-                  <div className="relative inline-block">
-                    <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-full blur-2xl animate-pulse"></div>
-                    <div className="relative w-24 h-24 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border-2 border-emerald-500/30 rounded-3xl flex items-center justify-center backdrop-blur-sm">
-                      <Package className="w-12 h-12 text-emerald-400" />
+          {/* Sales Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Total Orders */}
+            <div className="group relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/30 via-cyan-500/30 to-teal-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+              <div className="relative bg-gradient-to-br from-blue-500/20 via-cyan-500/15 to-teal-500/10 backdrop-blur-xl border-2 border-blue-500/30 rounded-3xl p-8 hover:border-blue-400/50 transition-all duration-500">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-2xl blur opacity-60"></div>
+                    <div className="relative w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <ShoppingCart className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-black bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent mb-1">
+                      {customerSalesData.totalOrders}
+                    </div>
+                    <div className="flex items-center gap-1 text-blue-400 text-sm font-semibold">
+                      <TrendingUp className="w-3 h-3" />
+                      <span>+15.2%</span>
                     </div>
                   </div>
                 </div>
-                
-                <div className="space-y-4 max-w-md mx-auto">
-                  <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                    New content For Customer Dashboard will appear here
-                  </h3>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">Total Orders</h3>
+                  <p className="text-blue-300/80 text-sm font-medium">All time purchases</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Current Orders */}
+            <div className="group relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-orange-500/30 via-yellow-500/30 to-amber-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+              <div className="relative bg-gradient-to-br from-orange-500/20 via-yellow-500/15 to-amber-500/10 backdrop-blur-xl border-2 border-orange-500/30 rounded-3xl p-8 hover:border-orange-400/50 transition-all duration-500">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-gradient-to-r from-orange-400 to-yellow-500 rounded-2xl blur opacity-60"></div>
+                    <div className="relative w-16 h-16 bg-gradient-to-br from-orange-500 to-yellow-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <Clock className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-black bg-gradient-to-r from-white to-orange-200 bg-clip-text text-transparent mb-1">
+                      {customerSalesData.currentOrders}
+                    </div>
+                    <div className="flex items-center gap-1 text-orange-400 text-sm font-semibold">
+                      <Activity className="w-3 h-3" />
+                      <span>Active</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-white to-orange-200 bg-clip-text text-transparent">Current Orders</h3>
+                  <p className="text-orange-300/80 text-sm font-medium">Orders in progress</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Total Spent */}
+            <div className="group relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/30 via-green-500/30 to-teal-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+              <div className="relative bg-gradient-to-br from-emerald-500/20 via-green-500/15 to-teal-500/10 backdrop-blur-xl border-2 border-emerald-500/30 rounded-3xl p-8 hover:border-emerald-400/50 transition-all duration-500">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 to-green-500 rounded-2xl blur opacity-60"></div>
+                    <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <DollarSign className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-black bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent mb-1">
+                      ₹{customerSalesData.totalSpent.toLocaleString()}
+                    </div>
+                    <div className="flex items-center gap-1 text-emerald-400 text-sm font-semibold">
+                      <ArrowUpRight className="w-3 h-3" />
+                      <span>+22.8%</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">Total Spent</h3>
+                  <p className="text-emerald-300/80 text-sm font-medium">Lifetime purchases</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Loyalty Points */}
+            <div className="group relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-rose-500/30 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+              <div className="relative bg-gradient-to-br from-purple-500/20 via-pink-500/15 to-rose-500/10 backdrop-blur-xl border-2 border-purple-500/30 rounded-3xl p-8 hover:border-purple-400/50 transition-all duration-500">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-gradient-to-r from-purple-400 to-pink-500 rounded-2xl blur opacity-60"></div>
+                    <div className="relative w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <Star className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-black bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent mb-1">
+                      {customerSalesData.loyaltyPoints}
+                    </div>
+                    <div className="flex items-center gap-1 text-purple-400 text-sm font-semibold">
+                      <Star className="w-3 h-3" />
+                      <span>Rewards</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">Loyalty Points</h3>
+                  <p className="text-purple-300/80 text-sm font-medium">Available rewards</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* Trending Herbs */}
+            <div className="lg:col-span-2">
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-xl"></div>
+                <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-3xl p-8">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl blur opacity-60"></div>
+                        <div className="relative w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                          <TrendingUp className="w-7 h-7 text-white" />
+                        </div>
+                      </div>
+                      <div>
+                        <h2 className="text-3xl font-black bg-gradient-to-r from-white via-emerald-200 to-teal-300 bg-clip-text text-transparent">
+                          Trending Herbs
+                        </h2>
+                        <p className="text-gray-400 mt-1">Most popular herbs this month</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
+                      <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                      <span className="text-emerald-300 text-sm font-medium">Live Data</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    {trendingHerbs.map((herb, index) => (
+                      <div key={index} className="group relative">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                        <div className="relative bg-gradient-to-br from-white/8 to-white/12 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:border-emerald-500/40 transition-all duration-300">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-5">
+                              <div className="text-4xl">{herb.image}</div>
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-3">
+                                  <h3 className="text-xl font-bold text-white">{herb.name}</h3>
+                                  <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                    herb.status === 'Hot' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                                    herb.status === 'Trending' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
+                                    herb.status === 'Popular' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                                    'bg-green-500/20 text-green-400 border border-green-500/30'
+                                  }`}>
+                                    {herb.status}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-4 text-gray-300">
+                                  <span className="flex items-center gap-2">
+                                    <BarChart3 className="w-4 h-4 text-emerald-400" />
+                                    <span className="font-medium">{herb.sales} sales</span>
+                                  </span>
+                                  <span className="w-1 h-1 bg-gray-500 rounded-full"></span>
+                                  <span className="font-medium">₹{herb.price}/kg</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right space-y-2">
+                              <div className="flex items-center gap-2 text-emerald-400">
+                                <ArrowUpRight className="w-5 h-5" />
+                                <span className="text-xl font-bold">{herb.growth}</span>
+                              </div>
+                              <button className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all duration-300">
+                                Order Now
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Orders */}
+            <div>
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-xl"></div>
+                <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-3xl p-8 h-full">
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="relative">
+                      <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur opacity-60"></div>
+                      <div className="relative w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                        <Package className="w-7 h-7 text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-black bg-gradient-to-r from-white via-blue-200 to-purple-300 bg-clip-text text-transparent">
+                        Recent Orders
+                      </h2>
+                      <p className="text-gray-400 mt-1">Your latest purchases</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    {recentOrders.map((order, index) => (
+                      <div key={order.id} className="group relative">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                        <div className="relative bg-gradient-to-br from-white/8 to-white/12 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:border-blue-500/40 transition-all duration-300">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-white font-bold text-sm">{order.id}</h4>
+                              <div className={`px-2 py-1 rounded-full text-xs font-medium border ${
+                                order.status === 'Delivered' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
+                                order.status === 'Shipped' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
+                                'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                              }`}>
+                                {order.status}
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-gray-300 font-medium">{order.herb}</p>
+                              <p className="text-gray-400 text-sm">{order.quantity}</p>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <p className="text-gray-500 text-xs">{new Date(order.date).toLocaleDateString()}</p>
+                              <p className="text-white font-bold">₹{order.amount}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6">
+                    <button className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300">
+                      View All Orders
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
