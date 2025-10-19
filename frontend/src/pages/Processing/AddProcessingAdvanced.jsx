@@ -710,7 +710,7 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
                   <div className="space-y-3">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
                       <Thermometer className="w-4 h-4 text-orange-400" />
-                      Temperature
+                      Temperature in Degree Celsius
                     </label>
                     <div className="relative">
                       <Thermometer className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-orange-400" />
