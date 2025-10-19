@@ -12,73 +12,89 @@ const Cart = () => {
   const [promoApplied, setPromoApplied] = useState(false);
 
   useEffect(() => {
-    // Simulate loading cart data
-    setTimeout(() => {
-      setCartItems([
-        {
-          id: 1,
-          name: 'Ashwagandha Powder',
-          description: 'Premium quality organic ashwagandha root powder',
-          price: 450,
-          originalPrice: 500,
-          quantity: 2,
-          image: '🌿',
-          category: 'Powders',
-          rating: 4.8,
-          reviews: 156,
-          inStock: true,
-          stockCount: 25,
-          benefits: ['Stress Relief', 'Energy Boost', 'Immunity'],
-          seller: 'AyurHerb Premium'
-        },
-        {
-          id: 2,
-          name: 'Turmeric Capsules',
-          description: 'High curcumin content turmeric extract capsules',
-          price: 280,
-          originalPrice: 320,
-          quantity: 1,
-          image: '🟡',
-          category: 'Capsules',
-          rating: 4.6,
-          reviews: 89,
-          inStock: true,
-          stockCount: 12,
-          benefits: ['Anti-inflammatory', 'Joint Health', 'Antioxidant'],
-          seller: 'AyurHerb Premium'
-        },
-        {
-          id: 3,
-          name: 'Brahmi Oil',
-          description: 'Pure brahmi oil for hair and scalp nourishment',
-          price: 380,
-          originalPrice: 420,
-          quantity: 1,
-          image: '🍃',
-          category: 'Oils',
-          rating: 4.7,
-          reviews: 67,
-          inStock: true,
-          stockCount: 8,
-          benefits: ['Hair Growth', 'Memory Enhancement', 'Scalp Health'],
-          seller: 'AyurHerb Premium'
-        }
-      ]);
-      setLoading(false);
-    }, 1000);
+    loadCartItems();
   }, []);
+
+  const loadCartItems = () => {
+    try {
+      setLoading(true);
+      // Load cart items from localStorage
+      const savedCart = JSON.parse(localStorage.getItem('ayurherb_cart') || '[]');
+      
+      // Add additional properties for display
+      const enhancedCart = savedCart.map(item => ({
+        ...item,
+        description: getProductDescription(item.name),
+        category: getProductCategory(item.name),
+        rating: (4.2 + Math.random() * 0.8).toFixed(1),
+        reviews: Math.floor(Math.random() * 200) + 50,
+        benefits: getProductBenefits(item.name),
+        seller: 'AyurHerb Premium'
+      }));
+      
+      setCartItems(enhancedCart);
+    } catch (error) {
+      console.error('Error loading cart:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getProductDescription = (name) => {
+    const descriptions = {
+      'Allovera': 'Premium quality organic Aloe Vera gel extract',
+      'Ashwagandha': 'Premium quality organic ashwagandha root powder',
+      'Turmeric': 'High curcumin content turmeric extract capsules',
+      'Brahmi': 'Pure brahmi oil for hair and scalp nourishment',
+      'Neem': 'Organic Neem leaf powder with natural properties',
+      'Tulsi': 'Sacred Tulsi leaves, dried and powdered'
+    };
+    return descriptions[name] || 'Premium quality ayurvedic herb product';
+  };
+
+  const getProductCategory = (name) => {
+    const categories = {
+      'Allovera': 'Gel Extract',
+      'Ashwagandha': 'Powders',
+      'Turmeric': 'Capsules',
+      'Brahmi': 'Oils',
+      'Neem': 'Powders',
+      'Tulsi': 'Powders'
+    };
+    return categories[name] || 'Herbs';
+  };
+
+  const getProductBenefits = (name) => {
+    const benefits = {
+      'Allovera': ['Skin Healing', 'Moisturizing', 'Anti-inflammatory'],
+      'Ashwagandha': ['Stress Relief', 'Energy Boost', 'Immunity'],
+      'Turmeric': ['Anti-inflammatory', 'Joint Health', 'Antioxidant'],
+      'Brahmi': ['Hair Growth', 'Memory Enhancement', 'Scalp Health'],
+      'Neem': ['Antibacterial', 'Skin Health', 'Blood Purification'],
+      'Tulsi': ['Respiratory Health', 'Immune Boost', 'Stress Relief']
+    };
+    return benefits[name] || ['Natural Healing', 'Health Support'];
+  };
 
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return;
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
+    const updatedItems = cartItems.map(item =>
+      item.id === id ? { ...item, quantity: newQuantity } : item
     );
+    setCartItems(updatedItems);
+    
+    // Update localStorage
+    const cartForStorage = updatedItems.map(({ description, category, rating, reviews, benefits, seller, ...item }) => item);
+    localStorage.setItem('ayurherb_cart', JSON.stringify(cartForStorage));
   };
 
   const removeItem = (id) => {
-    setCartItems(items => items.filter(item => item.id !== id));
+    const updatedItems = cartItems.filter(item => item.id !== id);
+    setCartItems(updatedItems);
+    
+    // Update localStorage
+    const cartForStorage = updatedItems.map(({ description, category, rating, reviews, benefits, seller, ...item }) => item);
+    localStorage.setItem('ayurherb_cart', JSON.stringify(cartForStorage));
   };
 
   const applyPromoCode = () => {

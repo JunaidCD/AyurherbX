@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Package, Filter, SortAsc, Eye, Star, MapPin, Calendar, User, Activity, Shield } from 'lucide-react';
 import Card from '../../components/UI/Card';
 import { api } from '../../utils/api';
 
 const ViewProduct = ({ user, showToast }) => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -123,36 +125,9 @@ const ViewProduct = ({ user, showToast }) => {
     setSearchQuery(e.target.value);
   };
 
-  const handleAloveraClick = () => {
-    const aloveraData = {
-      batchInfo: {
-        batchId: "BAT 2024 001",
-        herbType: "Allovera",
-        location: "21.0397°, 88.4400°",
-        quantity: "5 kg",
-        quality: "Premium (A++)",
-        harvestDate: "2025-09-22"
-      },
-      dryingProcess: {
-        temperature: "20°C",
-        duration: "2 hrs",
-        progress: "100%"
-      },
-      labTesting: {
-        testType: "Pesticide Screening",
-        result: "2 ppm",
-        status: "Passed",
-        testDate: "9/25/2025"
-      },
-      verification: {
-        status: "Verified on Blockchain",
-        blockchainRef: "0xbF73c399",
-        certification: "Ayush Certified"
-      }
-    };
-    
-    setQrData(aloveraData);
-    setShowQRModal(true);
+  const handleHerbClick = (herbName) => {
+    // Navigate to product detail page
+    navigate(`/product/${herbName}`);
   };
 
   const generateQRCodeURL = (data) => {
@@ -395,10 +370,8 @@ Blockchain Verified`;
                   {['Ashwagandha', 'Turmeric', 'Brahmi', 'Neem', 'Allovera'].map((suggestion, index) => (
                     <div
                       key={suggestion}
-                      onClick={suggestion === 'Allovera' ? handleAloveraClick : undefined}
-                      className={`group px-4 py-2 bg-gradient-to-r from-primary-500/20 to-emerald-500/20 hover:from-primary-500/30 hover:to-emerald-500/30 border border-primary-500/30 hover:border-primary-500/50 rounded-full text-primary-300 hover:text-primary-200 font-medium transition-all duration-300 transform hover:scale-105 ${
-                        suggestion === 'Allovera' ? 'cursor-pointer' : 'cursor-default'
-                      }`}
+                      onClick={() => handleHerbClick(suggestion)}
+                      className="group px-4 py-2 bg-gradient-to-r from-primary-500/20 to-emerald-500/20 hover:from-primary-500/30 hover:to-emerald-500/30 border border-primary-500/30 hover:border-primary-500/50 rounded-full text-primary-300 hover:text-primary-200 font-medium transition-all duration-300 transform hover:scale-105 cursor-pointer"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
                       <span className="relative">Try "{suggestion}"</span>

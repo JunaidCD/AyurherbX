@@ -17,6 +17,7 @@ import BatchDetails from './pages/Lab/BatchDetails';
 import AddProcessingAdvanced from './pages/Processing/AddProcessingAdvanced';
 import VerificationReport from './pages/VerificationReport/VerificationReport';
 import ViewProduct from './pages/ViewProduct/ViewProduct';
+import ProductDetail from './pages/ProductDetail/ProductDetail';
 import Cart from './pages/Cart/Cart';
 import SeeItems from './pages/Admin/SeeItems';
 import Toast from './components/UI/Toast';
@@ -216,6 +217,23 @@ function App() {
                 <Layout user={user} onLogout={handleLogout}>
                   <ViewProduct user={user} showToast={showToast} />
                 </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            } 
+          />
+          
+          <Route 
+            path="/product/:herbName" 
+            element={
+              user ? (
+                user.role === 'Customer' ? (
+                  <Layout user={user} onLogout={handleLogout}>
+                    <ProductDetail user={user} showToast={showToast} />
+                  </Layout>
+                ) : (
+                  <Navigate to="/dashboard" />
+                )
               ) : (
                 <Navigate to="/login" />
               )
