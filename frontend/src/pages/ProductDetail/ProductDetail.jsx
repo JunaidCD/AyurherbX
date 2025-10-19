@@ -24,11 +24,51 @@ const ProductDetail = ({ user, showToast }) => {
     try {
       setLoading(true);
       
+      // Get processing steps from localStorage (same as SeeItem page)
+      const processingStepsData = localStorage.getItem('ayurherb_processing_steps');
+      const processingSteps = processingStepsData ? JSON.parse(processingStepsData) : {};
+      
+      // Get lab test results from localStorage (same as SeeItem page)
+      const labTestsData = localStorage.getItem('ayurherb_lab_tests');
+      const labTests = labTestsData ? JSON.parse(labTestsData) : {};
+      
+      // Get verification data from localStorage (same as SeeItem page)
+      const verificationsData = localStorage.getItem('ayurherb_verifications');
+      const verifications = verificationsData ? JSON.parse(verificationsData) : {};
+      
+      // Get collections from localStorage (same as SeeItem page)
+      const storedCollections = localStorage.getItem('ayurherb_collections');
+      const collectionsData = storedCollections ? JSON.parse(storedCollections) : [];
+      
+      // Find the batch that matches our herb name and has processing steps
+      let matchingBatch = null;
+      let batchId = null;
+      
+      // Look through processing steps to find batches for this herb
+      Object.keys(processingSteps).forEach(id => {
+        const steps = processingSteps[id];
+        if (steps.length > 0) {
+          // Find matching collection
+          const collection = collectionsData.find(c => 
+            (c.batchId === id || c.id === id) && 
+            c.herbName?.toLowerCase() === herbName?.toLowerCase()
+          );
+          
+          if (collection && collection.herbName) {
+            matchingBatch = {
+              batchId: id,
+              collection,
+              processingSteps: steps,
+              labTests: labTests[id] || [],
+              verification: verifications[id] || null
+            };
+            batchId = id;
+          }
+        }
+      });
+
       // Check if herb is verified by admin
-      const verifications = JSON.parse(localStorage.getItem('ayurherb_verifications') || '{}');
-      const herbVerified = Object.values(verifications).some(v => 
-        v.herbName?.toLowerCase() === herbName?.toLowerCase() && v.verified
-      );
+      const herbVerified = matchingBatch?.verification?.verified || false;
       setIsVerified(herbVerified);
 
       if (!herbVerified) {
@@ -36,23 +76,10 @@ const ProductDetail = ({ user, showToast }) => {
         return;
       }
 
-      // Get collections data
-      const collections = JSON.parse(localStorage.getItem('ayurherb_collections') || '[]');
-      const herbCollection = collections.find(c => 
-        c.herbName?.toLowerCase() === herbName?.toLowerCase()
-      );
-
-      // Get processing steps
-      const processingSteps = JSON.parse(localStorage.getItem('ayurherb_processing_steps') || '{}');
-      const herbProcessing = Object.values(processingSteps).filter(p => 
-        p.herbName?.toLowerCase() === herbName?.toLowerCase()
-      );
-
-      // Get lab test data
-      const labTests = JSON.parse(localStorage.getItem('ayurherb_lab_tests') || '{}');
-      const herbLabTests = Object.values(labTests).filter(t => 
-        t.herbName?.toLowerCase() === herbName?.toLowerCase()
-      );
+      if (!matchingBatch) {
+        showToast(`No processed batch found for ${herbName}`, 'error');
+        return;
+      }
 
       // Generate random price based on herb type
       const basePrices = {
@@ -67,7 +94,7 @@ const ProductDetail = ({ user, showToast }) => {
       const randomPrice = basePrice + Math.floor(Math.random() * 100) - 50;
       setPrice(randomPrice);
 
-      // Create comprehensive product data
+      // Create comprehensive product data using real data
       const product = {
         name: herbName,
         image: getProductImage(herbName),
@@ -79,16 +106,14 @@ const ProductDetail = ({ user, showToast }) => {
         reviews: Math.floor(Math.random() * 200) + 50,
         description: getProductDescription(herbName),
         benefits: getProductBenefits(herbName),
-        collection: herbCollection,
-        processing: herbProcessing,
-        labTests: herbLabTests,
-        verification: verifications[Object.keys(verifications).find(key => 
-          verifications[key].herbName?.toLowerCase() === herbName?.toLowerCase()
-        )],
-        batchId: herbCollection?.batchId || `BAT-${Date.now()}`,
-        collectorId: herbCollection?.collectorAddress || 'COL-001',
-        location: herbCollection?.location || '21.0397°N, 88.4400°E',
-        harvestDate: herbCollection?.submissionDate || new Date().toISOString(),
+        collection: matchingBatch.collection,
+        processing: matchingBatch.processingSteps,
+        labTests: matchingBatch.labTests,
+        verification: matchingBatch.verification,
+        batchId: matchingBatch.batchId,
+        collectorId: matchingBatch.collection?.collectorAddress || matchingBatch.collection?.collectorId || matchingBatch.collection?.collector || 'N/A',
+        location: matchingBatch.collection?.location || 'N/A',
+        harvestDate: matchingBatch.collection?.submissionDate || matchingBatch.collection?.harvestDate || new Date().toISOString(),
         qualityGrade: 'Premium (A++)',
         moisture: '8.5%',
         purity: '99.2%'
@@ -142,8 +167,8 @@ const ProductDetail = ({ user, showToast }) => {
   const generateQRCodeURL = (data) => {
     const qrText = `AYURHERB PRODUCT DETAILS
 
-BATCH ID: ${data.collection?.batchId || data.batchId || 'N/A'}
-COLLECTOR ID: ${data.collection?.collectorAddress || data.collectorId || 'N/A'}
+BATCH ID: ${data.batchId || 'N/A'}
+COLLECTOR ID: ${data.collectorId || 'N/A'}
 
 PROCESSING STEPS:
 ${data.processing && data.processing.length > 0 ? 
@@ -151,7 +176,7 @@ ${data.processing && data.processing.length > 0 ?
     `${idx + 1}. ${step.stepType || 'Unknown Step'}
 Temperature: ${step.temperature || 'N/A'}
 Duration: ${step.duration || 'N/A'}
-Date: ${step.timestamp ? new Date(step.timestamp).toLocaleDateString() : 'N/A'}`
+Date: ${step.timestamp ? new Date(step.timestamp).toLocaleDateString() : (step.date ? new Date(step.date).toLocaleDateString() : 'N/A')}`
   ).join('\n') : 
   'No processing steps recorded'
 }
@@ -160,9 +185,9 @@ LAB TEST RESULTS:
 ${data.labTests && data.labTests.length > 0 ? 
   data.labTests.map((test, idx) => 
     `${idx + 1}. ${test.testType || 'Unknown Test'}
-Result: ${test.result || 'N/A'}
+Result: ${test.resultValue || test.result || 'N/A'}${test.unit ? ' ' + test.unit : ''}
 Status: ${test.status || 'Pending'}
-Date: ${test.timestamp ? new Date(test.timestamp).toLocaleDateString() : 'N/A'}`
+Date: ${test.testDate ? new Date(test.testDate).toLocaleDateString() : (test.timestamp ? new Date(test.timestamp).toLocaleDateString() : (test.date ? new Date(test.date).toLocaleDateString() : 'N/A'))}`
   ).join('\n') : 
   'No lab tests recorded'
 }`;
@@ -469,74 +494,6 @@ Date: ${test.timestamp ? new Date(test.timestamp).toLocaleDateString() : 'N/A'}`
               </div>
             </div>
 
-            {/* Processing Steps */}
-            {productData.processing && productData.processing.length > 0 && (
-              <div className="relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-rose-500/20 rounded-2xl blur"></div>
-                <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl p-6">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-purple-400" />
-                    Processing Steps ({productData.processing.length})
-                  </h3>
-                  <div className="space-y-3">
-                    {productData.processing.map((step, index) => (
-                      <div key={index} className="bg-slate-800/50 rounded-xl p-4 border border-slate-600/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-white font-semibold">{step.stepType}</h4>
-                          <span className="text-xs text-gray-400">{new Date(step.timestamp).toLocaleDateString()}</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Thermometer className="w-4 h-4 text-orange-400" />
-                            <span className="text-gray-400">Temperature:</span>
-                            <span className="text-white">{step.temperature || 'N/A'}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-blue-400" />
-                            <span className="text-gray-400">Duration:</span>
-                            <span className="text-white">{step.duration || 'N/A'}</span>
-                          </div>
-                        </div>
-                        {step.notes && (
-                          <p className="text-gray-300 text-sm mt-2">{step.notes}</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Lab Tests */}
-            {productData.labTests && productData.labTests.length > 0 && (
-              <div className="relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-indigo-500/20 rounded-2xl blur"></div>
-                <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl p-6">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Beaker className="w-5 h-5 text-cyan-400" />
-                    Lab Test Results ({productData.labTests.length})
-                  </h3>
-                  <div className="space-y-3">
-                    {productData.labTests.map((test, index) => (
-                      <div key={index} className="bg-slate-800/50 rounded-xl p-4 border border-slate-600/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-white font-semibold">{test.testType}</h4>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            test.status === 'Passed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
-                          }`}>
-                            {test.status}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-400">Result: <span className="text-white">{test.result}</span></span>
-                          <span className="text-gray-400">{new Date(test.timestamp).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
