@@ -37,6 +37,21 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Logging middleware
 app.use(morgan('combined'));
 
+// Welcome route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: '🌿 AyurHerb Backend API is running!',
+    status: 'Online',
+    version: '2.0',
+    endpoints: {
+      health: '/health',
+      collections: '/api/collections',
+      blockchain: '/api/blockchain'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
