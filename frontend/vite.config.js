@@ -10,22 +10,9 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false,
     emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          ethers: ['ethers']
-        }
-      }
+    commonjsOptions: {
+      transformMixedEsModules: true
     }
-  },
-  define: {
-    global: 'globalThis',
-    'process.env': {}
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'ethers']
   }
 })
