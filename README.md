@@ -25,9 +25,9 @@
 
 ## 🌟 Overview
 
-AyurHerb is a comprehensive blockchain-powered supply chain management system specifically designed for Ayurvedic herbs and medicines. The platform ensures transparency, traceability, and authenticity throughout the entire supply chain from collection to consumer delivery.
+AyurHerb is a comprehensive blockchain-powered supply chain management system specifically designed for Ayurvedic herbs and medicines. The platform ensures **immutable tracking via events + NFT metadata**, traceability, and authenticity throughout the entire supply chain from collection to consumer delivery.
 
-The system leverages Ethereum blockchain technology (Sepolia testnet) to create an immutable record of herb collections, processing steps, lab testing results, and admin verifications, ensuring complete transparency and trust in the Ayurvedic supply chain.
+The system leverages Ethereum blockchain technology (Sepolia testnet) with **NFT-based herb batch tracking** (ERC721), creating immutable records with unique token IDs, metadata for origin/quality, and environmental data stamps via Chainlink oracle integration.
 
 ## ✨ Features
 
@@ -68,11 +68,14 @@ The system leverages Ethereum blockchain technology (Sepolia testnet) to create 
 
 ### 🔗 Blockchain Features
 - Ethereum Sepolia testnet integration
+- **NFT-based herb batches** (ERC721) with unique token IDs
+- **Chainlink oracle stub** for temperature/humidity/AQI stamps
+- Immutable tracking via events + NFT metadata
 - Smart contract deployment
 - MetaMask wallet connectivity
 - Transaction hash verification
 - Etherscan explorer links
-- Immutable data storage
+- **Quality verification** with A/B/C grading system
 
 ## 🛠 Technology Stack
 
@@ -157,21 +160,35 @@ AyurHerb System Architecture
 
 ## 📜 Smart Contract
 
-The `HerbCollection.sol` smart contract manages:
+The system includes two main contracts in `HerbCollection.sol`:
 
-- **Collection Storage**: Immutable herb collection data
-- **Batch Tracking**: Unique batch ID management
-- **Verification System**: Admin verification workflow
-- **Event Emission**: Transaction logging and tracking
-- **Access Control**: Role-based permissions
-- **Data Retrieval**: Query functions for frontend
+### HerbNFT (ERC721) - Production Ready
+The `HerbNFT` contract provides NFT-based herb batch tracking:
 
-### Key Functions:
+- **NFT Minting**: Each herb batch becomes a unique NFT with token ID
+- **Metadata Storage**: IPFS URI for JSON metadata (origin, quality, harvest date)
+- **Quality Grading**: A/B/C grade assignment via admin verification
+- **Chainlink Integration**: Oracle stub for temperature/humidity/AQI data
+- **Event Emission**: Immutable tracking via events (`HerbBatchMinted`, `HerbBatchVerified`, `EnvironmentalDataUpdated`)
+
+### Key NFT Functions:
+- `mintHerbBatch()` - Mint new herb batch as NFT with metadata
+- `verifyHerbBatch()` - Assign quality grade (A, B, or C)
+- `updateEnvironmentalData()` - Record temperature/humidity from oracle
+- `getHerbBatch()` - Retrieve full batch data with environmental info
+- `getBatchByCode()` - Quick lookup by batch code
+
+### ChainlinkOracleStub
+Stub contract for oracle integration (production: replace with actual Chainlink feeds):
+- `requestEnvironmentalData()` - Request data from oracle
+- `fulfillRequest()` - Oracle callback with data
+- `getLatestData()` - Retrieve latest environmental readings
+
+### HerbCollection (Legacy)
+Backward-compatible original contract:
 - `submitCollection()` - Store new herb collection
 - `verifyCollection()` - Admin verification
 - `getCollection()` - Retrieve collection data
-- `getCollectorCollections()` - Get user's collections
-- `getAllCollections()` - Fetch all collections
 
 ## 📋 Prerequisites
 
@@ -360,21 +377,39 @@ GET    /api/blockchain/contract-info       # Get contract information
 ## ⛓️ Blockchain Integration
 
 ### Smart Contract Deployment
-The system uses a custom `HerbCollection` smart contract deployed on Sepolia testnet:
+The system uses production-ready smart contracts deployed on Sepolia testnet:
 
 ```solidity
-contract HerbCollection {
-    struct Collection {
-        uint256 id;
+// HerbNFT - ERC721 for NFT-based herb batches
+contract HerbNFT is ERC721, ERC721URIStorage, Ownable {
+    struct HerbBatch {
+        uint256 tokenId;
         string herbName;
-        string quantity;
-        string batchId;
+        string batchCode;
         address collector;
-        string location;
-        string notes;
-        uint256 timestamp;
+        string originLocation;
+        string harvestDate;
+        string qualityGrade; // A, B, C
         bool isVerified;
+        EnvironmentalData environmentalData;
     }
+    
+    struct EnvironmentalData {
+        int256 temperature;    // Kelvin (x100)
+        uint256 humidity;     // 0-100%
+        uint256 airQualityIndex;
+        uint256 lastUpdated;
+    }
+}
+
+// ChainlinkOracleStub - Oracle integration stub
+contract ChainlinkOracleStub {
+    function getLatestData() returns (
+        int256 temperature,
+        uint256 humidity,
+        uint256 airQualityIndex,
+        uint256 timestamp
+    );
 }
 ```
 
@@ -386,7 +421,9 @@ contract HerbCollection {
 - Transaction status tracking
 
 ### Data Storage Strategy
-- **Primary**: Ethereum blockchain (immutable)
+- **Primary**: Ethereum blockchain (immutable via NFTs)
+- **Metadata**: IPFS for JSON metadata linked via tokenURI
+- **Environmental**: Chainlink oracle data on-chain
 - **Secondary**: localStorage (local backup)
 - **Hybrid**: Blockchain + local storage for performance
 
@@ -488,14 +525,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🌟 Key Features Highlight
 
-- ✅ **Blockchain Immutability**: All data stored permanently on Ethereum
+- ✅ **Blockchain Immutability**: All data stored permanently on Ethereum via NFTs
+- ✅ **NFT-Based Tracking**: Unique token IDs per herb batch
+- ✅ **Chainlink Oracle Integration**: Temperature/humidity/AQI stamps
+- ✅ **Immutable Tracking via Events**: HerbBatchMinted, HerbBatchVerified, EnvironmentalDataUpdated
 - ✅ **MetaMask Integration**: Seamless wallet connectivity
 - ✅ **Role-Based Access**: Secure multi-user system
-- ✅ **Real-time Updates**: Live data synchronization
-- ✅ **Mobile Responsive**: Works on all devices
-- ✅ **Quality Assurance**: 3-checkpoint verification system
-- ✅ **Analytics Dashboard**: Comprehensive business insights
-- ✅ **Supply Chain Tracking**: End-to-end transparency
+- ✅ **Quality Grading**: A/B/C verification system
+- ✅ **Supply Chain Tracking**: End-to-end provenance via NFT metadata
 
 ---
 
