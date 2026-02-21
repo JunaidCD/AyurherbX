@@ -1,0 +1,86 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "QRCodeRegistry",
+  "sourceName": "contracts/QRCodeRegistry.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "batchToQR",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_qrHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getBatchByQR",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "qrToBatch",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_qrHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_batchId",
+          "type": "uint256"
+        }
+      ],
+      "name": "registerQR",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080806040523461001657610123908161001c8239f35b600080fdfe608060408181526004361015601357600080fd5b600091823560e01c9081634df9f9791460c55750806356da65101460a0578063b79d56fc1460715763e08d304814604957600080fd5b34606d576020366003190112606d5780602092600435815280845220549051908152f35b5080fd5b5034606d5780600319360112606d57600435906024358284528360205280828520558352600160205282205580f35b5034606d576020366003190112606d5780602092600435815280845220549051908152f35b9190503460e957602036600319011260e95760209260043581526001845220548152f35b8280fdfea2646970667358221220a6d1df01d6d6e7a3fcc7ae1a01c428bc48473e71551ebb4391b9ffc496afe87664736f6c63430008180033",
+  "deployedBytecode": "0x608060408181526004361015601357600080fd5b600091823560e01c9081634df9f9791460c55750806356da65101460a0578063b79d56fc1460715763e08d304814604957600080fd5b34606d576020366003190112606d5780602092600435815280845220549051908152f35b5080fd5b5034606d5780600319360112606d57600435906024358284528360205280828520558352600160205282205580f35b5034606d576020366003190112606d5780602092600435815280845220549051908152f35b9190503460e957602036600319011260e95760209260043581526001845220548152f35b8280fdfea2646970667358221220a6d1df01d6d6e7a3fcc7ae1a01c428bc48473e71551ebb4391b9ffc496afe87664736f6c63430008180033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

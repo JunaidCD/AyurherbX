@@ -1,0 +1,81 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ValidatorContract",
+  "sourceName": "contracts/Validator.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "dataHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "validator",
+          "type": "address"
+        }
+      ],
+      "name": "DataValidated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_dataHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isValidated",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_dataHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "validateData",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "validatedData",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080806040523461001657610121908161001c8239f35b600080fdfe608060408181526004361015601357600080fd5b600091823560e01c9081633fc93da21460bf575080635e8e31d014606c5763bf1db71e14603f57600080fd5b34606857602036600319011260685760ff81602093600435815280855220541690519015158152f35b5080fd5b503460685760203660031901126068577f02aa667f299fe7f37e26e41f6c358d96727c31eccb158639520d98f731cc5f25602060043592838552848252808520600160ff1982541617905551338152a280f35b9190503460e757602036600319011260e7576004358352602083815292205460ff1615158152f35b8280fdfea2646970667358221220d76575e84cf04eb56a8996bdf6f5f86626ea9525ed6e1b7044dad5e35be30b9f64736f6c63430008180033",
+  "deployedBytecode": "0x608060408181526004361015601357600080fd5b600091823560e01c9081633fc93da21460bf575080635e8e31d014606c5763bf1db71e14603f57600080fd5b34606857602036600319011260685760ff81602093600435815280855220541690519015158152f35b5080fd5b503460685760203660031901126068577f02aa667f299fe7f37e26e41f6c358d96727c31eccb158639520d98f731cc5f25602060043592838552848252808520600160ff1982541617905551338152a280f35b9190503460e757602036600319011260e7576004358352602083815292205460ff1615158152f35b8280fdfea2646970667358221220d76575e84cf04eb56a8996bdf6f5f86626ea9525ed6e1b7044dad5e35be30b9f64736f6c63430008180033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

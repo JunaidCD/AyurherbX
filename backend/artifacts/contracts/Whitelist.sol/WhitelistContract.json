@@ -1,0 +1,120 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "WhitelistContract",
+  "sourceName": "contracts/Whitelist.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "AddressRemovedFromWhitelist",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "AddressWhitelisted",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "addToWhitelist",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "isWhitelisted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "removeFromWhitelist",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "whitelist",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "whitelistAddedAt",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080806040523461001657610212908161001c8239f35b600080fdfe6080604081815260048036101561001557600080fd5b600092833560e01c9081633af32abf1461019d575080638ab1d6811461013f578063919e38a3146101065780639b19251a146100c95763e43252d71461005a57600080fd5b346100c55760203660031901126100c557356001600160a01b03811691908290036100c55781835282602052808320600160ff19825416179055600160205242908320557f4f783c179409b4127238bc9c990bc99b9a651666a0d20b51d6c42849eb88466d8280a280f35b8280fd5b50346100c55760203660031901126100c557356001600160a01b038116908190036100c557818360ff926020955280855220541690519015158152f35b50346100c55760203660031901126100c557356001600160a01b038116908190036100c557828291602094526001845220549051908152f35b50346100c55760203660031901126100c557356001600160a01b03811691908290036100c55781835282602052822060ff1981541690557f535611fb62fa2a833988f283b779e417e996813e44046f521d76c17b5943b08c8280a280f35b92919050346101d85760203660031901126101d857356001600160a01b038116908190036101d8578352602083815292205460ff1615158152f35b8380fdfea2646970667358221220b0a73f6e12ab576e5ac91575275198b998c5c0593db8ac965251e3c02a6231a564736f6c63430008180033",
+  "deployedBytecode": "0x6080604081815260048036101561001557600080fd5b600092833560e01c9081633af32abf1461019d575080638ab1d6811461013f578063919e38a3146101065780639b19251a146100c95763e43252d71461005a57600080fd5b346100c55760203660031901126100c557356001600160a01b03811691908290036100c55781835282602052808320600160ff19825416179055600160205242908320557f4f783c179409b4127238bc9c990bc99b9a651666a0d20b51d6c42849eb88466d8280a280f35b8280fd5b50346100c55760203660031901126100c557356001600160a01b038116908190036100c557818360ff926020955280855220541690519015158152f35b50346100c55760203660031901126100c557356001600160a01b038116908190036100c557828291602094526001845220549051908152f35b50346100c55760203660031901126100c557356001600160a01b03811691908290036100c55781835282602052822060ff1981541690557f535611fb62fa2a833988f283b779e417e996813e44046f521d76c17b5943b08c8280a280f35b92919050346101d85760203660031901126101d857356001600160a01b038116908190036101d8578352602083815292205460ff1615158152f35b8380fdfea2646970667358221220b0a73f6e12ab576e5ac91575275198b998c5c0593db8ac965251e3c02a6231a564736f6c63430008180033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

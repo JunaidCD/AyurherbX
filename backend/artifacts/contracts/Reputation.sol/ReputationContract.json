@@ -1,0 +1,113 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ReputationContract",
+  "sourceName": "contracts/Reputation.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newScore",
+          "type": "uint256"
+        }
+      ],
+      "name": "ReputationUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
+      ],
+      "name": "getReputation",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "score",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalRatings",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lastUpdate",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct ReputationContract.Reputation",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "reputations",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "score",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalRatings",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lastUpdate",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_rating",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateReputation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608080604052346100165761027f908161001c8239f35b600080fdfe6080604081815260048036101561001557600080fd5b600092833560e01c90816306fa15a7146101ac575080639c89a0e21461012d5763f5c91a081461004457600080fd5b3461012957816003193601126101295761005c6101f8565b6001600160a01b0316808452602084905282842080546001820180549395939485830292602491908015908504881417156100f457813584018094116100f45760018701938488116101175784156101055784900480865596600019146100f45750505542600290910155519081527ffc577563f1b9a0461e24abef1e1fcc0d33d3d881f20b5df6dda59de4aae2c82190602090a280f35b634e487b7160e01b89526011905287fd5b50634e487b7160e01b89526012905287fd5b50634e487b7160e01b89526011905287fd5b8280fd5b5050346101a85760203660031901126101a8578060609261014c6101f8565b8183610156610213565b828152826020820152015260018060a01b03168152806020522090610179610213565b825492838252826002600183015492602085019384520154920191825282519384525160208401525190820152f35b5080fd5b849084346101295760203660031901126101295760609281906001600160a01b036101d56101f8565b168152806020522090815491600260018201549101549284526020840152820152f35b600435906001600160a01b038216820361020e57565b600080fd5b604051906060820182811067ffffffffffffffff82111761023357604052565b634e487b7160e01b600052604160045260246000fdfea2646970667358221220a97b77495ebd81e189eb7196086b8d4d410518b84de986ffa7c45d8877226fd864736f6c63430008180033",
+  "deployedBytecode": "0x6080604081815260048036101561001557600080fd5b600092833560e01c90816306fa15a7146101ac575080639c89a0e21461012d5763f5c91a081461004457600080fd5b3461012957816003193601126101295761005c6101f8565b6001600160a01b0316808452602084905282842080546001820180549395939485830292602491908015908504881417156100f457813584018094116100f45760018701938488116101175784156101055784900480865596600019146100f45750505542600290910155519081527ffc577563f1b9a0461e24abef1e1fcc0d33d3d881f20b5df6dda59de4aae2c82190602090a280f35b634e487b7160e01b89526011905287fd5b50634e487b7160e01b89526012905287fd5b50634e487b7160e01b89526011905287fd5b8280fd5b5050346101a85760203660031901126101a8578060609261014c6101f8565b8183610156610213565b828152826020820152015260018060a01b03168152806020522090610179610213565b825492838252826002600183015492602085019384520154920191825282519384525160208401525190820152f35b5080fd5b849084346101295760203660031901126101295760609281906001600160a01b036101d56101f8565b168152806020522090815491600260018201549101549284526020840152820152f35b600435906001600160a01b038216820361020e57565b600080fd5b604051906060820182811067ffffffffffffffff82111761023357604052565b634e487b7160e01b600052604160045260246000fdfea2646970667358221220a97b77495ebd81e189eb7196086b8d4d410518b84de986ffa7c45d8877226fd864736f6c63430008180033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
