@@ -8,16 +8,13 @@ import Information from './pages/Customer/Information';
 import QRDetails from './pages/QRDetails/QRDetails';
 import Collections from './pages/Collections/Collections';
 import Settings from './pages/Settings/Settings';
-import Batches from './pages/Batches/Batches';
 import LabTest from './pages/LabTest/LabTest';
 import SeeItem from './pages/SeeItem/SeeItem';
-import BatchDetails from './pages/Lab/BatchDetails';
 import AddProcessingAdvanced from './pages/Processing/AddProcessingAdvanced';
 import VerificationReport from './pages/VerificationReport/VerificationReport';
 import ViewProduct from './pages/ViewProduct/ViewProduct';
 import ProductDetail from './pages/ProductDetail/ProductDetail';
 import Cart from './pages/Cart/Cart';
-import SeeItems from './pages/Admin/SeeItems';
 import Toast from './components/UI/Toast';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import { WalletProvider } from './contexts/WalletContext';
@@ -127,36 +124,6 @@ function App() {
           />
           
           <Route 
-            path="/see-items" 
-            element={
-              user ? (
-                user.role === 'Admin' ? (
-                  <Layout user={user} onLogout={handleLogout}>
-                    <SeeItems user={user} showToast={showToast} />
-                  </Layout>
-                ) : (
-                  <Navigate to="/dashboard" />
-                )
-              ) : (
-                <Navigate to="/login" />
-              )
-            } 
-          />
-          
-          <Route 
-            path="/batches" 
-            element={
-              user ? (
-                <Layout user={user} onLogout={handleLogout}>
-                  <Batches user={user} showToast={showToast} />
-                </Layout>
-              ) : (
-                <Navigate to="/login" />
-              )
-            } 
-          />
-          
-          <Route 
             path="/see-item" 
             element={
               user ? (
@@ -175,19 +142,6 @@ function App() {
               user ? (
                 <Layout user={user} onLogout={handleLogout}>
                   <LabTest user={user} showToast={showToast} />
-                </Layout>
-              ) : (
-                <Navigate to="/login" />
-              )
-            } 
-          />
-          
-          <Route 
-            path="/batch/:batchId" 
-            element={
-              user ? (
-                <Layout user={user} onLogout={handleLogout}>
-                  <BatchDetails user={user} showToast={showToast} />
                 </Layout>
               ) : (
                 <Navigate to="/login" />
