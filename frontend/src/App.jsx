@@ -9,8 +9,6 @@ import QRDetails from './pages/QRDetails/QRDetails';
 import Collections from './pages/Collections/Collections';
 import Settings from './pages/Settings/Settings';
 import Batches from './pages/Batches/Batches';
-import TestBatches from './pages/TestBatches';
-import TestLabDashboard from './pages/TestLabDashboard';
 import LabTest from './pages/LabTest/LabTest';
 import SeeItem from './pages/SeeItem/SeeItem';
 import BatchDetails from './pages/Lab/BatchDetails';
@@ -274,20 +272,6 @@ function App() {
           <Route 
             path="/qr-details" 
             element={<QRDetails />} 
-          />
-          
-          {/* Test routes - no auth required */}
-          <Route 
-            path="/test-batches" 
-            element={<TestBatches />} 
-          />
-          <Route 
-            path="/test-lab" 
-            element={<TestLabDashboard />} 
-          />
-          <Route 
-            path="/test-lab-test" 
-            element={<LabTest user={{name: 'Dr. Sarah Wilson', role: 'Lab Tester'}} showToast={console.log} />} 
           />
           
           {/* Public customer portal route */}

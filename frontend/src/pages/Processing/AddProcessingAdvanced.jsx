@@ -208,8 +208,6 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
     }
 
     // All validations passed - proceed with blockchain transaction
-    console.log('✅ All validations passed, proceeding with blockchain transaction...');
-
     try {
       setSaving(true);
       

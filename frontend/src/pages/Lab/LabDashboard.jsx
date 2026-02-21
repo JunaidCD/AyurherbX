@@ -37,7 +37,6 @@ const LabDashboard = ({ user, showToast = console.log }) => {
   const [testResults, setTestResults] = useState([]);
 
   useEffect(() => {
-    console.log('Lab Dashboard mounted, loading data...');
     loadBatches();
     loadRecentActivity();
   }, []);

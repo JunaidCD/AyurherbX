@@ -16,7 +16,7 @@ import {
 import { api } from '../../utils/api';
 import walletService from '../../services/walletService';
 
-const LabTest = ({ user, showToast = console.log }) => {
+const LabTest = ({ user, showToast = () => {} }) => {
   const [batches, setBatches] = useState([]);
   const [selectedBatch, setSelectedBatch] = useState(null);
   const [testResults, setTestResults] = useState([]);
@@ -65,15 +65,9 @@ const LabTest = ({ user, showToast = console.log }) => {
     const selectedFromNavigation = localStorage.getItem('selectedBatchForTesting');
     const currentSelected = localStorage.getItem('currentSelectedBatch');
     
-    console.log('🚀 CHECKING BATCH DATA');
-    console.log('🚀 selectedFromNavigation:', selectedFromNavigation);
-    console.log('🚀 currentSelected:', currentSelected);
-    
     if (selectedFromNavigation) {
-      console.log('🚀 LOADING FROM NAVIGATION');
       checkForSelectedBatch();
     } else if (currentSelected) {
-      console.log('🚀 LOADING FROM CURRENT SELECTED');
       try {
         const batchData = JSON.parse(currentSelected);
         setSelectedBatch(batchData);
@@ -89,7 +83,6 @@ const LabTest = ({ user, showToast = console.log }) => {
         loadBatches();
       }
     } else {
-      console.log('🚀 NO BATCH DATA - SHOWING NO BATCH MESSAGE');
       // Clear any old data and ensure no batch is selected
       localStorage.removeItem('currentSelectedBatch');
       setSelectedBatch(null);
@@ -241,7 +234,6 @@ const LabTest = ({ user, showToast = console.log }) => {
 
   const loadBatchesWithoutSelection = async () => {
     try {
-      console.log('📦 Loading batches without changing selection...');
       // Mock batches for testing - including BAT 2024 001
       const mockBatches = [
         {
@@ -287,8 +279,7 @@ const LabTest = ({ user, showToast = console.log }) => {
       ];
       
       setBatches(mockBatches);
-      console.log('📦 Batches loaded, selectedBatch should remain unchanged');
-      // Don't set selected batch here - keep the one from navigation
+      // Keep current selection
       
     } catch (error) {
       console.error('Error loading batches:', error);
@@ -586,10 +577,6 @@ const LabTest = ({ user, showToast = console.log }) => {
         notes: '',
         certificate: null
       });
-
-      console.log('=== REAL BLOCKCHAIN LAB TEST SAVED ===');
-      console.log('Blockchain Result:', blockchainResult);
-      console.log('Lab test saved to localStorage for batch:', batchId);
 
     } catch (error) {
       console.error('Blockchain submission error:', error);

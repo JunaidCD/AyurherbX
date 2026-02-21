@@ -24,9 +24,7 @@ class ErrorBoundary extends React.Component {
     );
 
     if (isMetaMaskError) {
-      console.log('🔧 MetaMask-related error suppressed - using mock blockchain');
-      // Don't show error UI for MetaMask issues, just log and continue
-      this.setState({ hasError: false });
+      // Don't show error UI for MetaMask issues, continue with mock blockchain      this.setState({ hasError: false });
       return;
     }
 

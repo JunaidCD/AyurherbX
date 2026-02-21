@@ -41,9 +41,6 @@ const Dashboard = ({ user, showToast }) => {
   const isCustomer = userRole === 'Customer';
   const isCollector = userRole === 'Collector';
 
-  // Debug log to verify role detection
-  console.log('Dashboard - User role:', userRole, 'isProcessor:', isProcessor, 'isLabTester:', isLabTester, 'isAdmin:', isAdmin, 'isCustomer:', isCustomer);
-
   // Get real-time data from collections context
   const stats = getCollectionsStats();
   const recentCollections = getRecentCollections(5);
@@ -86,10 +83,6 @@ const Dashboard = ({ user, showToast }) => {
           collectionsData = storedCollections ? JSON.parse(storedCollections) : [];
         }
         
-        // Debug logging
-        console.log('Collections data:', collectionsData);
-        console.log('Collections length:', collectionsData.length);
-        
         // Calculate today's processed batches submitted by processors (not raw collections by collectors)
         const todayProcessedBatches = Object.keys(processingSteps).filter(batchId => {
           const steps = processingSteps[batchId];
@@ -98,7 +91,6 @@ const Dashboard = ({ user, showToast }) => {
           // Check if any processing step was completed today
           return steps.some(step => {
             const stepDate = step.timestamp || step.date || '';
-            console.log('Checking processing step:', step.step, 'Date:', stepDate, 'Today:', today);
             
             // Check multiple date formats
             if (stepDate.startsWith(today)) {
@@ -112,8 +104,6 @@ const Dashboard = ({ user, showToast }) => {
             return stepDateObj.toDateString() === todayDateObj.toDateString();
           });
         }).length;
-        
-        console.log('Today processed batches count:', todayProcessedBatches);
         
         // Calculate pending batches (collections without processing steps)
         const processedBatchIds = Object.keys(processingSteps).filter(batchId => 
@@ -559,18 +549,6 @@ const Dashboard = ({ user, showToast }) => {
         
         const pendingTests = validPendingBatches.length;
 
-        // Debug logging
-        console.log('=== LAB TEST STATISTICS DEBUG ===');
-        console.log('Today:', today);
-        console.log('Lab Tests Data:', labTests);
-        console.log('Collections Data:', collectionsData);
-        console.log('Processing Steps:', processingSteps);
-        console.log('Total Tests Count:', totalTestsCount);
-        console.log('Today Tests Count:', todayTestsCount);
-        console.log('Tested Batch IDs:', testedBatchIds);
-        console.log('Valid Pending Batches:', validPendingBatches);
-        console.log('Pending Tests:', pendingTests);
-
         // Set statistics with real-time data
         setLabTestStats({
           totalTests: totalTestsCount + 156, // Real total + base number
@@ -621,7 +599,6 @@ const Dashboard = ({ user, showToast }) => {
     // Refresh data when localStorage changes (when new tests are added)
     useEffect(() => {
       const handleStorageChange = () => {
-        console.log('Storage changed, refreshing lab test data...');
         loadLabTestData();
       };
 
