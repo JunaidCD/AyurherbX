@@ -33,7 +33,8 @@ class WalletService {
         window.ethereum.on('accountsChanged', this.handleAccountsChanged.bind(this));
         window.ethereum.on('chainChanged', this.handleChainChanged.bind(this));
       } catch (error) {
-        console.error('Failed to initialize wallet service:', error);
+        console.warn('Wallet service initialized without blockchain connection:', error.message);
+        // Continue without crashing - app can work in mock mode
       }
     }
   }
@@ -68,8 +69,13 @@ class WalletService {
         await this.switchToSepolia();
       }
 
-      // Load contract
-      await this.loadContract();
+      // Try to load contract - but don't fail if backend is unavailable
+      try {
+        await this.loadContract();
+      } catch (contractError) {
+        console.warn('Contract not loaded - running in demo mode:', contractError.message);
+        // Continue - the app will work in demo mode without contract interactions
+      }
 
       return {
         success: true,
@@ -120,7 +126,14 @@ class WalletService {
   async loadContract() {
     try {
       // Fetch contract info from backend
-      const response = await fetch('http://localhost:5000/api/blockchain/contract-info');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      
+      const response = await fetch('http://localhost:5000/api/blockchain/contract-info', {
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         throw new Error('Contract not deployed. Please deploy the contract first.');
@@ -138,8 +151,14 @@ class WalletService {
       
       return contractInfo;
     } catch (error) {
-      console.error('Failed to load contract:', error);
-      throw error;
+      // Don't throw error for network issues - allow app to run in demo mode
+      if (error.name === 'AbortError') {
+        console.warn('Contract fetch timed out - running in demo mode');
+      } else {
+        console.warn('Failed to load contract - running in demo mode:', error.message);
+      }
+      // Return null instead of throwing to allow app to continue
+      return null;
     }
   }
 
@@ -224,7 +243,14 @@ class WalletService {
         throw new Error('No collector address provided');
       }
 
-      const response = await fetch(`http://localhost:5000/api/collections/collector/${collectorAddress}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const response = await fetch(`http://localhost:5000/api/collections/collector/${collectorAddress}`, {
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         throw new Error('Failed to fetch collections');
@@ -233,14 +259,21 @@ class WalletService {
       const result = await response.json();
       return result.data;
     } catch (error) {
-      console.error('Failed to get collector collections:', error);
-      throw error;
+      console.warn('Failed to get collector collections - returning empty list:', error.message);
+      return []; // Return empty array instead of throwing
     }
   }
 
   async getCollection(collectionId) {
     try {
-      const response = await fetch(`http://localhost:5000/api/collections/${collectionId}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const response = await fetch(`http://localhost:5000/api/collections/${collectionId}`, {
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         throw new Error('Failed to fetch collection');
@@ -249,8 +282,8 @@ class WalletService {
       const result = await response.json();
       return result.data;
     } catch (error) {
-      console.error('Failed to get collection:', error);
-      throw error;
+      console.warn('Failed to get collection:', error.message);
+      return null;
     }
   }
 

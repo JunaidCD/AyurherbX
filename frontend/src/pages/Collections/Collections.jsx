@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Database, X, Plus, Wallet, ExternalLink } from 'lucide-react';
 import { useWallet } from '../../contexts/WalletContext';
 import { useCollections } from '../../contexts/CollectionsContext';
@@ -29,8 +29,22 @@ const Collections = ({ user, showToast }) => {
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState(null);
 
-  // Auto-detect location when component mounts
-  React.useEffect(() => {
+  // Auto-detect location when component mounts - only once
+  const locationFetchedRef = useRef(false);
+  const showToastRef = useRef(showToast);
+  
+  // Keep showToastRef updated
+  useEffect(() => {
+    showToastRef.current = showToast;
+  }, [showToast]);
+
+  useEffect(() => {
+    // Prevent multiple location fetches
+    if (locationFetchedRef.current) {
+      return;
+    }
+    locationFetchedRef.current = true;
+    
     const getLocation = async () => {
       if (!navigator.geolocation) {
         setLocationError('Geolocation is not supported by this browser');
@@ -93,14 +107,14 @@ const Collections = ({ user, showToast }) => {
                 ...prev,
                 location: locationString
               }));
-              showToast('Location detected automatically', 'success');
+              showToastRef.current('Location detected automatically', 'success');
             } else {
               // Fallback to coordinates
               setFormData(prev => ({
                 ...prev,
                 location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
               }));
-              showToast('Location coordinates detected', 'info');
+              showToastRef.current('Location coordinates detected', 'info');
             }
           } else {
             // Fallback to coordinates
@@ -108,15 +122,16 @@ const Collections = ({ user, showToast }) => {
               ...prev,
               location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
             }));
-            showToast('Location coordinates detected', 'info');
+            showToastRef.current('Location coordinates detected', 'info');
           }
         } catch (geocodeError) {
-          // Fallback to coordinates
+          console.warn('Geocoding failed, using coordinates:', geocodeError);
+          // Fallback to coordinates - don't retry to prevent infinite loop
           setFormData(prev => ({
             ...prev,
             location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
           }));
-          showToast('Location coordinates detected', 'info');
+          showToastRef.current('Location coordinates detected', 'info');
         }
       } catch (error) {
         let errorMessage = 'Failed to get location';
@@ -137,14 +152,14 @@ const Collections = ({ user, showToast }) => {
         }
         
         setLocationError(errorMessage);
-        showToast(errorMessage, 'error');
+        showToastRef.current(errorMessage, 'error');
       } finally {
         setLocationLoading(false);
       }
     };
 
     getLocation();
-  }, [showToast]);
+  }, []); // Empty dependency array - only run once on mount
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
