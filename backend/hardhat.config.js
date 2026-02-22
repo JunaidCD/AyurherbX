@@ -13,6 +13,17 @@ module.exports = {
       viaIR: true,
     },
   },
+  gasReporter: {
+    enabled: true,
+    currency: "USD",
+    coinmarketcap: "",
+    token: "ETH",
+    gasPriceApi: "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice",
+    showTimeSpent: true,
+    onlyCalledMethods: true,
+    noColors: true,
+    outputFile: "gas-report.txt",
+  },
   networks: {
     sepolia: {
       url: process.env.SEPOLIA_RPC_URL || "https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID",

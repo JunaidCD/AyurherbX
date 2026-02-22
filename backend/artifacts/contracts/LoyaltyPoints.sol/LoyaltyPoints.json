@@ -1,0 +1,178 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "LoyaltyPoints",
+  "sourceName": "contracts/LoyaltyPoints.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "points",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "PointsEarned",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "points",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "PointsRedeemed",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "earnPoints",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "getPoints",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "points",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "redeemPoints",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "totalEarned",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "totalRedeemed",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x60808060405234610016576103c0908161001c8239f35b600080fdfe6080604081815260048036101561001557600080fd5b600092833560e01c908163358b8166146102bd57508063649aca4a1461028557806376327a911461024d5780637c18672514610152578063ee204abb146101175763f0c47cab1461006557600080fd5b346101135760603660031901126101135761007e6102f0565b6024356044359267ffffffffffffffff841161010f576100c5610109917fb51b16cb4103a8ce441e52afe5cfabab49df83ba6b570adcde7724f975bdf7d09536910161030b565b909360018060a01b031695868852876020528088206100e5858254610339565b905586885260016020528088206100fd858254610339565b9055519384938461035c565b0390a280f35b8580fd5b8280fd5b50503461014e57602036600319011261014e5760209181906001600160a01b0361013f6102f0565b16815280845220549051908152f35b5080fd5b5091903461014e578060031936011261014e5782359060243567ffffffffffffffff811161024957610187903690860161030b565b913385528460205283818620541061021157338552846020528085208054908582039182116101fe5791610109917fda49bb5bf412718988a26709b7c8c5385b0af3ae2570f06613f372c2d401faf29594935533875260026020528087206101f0878254610339565b90555192839233968461035c565b634e487b7160e01b875260118852602487fd5b5162461bcd60e51b81526020818701526013602482015272496e73756666696369656e7420706f696e747360681b6044820152606490fd5b8380fd5b50503461014e57602036600319011261014e5760209181906001600160a01b036102756102f0565b1681526002845220549051908152f35b50503461014e57602036600319011261014e5760209181906001600160a01b036102ad6102f0565b1681526001845220549051908152f35b84908434610113576020366003190112610113576020926001600160a01b036102e46102f0565b16815280845220548152f35b600435906001600160a01b038216820361030657565b600080fd5b9181601f840112156103065782359167ffffffffffffffff8311610306576020838186019501011161030657565b9190820180921161034657565b634e487b7160e01b600052601160045260246000fd5b91926060938192845260406020850152816040850152848401376000828201840152601f01601f191601019056fea2646970667358221220e3e2c042a0c526b253479e177f5c01e1b00ac7d53787498470c7e3e54a19a99564736f6c63430008180033",
+  "deployedBytecode": "0x6080604081815260048036101561001557600080fd5b600092833560e01c908163358b8166146102bd57508063649aca4a1461028557806376327a911461024d5780637c18672514610152578063ee204abb146101175763f0c47cab1461006557600080fd5b346101135760603660031901126101135761007e6102f0565b6024356044359267ffffffffffffffff841161010f576100c5610109917fb51b16cb4103a8ce441e52afe5cfabab49df83ba6b570adcde7724f975bdf7d09536910161030b565b909360018060a01b031695868852876020528088206100e5858254610339565b905586885260016020528088206100fd858254610339565b9055519384938461035c565b0390a280f35b8580fd5b8280fd5b50503461014e57602036600319011261014e5760209181906001600160a01b0361013f6102f0565b16815280845220549051908152f35b5080fd5b5091903461014e578060031936011261014e5782359060243567ffffffffffffffff811161024957610187903690860161030b565b913385528460205283818620541061021157338552846020528085208054908582039182116101fe5791610109917fda49bb5bf412718988a26709b7c8c5385b0af3ae2570f06613f372c2d401faf29594935533875260026020528087206101f0878254610339565b90555192839233968461035c565b634e487b7160e01b875260118852602487fd5b5162461bcd60e51b81526020818701526013602482015272496e73756666696369656e7420706f696e747360681b6044820152606490fd5b8380fd5b50503461014e57602036600319011261014e5760209181906001600160a01b036102756102f0565b1681526002845220549051908152f35b50503461014e57602036600319011261014e5760209181906001600160a01b036102ad6102f0565b1681526001845220549051908152f35b84908434610113576020366003190112610113576020926001600160a01b036102e46102f0565b16815280845220548152f35b600435906001600160a01b038216820361030657565b600080fd5b9181601f840112156103065782359167ffffffffffffffff8311610306576020838186019501011161030657565b9190820180921161034657565b634e487b7160e01b600052601160045260246000fd5b91926060938192845260406020850152816040850152848401376000828201840152601f01601f191601019056fea2646970667358221220e3e2c042a0c526b253479e177f5c01e1b00ac7d53787498470c7e3e54a19a99564736f6c63430008180033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
