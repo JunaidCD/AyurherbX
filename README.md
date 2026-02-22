@@ -379,40 +379,6 @@ GET    /api/blockchain/contract-info       # Get contract information
 ### Smart Contract Deployment
 The system uses production-ready smart contracts deployed on Sepolia testnet:
 
-```solidity
-// HerbNFT - ERC721 for NFT-based herb batches
-contract HerbNFT is ERC721, ERC721URIStorage, Ownable {
-    struct HerbBatch {
-        uint256 tokenId;
-        string herbName;
-        string batchCode;
-        address collector;
-        string originLocation;
-        string harvestDate;
-        string qualityGrade; // A, B, C
-        bool isVerified;
-        EnvironmentalData environmentalData;
-    }
-    
-    struct EnvironmentalData {
-        int256 temperature;    // Kelvin (x100)
-        uint256 humidity;     // 0-100%
-        uint256 airQualityIndex;
-        uint256 lastUpdated;
-    }
-}
-
-// ChainlinkOracleStub - Oracle integration stub
-contract ChainlinkOracleStub {
-    function getLatestData() returns (
-        int256 temperature,
-        uint256 humidity,
-        uint256 airQualityIndex,
-        uint256 timestamp
-    );
-}
-```
-
 ### MetaMask Integration
 - Automatic network switching to Sepolia
 - Transaction signing for data submission
