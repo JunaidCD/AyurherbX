@@ -1,0 +1,5 @@
+{
+  "solc": "0.8.24",
+  "filter_paths": "node_modules",
+  "compile_force_framework": "hardhat"
+}
