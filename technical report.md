@@ -469,3 +469,144 @@ npx hardhat test --gas
 **Document Version**: 1.1  
 **Last Updated**: 2026-02-22  
 **Project**: AyurHerbX - Blockchain-Powered Ayurvedic Supply Chain
+
+---
+
+## Phase 3: Advanced Security & Formal Verification (Roadmap)
+
+### 3.1 Slither Static Analysis
+
+**Status**: Environment Setup Required
+
+Slither is a Solidity static analysis framework that can detect vulnerabilities. To run:
+
+```bash
+# Install Slither
+pip install slither-analyzer
+
+# Run analysis on contracts
+slither contracts/HerbCollection.sol
+```
+
+**Detects**: 
+- Reentrancy vulnerabilities
+- Unchecked external calls
+- Integer overflow/underflow (pre-Sol 0.8)
+- Access control issues
+- And 70+ other detectors
+
+---
+
+### 3.2 Formal Verification with Certora
+
+**Status**: Setup Required
+
+Certora provides formal verification for smart contracts. To set up:
+
+```bash
+# Install Certora CLI
+npm install -g certora
+
+# Create certora.conf
+cat > certora/conf/HerbNFT.conf << EOF
+{
+  "solc": "solc8.24",
+  "contracts": {
+    "HerbNFT": "contracts/HerbCollection.sol:HerbNFT"
+  },
+  "rule": "...",
+  "methods": [...]  
+}
+EOF
+
+# Run verification
+certoraRun certora/conf/HerbNFT.conf
+```
+
+**Key Rules to Verify**:
+- Only admin can verify batches
+- Quality grade is always A, B, or C
+- Batch code uniqueness
+- Environmental data bounds
+
+---
+
+### 3.3 ERC721A for Batch Minting
+
+**Status**: Recommended Upgrade
+
+ERC721A is an improved implementation of ERC721 that:
+- Mints multiple tokens for the same gas cost as one
+- ~50% gas savings for batch operations
+
+**Installation**:
+```bash
+npm install erc721a
+```
+
+**Implementation**:
+```solidity
+import "erc721a/contracts/ERC721A.sol";
+
+contract HerbNFTv2 is ERC721A, AccessControl {
+    function batchMint(
+        string[] memory _herbNames,
+        string[] memory _batchCodes,
+        ...
+    ) external {
+        _mint(msg.sender, _herbNames.length); // Single Sstore for all mints
+        // Initialize batch data
+    }
+}
+```
+
+---
+
+### 3.4 Role-Based Access Control (RBAC)
+
+**Status**: Partially Implemented
+
+The current HerbNFT uses Ownable for simplicity. For production, implement full RBAC:
+
+```solidity
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
+contract HerbNFTv2 is ERC721A, AccessControl {
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    bytes32 public constant COLLECTOR_ROLE = keccak256("COLLECTOR_ROLE");
+    bytes32 public constant PROCESSOR_ROLE = keccak256("PROCESSOR_ROLE");
+    bytes32 public constant LAB_ROLE = keccak256("LAB_ROLE");
+    bytes32 public constant VERIFIER_ROLE = keccak256("VERIFIER_ROLE");
+    
+    // Role-based functions
+    function mintHerbBatch(...) external onlyRole(COLLECTOR_ROLE) { ... }
+    function verifyBatch(...) external onlyRole(VERIFIER_ROLE) { ... }
+    function processBatch(...) external onlyRole(PROCESSOR_ROLE) { ... }
+    
+    // Admin role management
+    function grantCollectorRole(address _account) external onlyRole(ADMIN_ROLE) { ... }
+}
+```
+
+**Benefits**:
+- Multiple admins possible
+- Granular permission control
+- Role revocation support
+- Audit trail
+
+---
+
+### 3.5 Phase 3 Action Items
+
+| Task | Priority | Status |
+|------|----------|--------|
+| Run Slither | High | Pending (needs env setup) |
+| Set up Certora | Medium | Pending |
+| Implement ERC721A | High | Recommended |
+| Full RBAC | Medium | Recommended |
+
+---
+
+**Document Version**: 1.2  
+**Last Updated**: 2026-02-22  
+**Project**: AyurHerbX - Blockchain-Powered Ayurvedic Supply Chain
