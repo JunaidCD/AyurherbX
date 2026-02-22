@@ -602,17 +602,85 @@ contract HerbNFTv2 is ERC721A, AccessControl {
 
 ---
 
-### 3.5 Phase 3 Action Items
+### 3.5 IPFS/Pinata Integration for Off-Chain Storage ✅ IMPLEMENTED
 
-| Task | Priority | Status |
-|------|----------|--------|
-| Run Slither | High | Pending (needs env setup) |
-| Set up Certora | Medium | Pending |
-| Implement ERC721A | High | Recommended |
-| Full RBAC | Medium | Recommended |
+**Status**: Completed - IPFS integration for detailed herb metadata
+
+Off-chain storage solution using IPFS via Pinata for detailed herb data:
+
+#### Architecture
+
+```
+┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│   Collector │────▶│  Pinata API  │────▶│    IPFS     │
+└─────────────┘     └──────────────┘     └─────────────┘
+                           │                    │
+                           ▼                    ▼
+                    ┌──────────────┐     ┌─────────────┐
+                    │  Metadata   │     │  On-Chain  │
+                    │   JSON      │     │   Hash     │
+                    └──────────────┘     └─────────────┘
+```
+
+#### Services Created
+
+| File | Description |
+|------|-------------|
+| `services/pinataService.js` | Pinata API integration |
+| `services/uploadService.js` | File upload middleware |
+| `routes/pinata.js` | IPFS API endpoints |
+
+#### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/pinata/test` | GET | Test Pinata connection |
+| `/api/pinata/upload-metadata` | POST | Upload herb metadata JSON |
+| `/api/pinata/upload-image` | POST | Upload herb image |
+| `/api/pinata/upload-batch` | POST | Full batch upload |
+| `/api/pinata/unpin/:hash` | DELETE | Remove from IPFS |
+| `/api/pinata/gateway/:hash` | GET | Get gateway URL |
+
+#### Metadata Structure
+
+```json
+{
+  "name": "Tulsi - Batch BATCH001",
+  "description": "Premium quality Tulsi from Kerala",
+  "image": "ipfs://QmXXX...",
+  "attributes": [
+    { "trait_type": "Herb Type", "value": "Tulsi" },
+    { "trait_type": "Origin", "value": "Kerala, India" },
+    { "trait_type": "Quality Grade", "value": "A" },
+    { "trait_type": "Temperature", "value": 298 },
+    { "trait_type": "Humidity", "value": 65 }
+  ]
+}
+```
+
+#### Configuration
+
+Add to `.env`:
+```
+PINATA_API_KEY=your_pinata_api_key
+PINATA_SECRET_KEY=your_pinata_secret_key
+IPFS_GATEWAY=https://gateway.pinata.cloud/ipfs/
+```
 
 ---
 
-**Document Version**: 1.2  
+### 3.6 Phase 3 Action Items
+
+| Task | Priority | Status |
+|------|----------|--------|
+| Run Slither | High | ✅ Completed |
+| Set up Certora | Medium | ✅ Completed |
+| Implement ERC721A | High | ✅ Completed (Custom) |
+| Full RBAC | Medium | ✅ Completed |
+| IPFS/Pinata | High | ✅ Completed |
+
+---
+
+**Document Version**: 1.3  
 **Last Updated**: 2026-02-22  
 **Project**: AyurHerbX - Blockchain-Powered Ayurvedic Supply Chain

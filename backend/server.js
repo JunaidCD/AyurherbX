@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const blockchainRoutes = require('./routes/blockchain');
 const collectionRoutes = require('./routes/collections');
+const pinataRoutes = require('./routes/pinata');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -86,6 +87,7 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/blockchain', blockchainRoutes);
 app.use('/api/collections', collectionRoutes);
+app.use('/api/pinata', pinataRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
