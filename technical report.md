@@ -472,9 +472,9 @@ npx hardhat test --gas
 
 ---
 
-## Phase 3: Advanced Security & Formal Verification (Roadmap)
+## Phase 3: Advanced Security & Formal Verification (IMPLEMENTED)
 
-### 3.1 Slither Static Analysis ✅ RUNNING
+### 3.1 Slither Static Analysis ✅ COMPLETED
 
 **Status**: Completed - 374 issues found across 113 contracts
 
@@ -503,11 +503,11 @@ slither . --config-file slither.config.json
 
 ---
 
-### 3.2 Formal Verification with Certora
+### 3.2 Formal Verification with Certora ✅ IMPLEMENTED
 
-**Status**: Setup Required
+**Status**: Completed - Configuration and specs created
 
-Certora provides formal verification for smart contracts. To set up:
+Certora provides formal verification for smart contracts. Setup completed:
 
 ```bash
 # Install Certora CLI
@@ -537,9 +537,9 @@ certoraRun certora/conf/HerbNFT.conf
 
 ---
 
-### 3.3 ERC721A for Batch Minting
+### 3.3 ERC721A for Batch Minting ✅ IMPLEMENTED (Custom)
 
-**Status**: Recommended Upgrade
+**Status**: Completed - Custom batch minting implemented
 
 ERC721A is an improved implementation of ERC721 that:
 - Mints multiple tokens for the same gas cost as one
@@ -568,11 +568,11 @@ contract HerbNFTv2 is ERC721A, AccessControl {
 
 ---
 
-### 3.4 Role-Based Access Control (RBAC)
+### 3.4 Role-Based Access Control (RBAC) ✅ IMPLEMENTED
 
-**Status**: Partially Implemented
+**Status**: Completed - Full RBAC implemented in HerbNFTv2.sol
 
-The current HerbNFT uses Ownable for simplicity. For production, implement full RBAC:
+The HerbNFTv2 contract uses OpenZeppelin's AccessControl for fine-grained permissions:
 
 ```solidity
 import "@openzeppelin/contracts/access/AccessControl.sol";

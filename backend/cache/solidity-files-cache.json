@@ -4175,6 +4175,49 @@
       "artifacts": [
         "WholesaleMarketplace"
       ]
+    },
+    "C:\\Users\\ASUS\\OneDrive\\Desktop\\AyurherbX\\backend\\contracts\\HerbNFTv2.sol": {
+      "lastModificationDate": 1771743661702,
+      "contentHash": "e0e9866ebdf057360ac44151ce718c22",
+      "sourceName": "contracts/HerbNFTv2.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        "@openzeppelin/contracts/access/AccessControl.sol",
+        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "@openzeppelin/contracts/utils/Pausable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "HerbNFTv2"
+      ]
     }
   }
 }
