@@ -124,6 +124,19 @@ function App() {
           />
           
           <Route 
+            path="/see-items" 
+            element={
+              user ? (
+                <Layout user={user} onLogout={handleLogout}>
+                  <SeeItem user={user} showToast={showToast} />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            } 
+          />
+          
+          <Route 
             path="/see-item" 
             element={
               user ? (
@@ -150,11 +163,37 @@ function App() {
           />
           
           <Route 
+            path="/processing" 
+            element={
+              user ? (
+                <Layout user={user} onLogout={handleLogout}>
+                  <AddProcessingAdvanced user={user} showToast={showToast} />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            } 
+          />
+          
+          <Route 
             path="/add-processing/:batchId?" 
             element={
               user ? (
                 <Layout user={user} onLogout={handleLogout}>
                   <AddProcessingAdvanced user={user} showToast={showToast} />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            } 
+          />
+          
+          <Route 
+            path="/batches" 
+            element={
+              user ? (
+                <Layout user={user} onLogout={handleLogout}>
+                  <ViewProduct user={user} showToast={showToast} />
                 </Layout>
               ) : (
                 <Navigate to="/login" />
