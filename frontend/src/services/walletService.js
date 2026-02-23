@@ -13,6 +13,10 @@ class WalletService {
     this.SEPOLIA_CHAIN_ID = '0xaa36a7'; // 11155111 in hex
     this.SEPOLIA_RPC_URL = 'https://sepolia.infura.io/v3/';
     
+    // Polygon Amoy testnet configuration (L2)
+    this.AMOY_CHAIN_ID = '0x13882'; // 80002 in hex
+    this.AMOY_RPC_URL = 'https://rpc-amoy.polygon.technology/';
+    
     // Initialize on page load if wallet was previously connected
     this.init();
   }
@@ -64,9 +68,9 @@ class WalletService {
       const network = await this.provider.getNetwork();
       this.chainId = '0x' + network.chainId.toString(16);
 
-      // Switch to Sepolia if not already on it
-      if (this.chainId !== this.SEPOLIA_CHAIN_ID) {
-        await this.switchToSepolia();
+      // Switch to Amoy or Sepolia if not already on a supported network
+      if (this.chainId !== this.AMOY_CHAIN_ID && this.chainId !== this.SEPOLIA_CHAIN_ID) {
+        await this.switchToAmoy();
       }
 
       // Try to load contract - but don't fail if backend is unavailable
@@ -119,6 +123,41 @@ class WalletService {
         }
       } else {
         throw new Error('Failed to switch to Sepolia network');
+      }
+    }
+  }
+
+  async switchToAmoy() {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: this.AMOY_CHAIN_ID }],
+      });
+    } catch (switchError) {
+      // This error code indicates that the chain has not been added to MetaMask
+      if (switchError.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: this.AMOY_CHAIN_ID,
+                chainName: 'Polygon Amoy Testnet',
+                nativeCurrency: {
+                  name: 'MATIC',
+                  symbol: 'MATIC',
+                  decimals: 18,
+                },
+                rpcUrls: ['https://rpc-amoy.polygon.technology/'],
+                blockExplorerUrls: ['https://amoy.polygonscan.com/'],
+              },
+            ],
+          });
+        } catch (addError) {
+          throw new Error('Failed to add Polygon Amoy network to MetaMask');
+        }
+      } else {
+        throw new Error('Failed to switch to Polygon Amoy network');
       }
     }
   }
@@ -347,6 +386,26 @@ class WalletService {
     return this.chainId === this.SEPOLIA_CHAIN_ID;
   }
 
+  isOnAmoy() {
+    return this.chainId === this.AMOY_CHAIN_ID;
+  }
+
+  isOnSupportedNetwork() {
+    return this.isOnSepolia() || this.isOnAmoy();
+  }
+
+  getNetworkName() {
+    if (this.isOnAmoy()) return 'Polygon Amoy';
+    if (this.isOnSepolia()) return 'Sepolia';
+    return 'Unknown';
+  }
+
+  getExplorerUrl() {
+    if (this.isOnAmoy()) return 'https://amoy.polygonscan.com';
+    if (this.isOnSepolia()) return 'https://sepolia.etherscan.io';
+    return 'https://etherscan.io';
+  }
+
   formatAddress(address) {
     if (!address) return '';
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -406,14 +465,14 @@ class WalletService {
       console.log('✅ Provider and signer ready');
       console.log('Account:', this.account);
 
-      // Ensure we're on Sepolia testnet
-      if (!this.isOnSepolia()) {
-        console.log('🔄 Switching to Sepolia...');
-        await this.switchToSepolia();
+      // Ensure we're on a supported testnet (Sepolia or Amoy)
+      if (!this.isOnSupportedNetwork()) {
+        console.log('🔄 Switching to Polygon Amoy...');
+        await this.switchToAmoy();
         // Reinitialize after network switch
         this.provider = new ethers.BrowserProvider(window.ethereum);
         this.signer = await this.provider.getSigner();
-        console.log('✅ Switched to Sepolia');
+        console.log('✅ Switched to Polygon Amoy');
       }
 
       // Create a simple transaction to trigger MetaMask
@@ -520,16 +579,17 @@ class WalletService {
       // Check balance before proceeding
       const balance = await this.provider.getBalance(this.account);
       const balanceInEth = ethers.formatEther(balance);
-      console.log('Account balance:', balanceInEth, 'ETH');
+      const networkName = this.getNetworkName();
+      console.log('Account balance:', balanceInEth, 'MATIC');
       
       if (balance < ethers.parseEther('0.001')) {
-        throw new Error('Insufficient funds. You need at least 0.001 ETH for transaction fees. Please add some Sepolia ETH to your wallet.');
+        throw new Error(`Insufficient funds. You need at least 0.001 MATIC for transaction fees on ${networkName}. Please add some MATIC to your wallet.`);
       }
 
-      // Ensure we're on Sepolia testnet
-      if (!this.isOnSepolia()) {
-        console.log('🔄 Switching to Sepolia...');
-        await this.switchToSepolia();
+      // Ensure we're on a supported testnet (Sepolia or Amoy)
+      if (!this.isOnSupportedNetwork()) {
+        console.log('🔄 Switching to Polygon Amoy...');
+        await this.switchToAmoy();
         // Reinitialize after network switch
         this.provider = new ethers.BrowserProvider(window.ethereum);
         this.signer = await this.provider.getSigner();

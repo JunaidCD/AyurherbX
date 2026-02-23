@@ -59,7 +59,7 @@ const WalletButton = ({ showToast }) => {
 
   const openEtherscan = () => {
     if (account) {
-      window.open(`https://sepolia.etherscan.io/address/${account}`, '_blank');
+      window.open(`https://amoy.polygonscan.com/address/${account}`, '_blank');
     }
   };
 

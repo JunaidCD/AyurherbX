@@ -138,11 +138,11 @@ const LabTest = ({ user, showToast = () => {} }) => {
         throw new Error('No accounts found');
       }
 
-      // Switch to Sepolia network
+      // Switch to Polygon Amoy network
       try {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0xaa36a7' }], // Sepolia testnet chain ID
+          params: [{ chainId: '0x13882' }], // Polygon Amoy testnet chain ID (80002)
         });
       } catch (switchError) {
         // If the network doesn't exist, add it
@@ -150,15 +150,15 @@ const LabTest = ({ user, showToast = () => {} }) => {
           await window.ethereum.request({
             method: 'wallet_addEthereumChain',
             params: [{
-              chainId: '0xaa36a7',
-              chainName: 'Sepolia Test Network',
+              chainId: '0x13882',
+              chainName: 'Polygon Amoy Testnet',
               nativeCurrency: {
-                name: 'ETH',
-                symbol: 'ETH',
+                name: 'MATIC',
+                symbol: 'MATIC',
                 decimals: 18,
               },
-              rpcUrls: ['https://sepolia.infura.io/v3/'],
-              blockExplorerUrls: ['https://sepolia.etherscan.io/'],
+              rpcUrls: ['https://rpc-amoy.polygon.technology/'],
+              blockExplorerUrls: ['https://amoy.polygonscan.com/'],
             }],
           });
         } else {

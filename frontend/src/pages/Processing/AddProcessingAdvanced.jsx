@@ -332,8 +332,8 @@ const AddProcessingAdvanced = ({ user, showToast }) => {
           <button onclick="navigator.clipboard.writeText('${txHash}'); this.textContent='Copied!'" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-all duration-200">
             Copy Hash
           </button>
-          <button onclick="window.open('https://sepolia.etherscan.io/tx/${txHash}', '_blank')" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200">
-            View on Etherscan
+          <button onclick="window.open('https://amoy.polygonscan.com/tx/${txHash}', '_blank')" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200">
+            View on Polygonscan
           </button>
           <button onclick="this.closest('.fixed').remove()" class="flex-1 px-4 py-2 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-200">
             Continue

@@ -783,7 +783,7 @@ const SeeItem = ({ user, showToast }) => {
                   <p className="text-green-300 text-sm font-medium mb-2">Transaction Hash:</p>
                   <p className="text-white text-xs font-mono break-all">{successModal.txHash}</p>
                   <a 
-                    href={`https://sepolia.etherscan.io/tx/${successModal.txHash}`}
+                    href={`https://amoy.polygonscan.com/tx/${successModal.txHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-green-500/30 hover:bg-green-500/40 border border-green-500/50 rounded-lg text-green-300 text-sm font-medium transition-all duration-300"

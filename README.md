@@ -27,7 +27,7 @@
 
 AyurHerb is a comprehensive blockchain-powered supply chain management system specifically designed for Ayurvedic herbs and medicines. The platform ensures **immutable tracking via events + NFT metadata**, traceability, and authenticity throughout the entire supply chain from collection to consumer delivery.
 
-The system leverages Ethereum blockchain technology (Sepolia testnet) with **NFT-based herb batch tracking** (ERC721), creating immutable records with unique token IDs, metadata for origin/quality, and environmental data stamps via Chainlink oracle integration.
+The system leverages Polygon Amoy blockchain technology (L2 testnet) with **NFT-based herb batch tracking** (ERC721), creating immutable records with unique token IDs, metadata for origin/quality, and environmental data stamps via Chainlink oracle integration.
 
 ## ✨ Features
 
@@ -67,7 +67,7 @@ The system leverages Ethereum blockchain technology (Sepolia testnet) with **NFT
 - Inventory management
 
 ### 🔗 Blockchain Features
-- Ethereum Sepolia testnet integration
+- Polygon Amoy testnet (L2) integration
 - **NFT-based herb batches** (ERC721) with unique token IDs
 - **Chainlink oracle stub** for temperature/humidity/AQI stamps
 - Immutable tracking via events + NFT metadata
@@ -100,7 +100,7 @@ The system leverages Ethereum blockchain technology (Sepolia testnet) with **NFT
 - **Solidity ^0.8.19** - Smart contract language
 - **Hardhat** - Ethereum development environment
 - **Ethers.js** - Ethereum library
-- **Sepolia Testnet** - Ethereum test network
+- **Polygon Amoy Testnet** - Polygon L2 test network
 - **MetaMask** - Web3 wallet integration
 
 ### Development Tools
@@ -197,15 +197,15 @@ Before running this project, ensure you have:
 - **Node.js** (v16 or higher)
 - **npm** or **yarn** package manager
 - **MetaMask** browser extension
-- **Sepolia testnet ETH** for transactions
+- **MATIC** (Polygon Amoy) for transactions
 - **Git** for version control
 - **Code editor** (VS Code recommended)
 
 ### MetaMask Setup:
 1. Install MetaMask browser extension
 2. Create or import wallet
-3. Add Sepolia testnet to networks
-4. Get testnet ETH from [Sepolia Faucet](https://sepoliafaucet.com/)
+3. Add Polygon Amoy testnet to networks
+4. Get testnet MATIC from [Amoy Faucet](https://faucet.polygon.technology/)
 
 ## 🚀 Installation & Setup
 
@@ -299,7 +299,7 @@ npm run lint        # Run ESLint
 **Blockchain Commands:**
 ```bash
 npx hardhat compile                              # Compile contracts
-npx hardhat run scripts/deploy.js --network sepolia  # Deploy to Sepolia
+npx hardhat run scripts/deploy.js --network amoy  # Deploy to Polygon Amoy
 npx hardhat test                                # Run contract tests
 npx hardhat node                                # Start local blockchain
 ```
@@ -377,10 +377,10 @@ GET    /api/blockchain/contract-info       # Get contract information
 ## ⛓️ Blockchain Integration
 
 ### Smart Contract Deployment
-The system uses production-ready smart contracts deployed on Sepolia testnet:
+The system uses production-ready smart contracts deployed on Polygon Amoy testnet:
 
 ### MetaMask Integration
-- Automatic network switching to Sepolia
+- Automatic network switching to Polygon Amoy
 - Transaction signing for data submission
 - Wallet connection management
 - Gas estimation and optimization
@@ -413,7 +413,7 @@ RATE_LIMIT_MAX_REQUESTS=100
 No additional environment variables required. Configuration is handled through:
 - Wallet connection (MetaMask)
 - Smart contract addresses (auto-detected)
-- Network configuration (Sepolia testnet)
+- Network configuration (Polygon Amoy testnet)
 
 ## 🤝 Contributing
 
@@ -448,8 +448,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **1. MetaMask Connection Issues**
 - Ensure MetaMask is installed and unlocked
-- Switch to Sepolia testnet
-- Check if you have testnet ETH
+- Switch to Polygon Amoy testnet
+- Check if you have testnet MATIC
 
 **2. Smart Contract Deployment Fails**
 - Verify `.env` configuration
@@ -482,8 +482,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 5. **Serve Frontend**: Use Nginx or similar web server
 
 ### Testnet Deployment
-- Current deployment: Sepolia testnet
+- Current deployment: Polygon Amoy testnet (L2)
 - Smart contract address: Auto-generated during deployment
+- Explorer: https://amoy.polygonscan.com/
 - Frontend URL: `http://localhost:5173/`
 - Backend API: `http://localhost:3001/`
 

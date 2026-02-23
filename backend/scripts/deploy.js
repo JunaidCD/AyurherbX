@@ -3,7 +3,11 @@ const fs = require("fs");
 const path = require("path");
 
 async function main() {
-  console.log("Deploying HerbCollection contract to Sepolia testnet...");
+  const networkName = hre.network.name;
+  const chainId = hre.network.config.chainId;
+  
+  console.log(`Deploying HerbCollection contract to ${networkName} testnet...`);
+  console.log(`Chain ID: ${chainId}`);
 
   // Get the ContractFactory and Signers here
   const HerbCollection = await hre.ethers.getContractFactory("HerbCollection");
@@ -15,11 +19,34 @@ async function main() {
   const contractAddress = await herbCollection.getAddress();
   console.log("HerbCollection deployed to:", contractAddress);
 
+  // Determine explorer based on network
+  let explorerUrl = "";
+  let explorerName = "";
+  switch (networkName) {
+    case "amoy":
+      explorerUrl = "https://amoy.polygonscan.com";
+      explorerName = "Polygonscan";
+      break;
+    case "polygon":
+      explorerUrl = "https://polygonscan.com";
+      explorerName = "Polygonscan";
+      break;
+    case "sepolia":
+      explorerUrl = "https://sepolia.etherscan.io";
+      explorerName = "Etherscan";
+      break;
+    default:
+      explorerUrl = "https://etherscan.io";
+      explorerName = "Etherscan";
+  }
+
   // Save the contract address and ABI to a JSON file
   const contractInfo = {
     address: contractAddress,
     abi: HerbCollection.interface.formatJson(),
-    network: "sepolia",
+    network: networkName,
+    chainId: chainId,
+    explorerUrl: explorerUrl,
     deployedAt: new Date().toISOString()
   };
 
@@ -41,6 +68,8 @@ async function main() {
   const envPath = path.join(__dirname, "..", ".env");
   if (fs.existsSync(envPath)) {
     let envContent = fs.readFileSync(envPath, "utf8");
+    
+    // Update COLLECTION_CONTRACT_ADDRESS
     if (envContent.includes("COLLECTION_CONTRACT_ADDRESS=")) {
       envContent = envContent.replace(
         /COLLECTION_CONTRACT_ADDRESS=.*/,
@@ -49,13 +78,27 @@ async function main() {
     } else {
       envContent += `\nCOLLECTION_CONTRACT_ADDRESS=${contractAddress}\n`;
     }
+    
+    // Update NETWORK name
+    if (envContent.includes("NETWORK=")) {
+      envContent = envContent.replace(
+        /NETWORK=.*/,
+        `NETWORK=${networkName}`
+      );
+    } else {
+      envContent += `NETWORK=${networkName}\n`;
+    }
+    
     fs.writeFileSync(envPath, envContent);
     console.log("Updated .env file with contract address");
   }
 
-  // Verify contract on Etherscan (optional)
-  if (process.env.ETHERSCAN_API_KEY) {
-    console.log("Waiting for block confirmations...");
+  // Verify contract on block explorer (Etherscan or Polygonscan)
+  const isAmoy = networkName === "amoy" || networkName === "polygon";
+  const apiKey = isAmoy ? process.env.POLYGONSCAN_API_KEY : process.env.ETHERSCAN_API_KEY;
+  
+  if (apiKey) {
+    console.log(`Waiting for block confirmations on ${networkName}...`);
     await herbCollection.deploymentTransaction().wait(6);
     
     try {
@@ -63,11 +106,21 @@ async function main() {
         address: contractAddress,
         constructorArguments: [],
       });
-      console.log("Contract verified on Etherscan");
+      console.log(`Contract verified on ${explorerName}`);
+      console.log(`View contract at: ${explorerUrl}/address/${contractAddress}`);
     } catch (error) {
       console.log("Verification failed:", error.message);
+      console.log(`You can verify manually using: npx hardhat verify --network ${networkName} ${contractAddress}`);
     }
+  } else {
+    console.log(`No ${isAmoy ? "Polygonscan" : "Etherscan"} API key found. Skipping verification.`);
+    console.log(`To verify manually, run: npx hardhat verify --network ${networkName} ${contractAddress}`);
   }
+
+  console.log("\n=== Deployment Summary ===");
+  console.log(`Network: ${networkName} (Chain ID: ${chainId})`);
+  console.log(`Contract Address: ${contractAddress}`);
+  console.log(`Explorer: ${explorerUrl}/address/${contractAddress}`);
 }
 
 main()

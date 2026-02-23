@@ -165,6 +165,15 @@ export const WalletProvider = ({ children }) => {
     }
   };
 
+  const switchToAmoy = async () => {
+    try {
+      await walletService.switchToAmoy();
+    } catch (error) {
+      setError(error.message);
+      throw error;
+    }
+  };
+
   const formatAddress = (address) => {
     return walletService.formatAddress(address);
   };
@@ -194,6 +203,7 @@ export const WalletProvider = ({ children }) => {
     getCollectorCollections,
     getCollection,
     switchToSepolia,
+    switchToAmoy,
     updateBalance,
     clearError,
     

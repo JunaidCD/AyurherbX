@@ -210,8 +210,11 @@ contract HerbNFT is ERC721, AccessControl {
 
 ### 7.1 Network Configuration
 
-- **Network**: Ethereum Sepolia Testnet
-- **Solidity Version**: ^0.8.19
+- **Network**: Polygon Amoy Testnet (L2)
+- **Chain ID**: 80002
+- **RPC URL**: https://rpc-amoy.polygon.technology/
+- **Explorer**: https://amoy.polygonscan.com/
+- **Solidity Version**: ^0.8.24
 - **Hardhat**: Development environment
 
 ### 7.2 Contract Addresses
@@ -666,6 +669,83 @@ PINATA_API_KEY=your_pinata_api_key
 PINATA_SECRET_KEY=your_pinata_secret_key
 IPFS_GATEWAY=https://gateway.pinata.cloud/ipfs/
 ```
+
+---
+
+## Phase 4: L2 Migration to Polygon Amoy (IMPLEMENTED)
+
+### 4.1 Overview
+
+Phase 4 migrates the AyurHerbX project from Ethereum Sepolia testnet to Polygon Amoy testnet (L2) for improved scalability and lower transaction costs.
+
+### 4.2 Changes Made
+
+#### Backend Configuration
+- Updated [`hardhat.config.js`](backend/hardhat.config.js):
+  - Added Polygon Amoy network configuration (Chain ID: 80002)
+  - RPC URL: https://rpc-amoy.polygon.technology/
+  - Updated gas reporter to use MATIC token
+  - Added Polygonscan API key configuration
+
+- Updated [`.env.example`](backend/.env.example):
+  - Added AMOY_RPC_URL and POLYGONSCAN_API_KEY variables
+
+- Updated [`scripts/deploy.js`](backend/scripts/deploy.js):
+  - Auto-detection of deployed network
+  - Automatic verification on Polygonscan (Amoy) or Etherscan (Sepolia)
+  - Dynamic explorer URL generation
+  - Deployment summary with network details
+
+#### Frontend Updates
+- Updated [`services/walletService.js`](frontend/src/services/walletService.js):
+  - Added AMOY_CHAIN_ID constant (0x13882)
+  - Added switchToAmoy() method
+  - Added isOnAmoy() and isOnSupportedNetwork() methods
+  - Added getNetworkName() and getExplorerUrl() utilities
+  - Updated balance checks to use MATIC
+
+- Updated [`contexts/WalletContext.jsx`](frontend/src/contexts/WalletContext.jsx):
+  - Added switchToAmoy() export
+
+- Updated multiple frontend pages:
+  - LabTest.jsx - Network switch to Polygon Amoy
+  - VerificationReport.jsx - Polygonscan transaction links
+  - SeeItem.jsx - Polygonscan transaction links
+  - AddProcessingAdvanced.jsx - Polygonscan links
+  - WalletButton.jsx - Polygonscan address links
+
+### 4.3 Deployment Commands
+
+```bash
+# Deploy to Polygon Amoy
+cd backend
+npx hardhat run scripts/deploy.js --network amoy
+
+# Verify on Polygonscan
+npx hardhat verify --network amoy CONTRACT_ADDRESS
+```
+
+### 4.4 Environment Variables Required
+
+```env
+# Polygon Amoy Configuration
+AMOY_RPC_URL=https://rpc-amoy.polygon.technology/
+POLYGONSCAN_API_KEY=your_polygonscan_api_key
+PRIVATE_KEY=your_wallet_private_key
+```
+
+Get your Polygonscan API key from: https://polygonscan.com/myapikey
+
+### 4.5 Phase 4 Action Items
+
+| Task | Priority | Status |
+|------|----------|--------|
+| Configure Hardhat for Amoy | High | ✅ Completed |
+| Update deploy script | High | ✅ Completed |
+| Update wallet service | High | ✅ Completed |
+| Update frontend pages | High | ✅ Completed |
+| Update documentation | Medium | ✅ Completed |
+| Test end-to-end | High | 🔄 Pending |
 
 ---
 
