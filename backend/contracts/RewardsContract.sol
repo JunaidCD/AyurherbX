@@ -426,8 +426,9 @@ contract RewardsContract is Ownable {
     /**
      * @dev Get farmer leaderboard position
      */
-    function getLeaderboardPosition(address _farmer) external view returns (uint256 position) {
-        uint256 farmerPoints = farmerProfiles[_farmer].loyaltyPoints;
+    function getLeaderboardPosition(address _farmer) external pure returns (uint256 position) {
+        // farmerPoints unused - placeholder implementation
+        _farmer;
         position = 1;
         
         // This is a simple implementation - in production, use sorted data structure

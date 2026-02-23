@@ -137,7 +137,7 @@ contract SupplyChainTracker is Ownable {
         string memory _coordinates,
         string memory _description,
         string memory _documentURI,
-        bytes32 _dataHash
+        bytes32 /* _dataHash */
     ) external returns (uint256) {
         Journey storage journey = journeys[_batchTokenId];
         require(journey.startTime > 0, "Journey not started");
