@@ -23,35 +23,30 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// CORS configuration
-const allowedOrigins = process.env.NODE_ENV === 'production' 
-  ? [
-      'https://ayurherb.netlify.app',
-      'https://ayurherb-backend.onrender.com',
-      process.env.FRONTEND_URL || 'https://ayurherb.netlify.app'
-    ]
-  : [
-      'http://localhost:3000', 
-      'http://localhost:5173',
-      'http://127.0.0.1:5173'
-    ];
-
-app.use(cors({
+// CORS configuration - allow all origins for development
+// In production, you would restrict this to your frontend domain
+const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    // Also allow all Vercel deployments, Netlify deployments and localhost for development
+    if (!origin || 
+        origin.startsWith('http://localhost') || 
+        origin.startsWith('http://127.0.0.1') ||
+        origin.endsWith('.vercel.app') || 
+        origin.endsWith('.netlify.app') ||
+        origin.endsWith('.onrender.com')) {
       return callback(null, true);
     }
     
-    const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+    const msg = 'The CORS policy for this site does not allow access from the specified Origin: ' + origin;
     return callback(new Error(msg), false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+};
+
+app.use(cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));

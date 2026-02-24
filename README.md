@@ -169,9 +169,9 @@ Polygon Amoy offers ~88% lower gas costs compared to Ethereum Sepolia, making it
 
 ### Demo Mode vs Live Mode
 
-The app works in two modes:
+The app requires the backend to be running for full functionality:
 
-- **Demo Mode**: When backend is not running - submissions are saved to localStorage
+- **Backend Required**: Submissions will fail with an error if the backend is not running
 - **Live Mode**: When backend is running - actual blockchain transactions
 
 To use full blockchain features:

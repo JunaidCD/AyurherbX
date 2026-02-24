@@ -164,11 +164,14 @@ class WalletService {
 
   async loadContract() {
     try {
+      // Use environment variable for API URL, default to localhost for development
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      
       // Fetch contract info from backend
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
       
-      const response = await fetch('http://localhost:5000/api/blockchain/contract-info', {
+      const response = await fetch(`${API_URL}/api/blockchain/contract-info`, {
         signal: controller.signal
       });
       
@@ -207,43 +210,9 @@ class WalletService {
         throw new Error('Wallet not connected');
       }
 
-      // If contract is not loaded (demo mode), use mock submission
+      // If contract is not loaded, throw error
       if (!this.contract) {
-        console.warn('Contract not loaded - using mock submission');
-        
-        // Generate mock transaction data
-        const mockTxHash = '0x' + Array.from({length: 64}, () => 
-          Math.floor(Math.random() * 16).toString(16)).join('');
-        const mockCollectionId = Date.now().toString();
-        
-        // Store in localStorage for demo persistence
-        const mockResult = {
-          success: true,
-          transactionHash: mockTxHash,
-          collectionId: mockCollectionId,
-          blockNumber: 0,
-          gasUsed: 0,
-          timestamp: Date.now(),
-          herbName: collectionData.herbName,
-          quantity: collectionData.quantity,
-          batchId: collectionData.batchId,
-          location: collectionData.location,
-          notes: collectionData.notes || '',
-          collectorAddress: this.account,
-          status: 'Demo Mode - Not on Blockchain'
-        };
-        
-        // Save to localStorage
-        try {
-          const existingData = JSON.parse(localStorage.getItem('mockCollections') || '[]');
-          existingData.push(mockResult);
-          localStorage.setItem('mockCollections', JSON.stringify(existingData));
-        } catch (e) {
-          console.warn('Could not save to localStorage:', e);
-        }
-        
-        console.log('Mock collection submitted:', mockResult);
-        return mockResult;
+        throw new Error('Smart contract not loaded. Please ensure the backend server is running and the contract is deployed. For live usage, connect to Polygon Amoy or Ethereum Sepolia testnet with MetaMask.');
       }
 
       // Estimate gas
@@ -320,7 +289,9 @@ class WalletService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       
-      const response = await fetch(`http://localhost:5000/api/collections/collector/${collectorAddress}`, {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      
+      const response = await fetch(`${API_URL}/api/collections/collector/${collectorAddress}`, {
         signal: controller.signal
       });
       
@@ -343,7 +314,9 @@ class WalletService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       
-      const response = await fetch(`http://localhost:5000/api/collections/${collectionId}`, {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      
+      const response = await fetch(`${API_URL}/api/collections/${collectionId}`, {
         signal: controller.signal
       });
       
