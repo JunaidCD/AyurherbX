@@ -5,23 +5,6 @@
 ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react)
 ![Node.js](https://img.shields.io/badge/Node.js-Backend-339933?style=for-the-badge&logo=node.js)
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Smart Contracts](#smart-contracts)
-- [Prerequisites](#prerequisites)
-- [How to Run/Deploy](#how-to-rundeploy)
-  - [Polygon Amoy](#polygon-amoy)
-  - [Ethereum Sepolia](#ethereum-sepolia)
-- [Environment Variables](#environment-variables)
-- [Project Structure](#project-structure)
-- [Lessons Learned](#lessons-learned)
-- [API Endpoints](#api-endpoints)
-- [Contributing](#contributing)
-- [License](#license)
-
 ## 🌟 Overview
 
 AyurHerb is a comprehensive blockchain-powered supply chain management system for Ayurvedic herbs and medicines. The platform ensures **immutable tracking via events + NFT metadata**, traceability, and authenticity throughout the supply chain from farm to consumer.

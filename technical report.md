@@ -251,11 +251,11 @@ Deployed contract addresses are stored in:
 
 ## 9. Future Enhancements (Phase 2+)
 
-- Replace Chainlink stub with actual oracle feeds
-- Implement IPFS metadata upload functionality
-- Add real-time price oracle integration
-- Expand NFT utilities (fractionalization, lending)
-- Integrate with external certification APIs
+Replace Chainlink stub with actual oracle feeds
+Implement IPFS metadata upload functionality
+Add real-time price oracle integration
+Expand NFT utilities (fractionalization, lending)
+Integrate with external certification APIs
 
 ---
 
@@ -462,10 +462,10 @@ npx hardhat test --gas
 
 ### 2.6 Future Enhancements (Phase 3+)
 
-- Run Slither static analysis
-- Add formal verification with Certora
-- Implement ERC721A for gas-optimized batch minting
-- Add access control lists (Role-based)
+Run Slither static analysis
+Add formal verification with Certora
+Implement ERC721A for gas-optimized batch minting
+Add access control lists (Role-based)
 
 ---
 
