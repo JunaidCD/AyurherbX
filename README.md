@@ -344,7 +344,7 @@ AyurherbX/
 │   │   ├── HerbCollection.sol  # Main NFT contract
 │   │   ├── SupplyChainTracker.sol
 │   │   ├── RewardsContract.sol
-│   │   └── ... (80+ more)
+│   │   └── ... (more)
 │   ├── 📁 scripts/
 │   │   └── deploy.js           # Deployment script
 │   ├── 📁 services/

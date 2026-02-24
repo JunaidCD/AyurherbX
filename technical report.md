@@ -613,17 +613,9 @@ Off-chain storage solution using IPFS via Pinata for detailed herb data:
 
 #### Architecture
 
-```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│   Collector │────▶│  Pinata API  │────▶│    IPFS     │
-└─────────────┘     └──────────────┘     └─────────────┘
-                           │                    │
-                           ▼                    ▼
-                    ┌──────────────┐     ┌─────────────┐
-                    │  Metadata   │     │  On-Chain  │
-                    │   JSON      │     │   Hash     │
-                    └──────────────┘     └─────────────┘
-```
+``
+![IPFS FLOW](./assets/IPFS%20FLOW.png)
+``
 
 #### Services Created
 
