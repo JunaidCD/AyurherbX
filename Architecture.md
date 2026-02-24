@@ -429,23 +429,6 @@ AyurHerb is a blockchain-powered supply chain management system for Ayurvedic he
 
 ---
 
-## Technology Stack Summary
-
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Frontend** | React 18 + Vite | User Interface |
-| **Styling** | TailwindCSS | Responsive Design |
-| **State** | React Context | State Management |
-| **Blockchain** | Ethers.js v6 | Web3 Integration |
-| **Backend** | Express.js | API Server |
-| **Database** | localStorage + IPFS | Data Persistence |
-| **Smart Contracts** | Solidity ^0.8.24 | Blockchain Logic |
-| **Development** | Hardhat | Contract Compilation |
-| **Testnets** | Polygon Amoy, Ethereum Sepolia | Testing Networks |
-| **IPFS** | Pinata | Off-chain Storage |
-
----
-
 ## Security Features
 
 ```
