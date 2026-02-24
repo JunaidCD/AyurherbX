@@ -9,7 +9,8 @@ const Collections = ({ user, showToast }) => {
     account,
     isConnected,
     submitCollection,
-    isOnSepolia
+    isOnSepolia,
+    isOnAmoy
   } = useWallet();
 
   const {
@@ -205,11 +206,7 @@ const Collections = ({ user, showToast }) => {
       return;
     }
 
-    // Check network
-    if (!isOnSepolia()) {
-      showToast('Please switch to Sepolia testnet', 'error');
-      return;
-    }
+    // Note: Network check is handled in walletService - it allows demo mode submissions
 
     // Validate all required fields
     const validationErrors = validateForm();

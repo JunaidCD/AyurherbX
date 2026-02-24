@@ -182,6 +182,10 @@ export const WalletProvider = ({ children }) => {
     return walletService.isOnSepolia();
   };
 
+  const isOnAmoy = () => {
+    return walletService.isOnAmoy();
+  };
+
   const clearError = () => {
     setError(null);
   };
@@ -210,6 +214,7 @@ export const WalletProvider = ({ children }) => {
     // Utilities
     formatAddress,
     isOnSepolia,
+    isOnAmoy,
   };
 
   return (

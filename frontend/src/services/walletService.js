@@ -207,8 +207,43 @@ class WalletService {
         throw new Error('Wallet not connected');
       }
 
+      // If contract is not loaded (demo mode), use mock submission
       if (!this.contract) {
-        throw new Error('Contract not loaded');
+        console.warn('Contract not loaded - using mock submission');
+        
+        // Generate mock transaction data
+        const mockTxHash = '0x' + Array.from({length: 64}, () => 
+          Math.floor(Math.random() * 16).toString(16)).join('');
+        const mockCollectionId = Date.now().toString();
+        
+        // Store in localStorage for demo persistence
+        const mockResult = {
+          success: true,
+          transactionHash: mockTxHash,
+          collectionId: mockCollectionId,
+          blockNumber: 0,
+          gasUsed: 0,
+          timestamp: Date.now(),
+          herbName: collectionData.herbName,
+          quantity: collectionData.quantity,
+          batchId: collectionData.batchId,
+          location: collectionData.location,
+          notes: collectionData.notes || '',
+          collectorAddress: this.account,
+          status: 'Demo Mode - Not on Blockchain'
+        };
+        
+        // Save to localStorage
+        try {
+          const existingData = JSON.parse(localStorage.getItem('mockCollections') || '[]');
+          existingData.push(mockResult);
+          localStorage.setItem('mockCollections', JSON.stringify(existingData));
+        } catch (e) {
+          console.warn('Could not save to localStorage:', e);
+        }
+        
+        console.log('Mock collection submitted:', mockResult);
+        return mockResult;
       }
 
       // Estimate gas

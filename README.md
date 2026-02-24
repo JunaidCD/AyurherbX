@@ -155,6 +155,18 @@ Before running this project, ensure you have:
 
 Polygon Amoy offers ~88% lower gas costs compared to Ethereum Sepolia, making it the recommended network for development and testing.
 
+### Demo Mode vs Live Mode
+
+The app works in two modes:
+
+- **Demo Mode**: When backend is not running - submissions are saved to localStorage
+- **Live Mode**: When backend is running - actual blockchain transactions
+
+To use full blockchain features:
+1. Start backend: `cd backend && npm start`
+2. Deploy contracts to Polygon Amoy or Sepolia
+3. Connect to the correct network in MetaMask
+
 ### Step 1: Backend Setup
 ```bash
 cd backend
@@ -602,6 +614,18 @@ This project is licensed under the MIT License.
 - ✅ **Immutable Tracking via Events**: HerbBatchMinted, HerbBatchVerified
 - ✅ **MetaMask Integration**: Seamless wallet connectivity
 - ✅ **Role-Based Access**: Secure multi-user system
+
+---
+
+## 📄 Deployed Contracts
+
+### Polygon Amoy (Recommended - L2)
+- **Contract Address**: `0x059EBE39da2ad46aba3eaf18d9F680f477471915`
+- **Explorer**: [View on Polygonscan](https://amoy.polygonscan.com/address/0x059EBE39da2ad46aba3eaf18d9F680f477471915)
+
+### Ethereum Sepolia (L1)
+- **Contract Address**: `0x29DA7697a90D5FBFcd4BD03Ad5a6cbd917997Db1`
+- **Explorer**: [View on Etherscan](https://sepolia.etherscan.io/address/0x29DA7697a90D5FBFcd4BD03Ad5a6cbd917997Db1)
 
 ---
 
