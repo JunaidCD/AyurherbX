@@ -5,6 +5,18 @@
 ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react)
 ![Node.js](https://img.shields.io/badge/Node.js-Backend-339933?style=for-the-badge&logo=node.js)
 
+## 🚀 Deployed Contracts
+
+> **🎯 Polygon Amoy (Recommended - L2)**  
+> 📍 `0x059EBE39da2ad46aba3eaf18d9F680f477471915`  
+> 🔗 [View on Polygonscan](https://amoy.polygonscan.com/address/0x059EBE39da2ad46aba3eaf18d9F680f477471915)
+
+> **🔷 Ethereum Sepolia (L1)**  
+> 📍 `0x29DA7697a90D5FBFcd4BD03Ad5a6cbd917997Db1`  
+> 🔗 [View on Etherscan](https://sepolia.etherscan.io/address/0x29DA7697a90D5FBFcd4BD03Ad5a6cbd917997Db1)
+
+---
+
 ## 🌟 Overview
 
 AyurHerb is a comprehensive blockchain-powered supply chain management system for Ayurvedic herbs and medicines. The platform ensures **immutable tracking via events + NFT metadata**, traceability, and authenticity throughout the supply chain from farm to consumer, built on **Polygon Amoy (L2)** for low-cost, fast transactions.
@@ -614,18 +626,6 @@ This project is licensed under the MIT License.
 - ✅ **Immutable Tracking via Events**: HerbBatchMinted, HerbBatchVerified
 - ✅ **MetaMask Integration**: Seamless wallet connectivity
 - ✅ **Role-Based Access**: Secure multi-user system
-
----
-
-## 📄 Deployed Contracts
-
-### Polygon Amoy (Recommended - L2)
-- **Contract Address**: `0x059EBE39da2ad46aba3eaf18d9F680f477471915`
-- **Explorer**: [View on Polygonscan](https://amoy.polygonscan.com/address/0x059EBE39da2ad46aba3eaf18d9F680f477471915)
-
-### Ethereum Sepolia (L1)
-- **Contract Address**: `0x29DA7697a90D5FBFcd4BD03Ad5a6cbd917997Db1`
-- **Explorer**: [View on Etherscan](https://sepolia.etherscan.io/address/0x29DA7697a90D5FBFcd4BD03Ad5a6cbd917997Db1)
 
 ---
 
