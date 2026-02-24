@@ -604,3 +604,57 @@ This project is licensed under the MIT License.
 - ✅ **Immutable Tracking via Events**: HerbBatchMinted, HerbBatchVerified
 - ✅ **MetaMask Integration**: Seamless wallet connectivity
 - ✅ **Role-Based Access**: Secure multi-user system
+
+---
+
+## 📚 References
+
+### Blockchain & Smart Contracts
+- [Solidity Documentation](https://docs.soliditylang.org/) - Smart contract programming language
+- [OpenZeppelin Contracts](https://docs.openzeppelin.com/contracts) - Battle-tested smart contract library
+- [Ethers.js v6 Documentation](https://docs.ethers.org/v6/) - Ethereum JavaScript library
+- [Hardhat Documentation](https://hardhat.org/docs) - Ethereum development environment
+- [ERC-721 Token Standard](https://eips.ethereum.org/EIPS/eip-721) - NFT token standard
+- [ERC-721A Documentation](https://www.erc721a.org/) - Gas-optimized NFT implementation
+
+### Networks & Infrastructure
+- [Polygon Amoy Testnet](https://wiki.polygon.technology/docs/foundary/infrastructure/networks/amoy/) - L2 test network documentation
+- [Polygon Faucet](https://faucet.polygon.technology/) - Get test MATIC tokens
+- [Ethereum Sepolia Testnet](https://ethereum.org/en/developers/docs/networks/) - Ethereum testnet documentation
+- [Sepolia Faucet](https://sepoliafaucet.com/) - Get test ETH tokens
+- [Infura](https://www.infura.io/) - Ethereum node infrastructure
+
+### IPFS & Storage
+- [IPFS Documentation](https://docs.ipfs.io/) - Distributed file system
+- [Pinata](https://www.pinata.cloud/) - IPFS pinning service
+- [NFT Storage](https://nft.storage/) - NFT-focused IPFS storage
+
+### Development Tools
+- [React Documentation](https://react.dev/) - UI framework
+- [Vite](https://vitejs.dev/) - Next-generation frontend tooling
+- [TailwindCSS](https://tailwindcss.com/docs) - Utility-first CSS framework
+- [MetaMask Documentation](https://docs.metamask.io/) - Crypto wallet integration
+
+### Block Explorers
+- [Polygonscan (Amoy)](https://amoy.polygonscan.com/) - Polygon Amoy block explorer
+- [Etherscan (Sepolia)](https://sepolia.etherscan.io/) - Ethereum Sepolia block explorer
+
+### Learning Resources
+- [CryptoZombies](https://cryptozombies.io/) - Learn Solidity by building games
+- [Alchemy University](https://university.alchemy.com/) - Web3 education platform
+- [Chainlink Documentation](https://docs.chain.link/) - Oracle network documentation
+- [Web3.js vs Ethers.js](https://web3js.readthedocs.io/) - Ethereum JavaScript libraries
+
+### Related Projects
+- [OpenZeppelin Defender](https://www.openzeppelin.com/defender) - Smart contract security suite
+- [The Graph](https://thegraph.com/) - Decentralized indexing for blockchain data
+- [QuickNode](https://www.quicknode.com/) - Blockchain infrastructure
+
+---
+
+## 🙏 Acknowledgments
+
+- [OpenZeppelin](https://openzeppelin.com/) for secure smart contract libraries
+- [Polygon](https://polygon.technology/) for L2 scaling solutions
+- [Ethereum](https://ethereum.org/) community for extensive documentation
+- [Pinata](https://www.pinata.cloud/) for IPFS infrastructure
