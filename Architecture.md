@@ -29,7 +29,7 @@ AyurHerb is a blockchain-powered supply chain management system for Ayurvedic he
 
 ### Collection Submission Flow
 
-![Collection Submission](./assets/Collection%20Submission.png)
+![Collection Submission Flow](./assets/Collection%20Submission%20Flow.png)
 
 ### Verification Flow
 
