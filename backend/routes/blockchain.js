@@ -8,6 +8,7 @@ router.get('/contract-info', async (req, res) => {
   try {
     const address = blockchainService.getContractAddress();
     const abi = blockchainService.getContractABI();
+    const networkInfo = blockchainService.getNetworkInfo();
     
     if (!address || !abi) {
       return res.status(404).json({
@@ -19,8 +20,8 @@ router.get('/contract-info', async (req, res) => {
     res.json({
       address,
       abi,
-      network: 'sepolia',
-      chainId: 11155111
+      network: networkInfo?.network || 'amoy',
+      chainId: networkInfo?.chainId || 80002
     });
   } catch (error) {
     res.status(500).json({

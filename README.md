@@ -5,6 +5,16 @@
 ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react)
 ![Node.js](https://img.shields.io/badge/Node.js-Backend-339933?style=for-the-badge&logo=node.js)
 
+## 🔗 Live URLs
+
+> **🌐 Frontend (Vercel)**  
+> 🔗 https://frontend-five-bay-68.vercel.app/login
+
+> **⚙️ Backend API (Render)**  
+> 🔗 https://ayurherbx1.onrender.com/
+
+---
+
 ## 🚀 Deployed Contracts
 
 > **🎯 Polygon Amoy (Recommended - L2)**  

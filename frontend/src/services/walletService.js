@@ -165,7 +165,9 @@ class WalletService {
   async loadContract() {
     try {
       // Use environment variable for API URL, default to localhost for development
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      // Remove trailing slash if present to avoid double slashes
+      let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      API_URL = API_URL.replace(/\/$/, '');
       
       // Fetch contract info from backend
       const controller = new AbortController();
@@ -289,7 +291,8 @@ class WalletService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      API_URL = API_URL.replace(/\/$/, '');
       
       const response = await fetch(`${API_URL}/api/collections/collector/${collectorAddress}`, {
         signal: controller.signal
@@ -314,7 +317,8 @@ class WalletService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      API_URL = API_URL.replace(/\/$/, '');
       
       const response = await fetch(`${API_URL}/api/collections/${collectionId}`, {
         signal: controller.signal

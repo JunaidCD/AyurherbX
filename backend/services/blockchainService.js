@@ -12,8 +12,15 @@ class BlockchainService {
 
   async init() {
     try {
-      // Initialize provider
-      this.provider = new ethers.JsonRpcProvider(process.env.SEPOLIA_RPC_URL);
+      // Initialize provider - use Amoy RPC if available, otherwise Sepolia
+      const rpcUrl = process.env.AMOY_RPC_URL || process.env.SEPOLIA_RPC_URL;
+      
+      if (!rpcUrl) {
+        console.log('⚠️  No RPC URL configured. Using read-only mode.');
+        return;
+      }
+      
+      this.provider = new ethers.JsonRpcProvider(rpcUrl);
       
       // Initialize signer (for contract deployment and admin functions)
       if (process.env.PRIVATE_KEY) {
@@ -257,6 +264,26 @@ class BlockchainService {
       return null;
     } catch (error) {
       console.error('❌ Failed to get contract ABI:', error.message);
+      return null;
+    }
+  }
+
+  // Get network info
+  getNetworkInfo() {
+    try {
+      const contractInfoPath = path.join(__dirname, '..', 'contracts-info', 'HerbCollection.json');
+      
+      if (fs.existsSync(contractInfoPath)) {
+        const contractInfo = JSON.parse(fs.readFileSync(contractInfoPath, 'utf8'));
+        return {
+          network: contractInfo.network || 'amoy',
+          chainId: contractInfo.chainId || 80002,
+          explorerUrl: contractInfo.explorerUrl || 'https://amoy.polygonscan.com'
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('❌ Failed to get network info:', error.message);
       return null;
     }
   }
