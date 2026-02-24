@@ -16,10 +16,7 @@ AyurHerb is a blockchain-powered supply chain management system for Ayurvedic he
 
 ### Frontend Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           FRONTEND ARCHITECTURE                               │
-└─────────────────────────────────────────────────────────────────────────────┘
+![Frontend Architecture](./assets/Frontend%20Architecture.png)
 
                               ┌─────────────────┐
                               │   index.html    │
@@ -90,16 +87,11 @@ AyurHerb is a blockchain-powered supply chain management system for Ayurvedic he
 │  │ • History   │  │ • Results   │  │ • Download  │  │ • Wallet   │            │
 │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘            │
 └─────────────────────────────────────────────────────────────────────────────────┘
-```
-
 ---
 
 ### Backend Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           BACKEND ARCHITECTURE                               │
-└─────────────────────────────────────────────────────────────────────────────┘
+![Backend Architecture](./assets/Backend%20Architecture.png)
 
                         ┌─────────────────────┐
                         │   Express Server    │
@@ -168,15 +160,13 @@ AyurHerb is a blockchain-powered supply chain management system for Ayurvedic he
 │  │  • SupplyChainTracker.sol                                     │    │
 │  └─────────────────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────────────────┘
-```
-
 ---
 
 ## Data Flow
 
 ### Collection Submission Flow
 
-```
+![Collection Submission](./assets/Collection%20Submission.png)
 ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
 │ Collector│     │ Frontend │     │ Backend  │     │Blockchain│     │  IPFS    │
 └────┬─────┘     └────┬─────┘     └────┬─────┘     └────┬─────┘     └────┬─────┘
@@ -204,30 +194,7 @@ AyurHerb is a blockchain-powered supply chain management system for Ayurvedic he
 
 ### Verification Flow
 
-```
-┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
-│  Admin   │     │ Frontend │     │ Backend  │     │Blockchain│
-└────┬─────┘     └────┬─────┘     └────┬─────┘     └────┬─────┘
-     │               │               │               │
-     │ 1.Verify     │               │               │
-     │──────────────>│               │               │
-     │               │ 2.API Call   │               │
-     │               │──────────────>│               │
-     │               │               │ 3.Call       │
-     │               │               │verify()      │
-     │               │               │─────────────>│
-     │               │               │               │
-     │               │               │ 4.Emit Event │
-     │               │               │<─────────────│
-     │               │               │               │
-     │               │               │ 5.Response   │
-     │               │               │<─────────────│
-     │               │ 6.Updated     │               │
-     │               │<──────────────│               │
-     │ 7.Confirmed  │               │               │
-     │<──────────────│               │               │
-     │               │               │               │
-```
+![Verification Flow](./assets/Verification%20Flow.png)
 
 ---
 
@@ -293,10 +260,7 @@ AyurHerb is a blockchain-powered supply chain management system for Ayurvedic he
 
 ## Network Configuration
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         NETWORK ARCHITECTURE                                │
-└─────────────────────────────────────────────────────────────────────────────┘
+![Network Configuration](./assets/Network%20Configuration.png)
 
                          ┌─────────────────┐
                          │   Main App      │
@@ -329,16 +293,11 @@ AyurHerb is a blockchain-powered supply chain management system for Ayurvedic he
                               │   MetaMask   │
                               │   (Wallet)   │
                               └──────────────┘
-```
-
 ---
 
 ## Security Features
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           SECURITY LAYER                                   │
-└─────────────────────────────────────────────────────────────────────────────┘
+![Security Features](./assets/Security%20Features.png)
 
   ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
   │  Role-Based    │  │   Input         │  │   Rate          │
@@ -363,16 +322,11 @@ AyurHerb is a blockchain-powered supply chain management system for Ayurvedic he
   │  • Event Logging for Auditing                                  │
   │  • Immutable Transaction History                                │
   └─────────────────────────────────────────────────────────────────┘
-```
-
 ---
 
 ## Deployment Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        DEPLOYMENT FLOW                                     │
-└─────────────────────────────────────────────────────────────────────────────┘
+![Deployment Architecture](./assets/Deployment%20Architecture.png)
 
    Development              Staging                 Production
    ┌─────────┐             ┌─────────┐            ┌─────────┐
@@ -389,8 +343,6 @@ AyurHerb is a blockchain-powered supply chain management system for Ayurvedic he
 
    Frontend: Vite        Frontend: Netlify      Frontend: Vercel/Netlify
    Backend:  localhost    Backend:  Render       Backend:  AWS/DigitalOcean
-```
-
 ---
 
 *Last Updated: February 2026*
