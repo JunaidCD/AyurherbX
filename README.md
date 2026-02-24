@@ -27,8 +27,8 @@
 AyurHerb is a comprehensive blockchain-powered supply chain management system for Ayurvedic herbs and medicines. The platform ensures **immutable tracking via events + NFT metadata**, traceability, and authenticity throughout the supply chain from farm to consumer.
 
 The system supports **two testnets**:
-- **Polygon Amoy** (L2) - Low-cost, fast transactions
-- **Ethereum Sepolia** - Industry-standard Ethereum testnet
+- **⭐ Polygon Amoy** (L2) - Recommended - Low-cost, fast transactions (~88% lower gas)
+- **Ethereum Sepolia** (L1) - Industry-standard Ethereum testnet
 
 ## ✨ Features
 
@@ -63,7 +63,7 @@ The system supports **two testnets**:
 - Collection status tracking
 
 ### 🔗 Blockchain Features
-- Dual-network support: Polygon Amoy + Ethereum Sepolia
+- **Dual-network support**: ⭐ Polygon Amoy (recommended) + Ethereum Sepolia
 - **NFT-based herb batches** (ERC721/ERC721A) with unique token IDs
 - **IPFS off-chain storage** for metadata (via Pinata)
 - **Chainlink oracle stub** for temperature/humidity/AQI stamps
@@ -95,7 +95,7 @@ The system supports **two testnets**:
 - **Solidity ^0.8.24** - Smart contract language
 - **Hardhat** - Ethereum development environment
 - **Ethers.js** - Ethereum library
-- **Polygon Amoy Testnet** - L2 test network (chainId: 80002)
+- **Polygon Amoy Testnet** - ⭐ Recommended L2 test network (chainId: 80002)
 - **Ethereum Sepolia Testnet** - L1 test network (chainId: 11155111)
 - **MetaMask** - Web3 wallet integration
 - **Pinata IPFS** - Off-chain metadata storage
@@ -136,10 +136,10 @@ Before running this project, ensure you have:
 
 ### Testnet Requirements
 
-| Network | Token | Faucet |
-|---------|-------|--------|
-| Polygon Amoy | MATIC | https://faucet.polygon.technology/ |
-| Ethereum Sepolia | ETH | https://sepoliafaucet.com/ |
+| Network | Token | Faucet | Recommended |
+|---------|-------|--------|-------------|
+| Polygon Amoy | MATIC | https://faucet.polygon.technology/ | ⭐ Yes |
+| Ethereum Sepolia | ETH | https://sepoliafaucet.com/ | Yes |
 
 ### MetaMask Setup:
 1. Install MetaMask browser extension
@@ -153,7 +153,9 @@ Before running this project, ensure you have:
 
 # 🚀 How to Run/Deploy
 
-## Polygon Amoy (Recommended - Lower Gas Costs)
+## ⭐ Recommended: Polygon Amoy (Lower Gas Costs)
+
+Polygon Amoy offers ~88% lower gas costs compared to Ethereum Sepolia, making it the recommended network for development and testing.
 
 ### Step 1: Backend Setup
 ```bash
@@ -211,7 +213,9 @@ Frontend runs on `http://localhost:5173`
 
 ---
 
-## Ethereum Sepolia (Industry Standard)
+## 🌍 Also Supported: Ethereum Sepolia
+
+Ethereum Sepolia is the industry-standard Ethereum testnet. Use this if you prefer L1 or need compatibility with Ethereum mainnet tools.
 
 ### Step 1: Backend Setup
 ```bash
@@ -592,7 +596,7 @@ This project is licensed under the MIT License.
 
 ## 🌟 Key Features Highlight
 
-- ✅ **Dual Testnet Support**: Polygon Amoy + Ethereum Sepolia
+- ✅ **Dual Testnet Support**: ⭐ Polygon Amoy (recommended) + Ethereum Sepolia
 - ✅ **NFT-Based Tracking**: Unique token IDs per herb batch
 - ✅ **Off-chain IPFS Storage**: ~50% gas reduction
 - ✅ **ERC721A Gas Optimization**: ~95% savings on batch minting
